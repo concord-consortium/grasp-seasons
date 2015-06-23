@@ -1,5 +1,9 @@
-import models from './models.js';
+import models from './models/models.js';
+import LatitudeLine from './models/latitude-line.js';
+import LatLongMarker from './models/lat-long-marker.js';
 import * as data from './data.js';
+
+var DEG_2_RAD = Math.PI / 180;
 
 export default class {
 
@@ -41,7 +45,11 @@ export default class {
 
     this.earth = models.earth();
     this.earthAxis = models.earthAxis();
+    this.latLine = new LatitudeLine();
+    this.latLongMarker = new LatLongMarker();
     this.earth.add(this.earthAxis);
+    this.earth.add(this.latLine.mesh);
+    this.earth.add(this.latLongMarker.mesh);
 
     this.earthPos = new THREE.Object3D();
     this.earthPos.add(models.grid({size: data.earthOrbitalRadius / 8, steps: 15}));
@@ -83,6 +91,12 @@ export default class {
 
   setEarthTilt(tilt) {
     this.earth.rotation.z = tilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
+  }
+
+  // Units: degree
+  setLatLong(lat, long) {
+    this.latLine.setLat(lat);
+    this.latLongMarker.setLatLong(lat, long)
   }
 
   rotateCam(angle) {

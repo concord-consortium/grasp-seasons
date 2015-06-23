@@ -1,8 +1,8 @@
 import EarthView from './earth-view.js';
 import OrbitView from './orbit-view.js';
 
-var earthView = new EarthView(document.getElementById('earth-view'));
-var orbitView = new OrbitView(document.getElementById('orbit-view'));
+window.earthView = new EarthView(document.getElementById('earth-view'));
+window.orbitView = new OrbitView(document.getElementById('orbit-view'));
 
 earthView.onCameraChange = function(camVec) {
   orbitView.setViewAxis(camVec);
