@@ -8,7 +8,7 @@ export default {
   stars: function () {
     var geometry = new THREE.SphereGeometry(350000000 * sf, 32, 32);
     var material = new THREE.MeshBasicMaterial();
-    material.map = THREE.ImageUtils.loadTexture('/images/milky_way.jpg');
+    material.map = THREE.ImageUtils.loadTexture('images/milky_way.jpg');
     material.side = THREE.BackSide;
     var mesh = new THREE.Mesh(geometry, material);
     return mesh;
@@ -43,7 +43,7 @@ export default {
     var geometry = new THREE.SphereGeometry(RADIUS, 32, 32);
     var material = new THREE.MeshPhongMaterial(COLORS);
     if (!simple) {
-      material.map = THREE.ImageUtils.loadTexture('/images/earth.jpg');
+      material.map = THREE.ImageUtils.loadTexture('images/earth.jpg');
     }
     var mesh = new THREE.Mesh(geometry, material);
     return mesh;
