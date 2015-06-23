@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Earth Orbit</title>
+  <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" media="all">
+  <style>
+    canvas {
+      display: inline-block;
+      vertical-align: top;
+    }
+    #earth-view {
+      width: 1000px;
+      height: 800px;
+    }
+    #orbit-view {
+      width: 400px;
+      height: 400px;
+    }
+    #day-slider {
+      width: 800px;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+
+
+<canvas id="earth-view"></canvas>
+<canvas id="orbit-view"></canvas>
+<div id="day-slider"></div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.js"></script>
+<script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="http://threejs.org/examples/fonts/helvetiker_regular.typeface.js"></script>
+<script src="dist/app.js"></script>
+</body>
+</html>
