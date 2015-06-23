@@ -5,21 +5,34 @@
   <title>Earth Orbit</title>
   <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" media="all">
   <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+    }
     canvas {
       display: inline-block;
       vertical-align: top;
     }
     #earth-view {
       width: 1000px;
-      height: 800px;
+      height: 700px;
     }
     #orbit-view {
       width: 400px;
-      height: 400px;
+      height: 350px;
     }
     #day-slider {
+
+    }
+    .controls {
       width: 800px;
       margin: 20px auto;
+    }
+    label {
+      display: block;
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -28,7 +41,14 @@
 
 <canvas id="earth-view"></canvas>
 <canvas id="orbit-view"></canvas>
-<div id="day-slider"></div>
+<div class="controls">
+  Day:
+  <div id="day-slider"></div>
+  <label><input type="checkbox" id="earth-rotation">Rotating?</label>
+  <label><input type="checkbox" id="earth-tilt">Tilted?</label>
+  Latitude:
+  <div id="latitude-slider"></div>
+</div>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>

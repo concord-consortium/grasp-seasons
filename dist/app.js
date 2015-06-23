@@ -48,36 +48,62 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _earthViewJs = __webpack_require__(1);
+	var _viewsManagerJs = __webpack_require__(11);
 
-	var _earthViewJs2 = _interopRequireDefault(_earthViewJs);
+	var _viewsManagerJs2 = _interopRequireDefault(_viewsManagerJs);
 
-	var _orbitViewJs = __webpack_require__(4);
-
-	var _orbitViewJs2 = _interopRequireDefault(_orbitViewJs);
-
-	window.earthView = new _earthViewJs2['default'](document.getElementById('earth-view'));
-	window.orbitView = new _orbitViewJs2['default'](document.getElementById('orbit-view'));
-
-	earthView.onCameraChange = function (camVec) {
-	  orbitView.setViewAxis(camVec);
+	var state = {
+	  day: 0,
+	  earthTilt: true,
+	  earthRotation: false,
+	  lat: 0,
+	  long: 0
+	};
+	var view = new _viewsManagerJs2['default'](state);
+	var ui = {
+	  $daySlider: $('#day-slider'),
+	  $earthRotation: $('#earth-rotation'),
+	  $earthTilt: $('#earth-tilt'),
+	  $latSlider: $('#latitude-slider')
 	};
 
-	function anim() {
-	  requestAnimationFrame(anim);
-	  earthView.render();
-	  orbitView.render();
+	function setState(newState) {
+	  state = $.extend(state, newState);
+	  view.setProps(state);
 	}
-	anim();
 
-	$('#day-slider').slider({
+	function updateUI() {
+	  ui.$daySlider.slider('value', state.day);
+	  ui.$earthRotation.prop('checked', state.earthRotation);
+	  ui.$earthTilt.prop('checked', state.earthTilt);
+	  ui.$latSlider.slider('value', state.lat);
+	}
+
+	ui.$daySlider.slider({
 	  min: 0,
 	  max: 364,
 	  step: 1
 	}).on('slide', function (e, ui) {
-	  earthView.setDay(ui.value);
-	  orbitView.setDay(ui.value);
+	  setState({ day: ui.value });
 	});
+
+	ui.$earthRotation.on('change', function () {
+	  setState({ earthRotation: this.checked });
+	});
+
+	ui.$earthTilt.on('change', function () {
+	  setState({ earthTilt: this.checked });
+	});
+
+	ui.$latSlider.slider({
+	  min: -90,
+	  max: 90,
+	  step: 1
+	}).on('slide', function (e, ui) {
+	  setState({ lat: ui.value });
+	});
+
+	updateUI();
 
 /***/ },
 /* 1 */
@@ -97,6 +123,10 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+	var _eventemitter2 = __webpack_require__(10);
+
+	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
+
 	var _modelsModelsJs = __webpack_require__(5);
 
 	var _modelsModelsJs2 = _interopRequireDefault(_modelsModelsJs);
@@ -115,8 +145,20 @@
 
 	var DEG_2_RAD = Math.PI / 180;
 
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  earthRotation: false,
+	  lat: 0,
+	  long: 0
+	};
+
 	var _default = (function () {
 	  var _class = function _default(canvasEl) {
+	    var _this = this;
+
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+
 	    _classCallCheck(this, _class);
 
 	    var width = canvasEl.clientWidth;
@@ -131,22 +173,101 @@
 	    this.controls.noZoom = true;
 	    this.controls.rotateSpeed = 0.5;
 
-	    this.controls.addEventListener('change', (function () {
-	      if (this.onCameraChange) {
-	        var camVec = this.camera.position.clone().sub(this.earthPos.position).normalize();
-	        this.onCameraChange(camVec);
-	      }
-	    }).bind(this));
+	    this.dispatch = new _eventemitter22['default']();
+
+	    this.controls.addEventListener('change', function () {
+	      _this.dispatch.emit('camera.change');
+	    });
 
 	    this._initScene();
 	    this._setInitialCamPos();
 
-	    this.setDay(0);
-	    this.setEarthTilt(true);
+	    this.props = {};
+	    this.setProps(props);
+
 	    this.render();
 	  };
 
 	  _createClass(_class, [{
+	    key: 'getCameraEarthVec',
+
+	    // Normalized vector pointing from camera to earth.
+	    value: function getCameraEarthVec() {
+	      return this.camera.position.clone().sub(this.earthPos.position).normalize();
+	    }
+	  }, {
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = $.extend(this.props);
+	      this.props = $.extend(this.props, newProps);
+
+	      if (this.props.day !== oldProps.day) this._updateDay();
+	      if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
+	      if (this.props.lat !== oldProps.lat || this.props.long !== oldProps.long) this._updateLatLong();
+	    }
+	  }, {
+	    key: 'on',
+
+	    // Delegate #on to EventEmitter object.
+	    value: function on() {
+	      this.dispatch.on.apply(this.dispatch, arguments);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(timestamp) {
+	      this._animate(timestamp);
+	      this.renderer.render(this.scene, this.camera);
+	      this.controls.update();
+	    }
+	  }, {
+	    key: '_updateDay',
+	    value: function _updateDay() {
+	      var day = this.props.day;
+	      var pos = data.earthEllipseLocationByDay(day);
+
+	      if (this._prevDay != null) {
+	        var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
+	        // Make sure that earth maintains its rotation.
+	        this.earth.rotateY(angle);
+	        // Update camera position, rotate it and adjust its orbit length.
+	        this._rotateCam(angle);
+	        var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
+	        var newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
+	        this.camera.position.x *= newOrbitLength / oldOrbitLength;
+	        this.camera.position.z *= newOrbitLength / oldOrbitLength;
+	      }
+
+	      this.earthPos.position.x = pos.x;
+	      this.earthPos.position.z = pos.z;
+
+	      // Set camera target to new position too.
+	      this.controls.target.x = pos.x;
+	      this.controls.target.z = pos.z;
+	      this.controls.update();
+
+	      this._prevDay = day;
+	    }
+	  }, {
+	    key: '_updateEarthTilt',
+	    value: function _updateEarthTilt() {
+	      this.earthRot.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
+	    }
+	  }, {
+	    key: '_updateLatLong',
+	    value: function _updateLatLong() {
+	      this.latLine.setLat(this.props.lat);
+	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+	    }
+	  }, {
+	    key: '_rotateCam',
+	    value: function _rotateCam(angle) {
+	      var p = this.camera.position;
+	      var newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
+	      var newX = p.z * Math.sin(angle) + p.x * Math.cos(angle);
+	      this.camera.position.x = newX;
+	      this.camera.position.z = newZ;
+	    }
+	  }, {
 	    key: '_initScene',
 	    value: function _initScene() {
 	      this.scene.add(_modelsModelsJs2['default'].stars());
@@ -164,9 +285,11 @@
 	      this.earth.add(this.latLine.mesh);
 	      this.earth.add(this.latLongMarker.mesh);
 
+	      this.earthRot = new THREE.Object3D();
+	      this.earthRot.add(this.earth);
 	      this.earthPos = new THREE.Object3D();
 	      this.earthPos.add(_modelsModelsJs2['default'].grid({ size: data.earthOrbitalRadius / 8, steps: 15 }));
-	      this.earthPos.add(this.earth);
+	      this.earthPos.add(this.earthRot);
 	      this.scene.add(this.earthPos);
 	    }
 	  }, {
@@ -177,59 +300,16 @@
 	      this.camera.position.z = 24799310 / data.scaleFactor;
 	    }
 	  }, {
-	    key: 'setDay',
-	    value: function setDay(day) {
-	      var pos = data.earthEllipseLocationByDay(day);
-
-	      if (this.day != null) {
-	        var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
-	        // Make sure that earth maintains its rotation.
-	        this.earth.rotateY(angle);
-	        // Update camera position, rotate it and adjust its orbit length.
-	        this.rotateCam(angle);
-	        var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
-	        var newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
-	        this.camera.position.x *= newOrbitLength / oldOrbitLength;
-	        this.camera.position.z *= newOrbitLength / oldOrbitLength;
+	    key: '_animate',
+	    value: function _animate(timestamp) {
+	      if (!this.props.earthRotation) {
+	        this._prevFrame = null;
+	        return;
 	      }
-
-	      this.earthPos.position.x = pos.x;
-	      this.earthPos.position.z = pos.z;
-
-	      // Set camera target to new position too.
-	      this.controls.target.x = pos.x;
-	      this.controls.target.z = pos.z;
-	      this.controls.update();
-
-	      this.day = day;
-	    }
-	  }, {
-	    key: 'setEarthTilt',
-	    value: function setEarthTilt(tilt) {
-	      this.earth.rotation.z = tilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
-	    }
-	  }, {
-	    key: 'setLatLong',
-
-	    // Units: degree
-	    value: function setLatLong(lat, long) {
-	      this.latLine.setLat(lat);
-	      this.latLongMarker.setLatLong(lat, long);
-	    }
-	  }, {
-	    key: 'rotateCam',
-	    value: function rotateCam(angle) {
-	      var p = this.camera.position;
-	      var newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
-	      var newX = p.z * Math.sin(angle) + p.x * Math.cos(angle);
-	      this.camera.position.x = newX;
-	      this.camera.position.z = newZ;
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      this.renderer.render(this.scene, this.camera);
-	      this.controls.update();
+	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
+	      var angleDiff = progress * 0.0001 * Math.PI;
+	      this.earth.rotateY(angleDiff);
+	      this._prevFrame = timestamp;
 	    }
 	  }]);
 
@@ -317,8 +397,15 @@
 
 	var data = _interopRequireWildcard(_dataJs);
 
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true
+	};
+
 	var _default = (function () {
 	  var _class = function _default(canvasEl) {
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+
 	    _classCallCheck(this, _class);
 
 	    var width = canvasEl.clientWidth;
@@ -336,12 +423,46 @@
 	    this._initScene();
 	    this._setInitialCamPos();
 
-	    this.setDay(0);
-	    this.setEarthTilt(true);
+	    this.props = {};
+	    this.setProps(props);
+
 	    this.render();
 	  };
 
 	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = $.extend(this.props);
+	      this.props = $.extend(this.props, newProps);
+
+	      if (this.props.day !== oldProps.day) this._updateDay();
+	      if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
+	    }
+	  }, {
+	    key: 'setViewAxis',
+	    value: function setViewAxis(vec3) {
+	      this.viewAxis.lookAt(vec3);
+	      this.viewAxis.rotateX(Math.PI * 0.5);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      this.renderer.render(this.scene, this.camera);
+	    }
+	  }, {
+	    key: '_updateDay',
+	    value: function _updateDay() {
+	      var day = this.props.day;
+	      var pos = data.earthEllipseLocationByDay(day);
+	      this.earthPos.position.x = pos.x;
+	      this.earthPos.position.z = pos.z;
+	    }
+	  }, {
+	    key: '_updateEarthTilt',
+	    value: function _updateEarthTilt() {
+	      this.earth.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
+	    }
+	  }, {
 	    key: '_initScene',
 	    value: function _initScene() {
 	      this.scene.add(_modelsModelsJs2['default'].stars());
@@ -393,29 +514,6 @@
 	      this.scene.add(sepLbl);
 	      this.scene.add(marLbl);
 	    }
-	  }, {
-	    key: 'setDay',
-	    value: function setDay(day) {
-	      var pos = data.earthEllipseLocationByDay(day);
-	      this.earthPos.position.x = pos.x;
-	      this.earthPos.position.z = pos.z;
-	    }
-	  }, {
-	    key: 'setEarthTilt',
-	    value: function setEarthTilt(tilt) {
-	      this.earth.rotation.z = tilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
-	    }
-	  }, {
-	    key: 'setViewAxis',
-	    value: function setViewAxis(vec3) {
-	      this.viewAxis.lookAt(vec3);
-	      this.viewAxis.rotateX(Math.PI * 0.5);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      this.renderer.render(this.scene, this.camera);
-	    }
 	  }]);
 
 	  return _class;
@@ -448,7 +546,9 @@
 	  stars: function stars() {
 	    var geometry = new THREE.SphereGeometry(350000000 * c.SF, 32, 32);
 	    var material = new THREE.MeshBasicMaterial();
-	    material.map = THREE.ImageUtils.loadTexture('images/milky_way.jpg');
+	    material.map = THREE.ImageUtils.loadTexture('images/milky_way.jpg', null, function (texture) {
+	      texture.minFilter = THREE.LinearFilter;
+	    });
 	    material.side = THREE.BackSide;
 	    return new THREE.Mesh(geometry, material);
 	  },
@@ -482,7 +582,9 @@
 	    var geometry = new THREE.SphereGeometry(RADIUS, 32, 32);
 	    var material = new THREE.MeshPhongMaterial(COLORS);
 	    if (!simple) {
-	      material.map = THREE.ImageUtils.loadTexture('images/earth.jpg');
+	      material.map = THREE.ImageUtils.loadTexture('images/earth.jpg', null, function (texture) {
+	        texture.minFilter = THREE.LinearFilter;
+	      });
 	    }
 	    return new THREE.Mesh(geometry, material);
 	  },
@@ -701,6 +803,667 @@
 	})();
 
 	exports['default'] = LatitudeLine;
+	module.exports = exports['default'];
+
+/***/ },
+/* 9 */,
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * EventEmitter2
+	 * https://github.com/hij1nx/EventEmitter2
+	 *
+	 * Copyright (c) 2013 hij1nx
+	 * Licensed under the MIT license.
+	 */
+	;!function(undefined) {
+
+	  var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
+	    return Object.prototype.toString.call(obj) === "[object Array]";
+	  };
+	  var defaultMaxListeners = 10;
+
+	  function init() {
+	    this._events = {};
+	    if (this._conf) {
+	      configure.call(this, this._conf);
+	    }
+	  }
+
+	  function configure(conf) {
+	    if (conf) {
+
+	      this._conf = conf;
+
+	      conf.delimiter && (this.delimiter = conf.delimiter);
+	      conf.maxListeners && (this._events.maxListeners = conf.maxListeners);
+	      conf.wildcard && (this.wildcard = conf.wildcard);
+	      conf.newListener && (this.newListener = conf.newListener);
+
+	      if (this.wildcard) {
+	        this.listenerTree = {};
+	      }
+	    }
+	  }
+
+	  function EventEmitter(conf) {
+	    this._events = {};
+	    this.newListener = false;
+	    configure.call(this, conf);
+	  }
+
+	  //
+	  // Attention, function return type now is array, always !
+	  // It has zero elements if no any matches found and one or more
+	  // elements (leafs) if there are matches
+	  //
+	  function searchListenerTree(handlers, type, tree, i) {
+	    if (!tree) {
+	      return [];
+	    }
+	    var listeners=[], leaf, len, branch, xTree, xxTree, isolatedBranch, endReached,
+	        typeLength = type.length, currentType = type[i], nextType = type[i+1];
+	    if (i === typeLength && tree._listeners) {
+	      //
+	      // If at the end of the event(s) list and the tree has listeners
+	      // invoke those listeners.
+	      //
+	      if (typeof tree._listeners === 'function') {
+	        handlers && handlers.push(tree._listeners);
+	        return [tree];
+	      } else {
+	        for (leaf = 0, len = tree._listeners.length; leaf < len; leaf++) {
+	          handlers && handlers.push(tree._listeners[leaf]);
+	        }
+	        return [tree];
+	      }
+	    }
+
+	    if ((currentType === '*' || currentType === '**') || tree[currentType]) {
+	      //
+	      // If the event emitted is '*' at this part
+	      // or there is a concrete match at this patch
+	      //
+	      if (currentType === '*') {
+	        for (branch in tree) {
+	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
+	            listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+1));
+	          }
+	        }
+	        return listeners;
+	      } else if(currentType === '**') {
+	        endReached = (i+1 === typeLength || (i+2 === typeLength && nextType === '*'));
+	        if(endReached && tree._listeners) {
+	          // The next element has a _listeners, add it to the handlers.
+	          listeners = listeners.concat(searchListenerTree(handlers, type, tree, typeLength));
+	        }
+
+	        for (branch in tree) {
+	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
+	            if(branch === '*' || branch === '**') {
+	              if(tree[branch]._listeners && !endReached) {
+	                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], typeLength));
+	              }
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
+	            } else if(branch === nextType) {
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+2));
+	            } else {
+	              // No match on this one, shift into the tree but not in the type array.
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
+	            }
+	          }
+	        }
+	        return listeners;
+	      }
+
+	      listeners = listeners.concat(searchListenerTree(handlers, type, tree[currentType], i+1));
+	    }
+
+	    xTree = tree['*'];
+	    if (xTree) {
+	      //
+	      // If the listener tree will allow any match for this part,
+	      // then recursively explore all branches of the tree
+	      //
+	      searchListenerTree(handlers, type, xTree, i+1);
+	    }
+
+	    xxTree = tree['**'];
+	    if(xxTree) {
+	      if(i < typeLength) {
+	        if(xxTree._listeners) {
+	          // If we have a listener on a '**', it will catch all, so add its handler.
+	          searchListenerTree(handlers, type, xxTree, typeLength);
+	        }
+
+	        // Build arrays of matching next branches and others.
+	        for(branch in xxTree) {
+	          if(branch !== '_listeners' && xxTree.hasOwnProperty(branch)) {
+	            if(branch === nextType) {
+	              // We know the next element will match, so jump twice.
+	              searchListenerTree(handlers, type, xxTree[branch], i+2);
+	            } else if(branch === currentType) {
+	              // Current node matches, move into the tree.
+	              searchListenerTree(handlers, type, xxTree[branch], i+1);
+	            } else {
+	              isolatedBranch = {};
+	              isolatedBranch[branch] = xxTree[branch];
+	              searchListenerTree(handlers, type, { '**': isolatedBranch }, i+1);
+	            }
+	          }
+	        }
+	      } else if(xxTree._listeners) {
+	        // We have reached the end and still on a '**'
+	        searchListenerTree(handlers, type, xxTree, typeLength);
+	      } else if(xxTree['*'] && xxTree['*']._listeners) {
+	        searchListenerTree(handlers, type, xxTree['*'], typeLength);
+	      }
+	    }
+
+	    return listeners;
+	  }
+
+	  function growListenerTree(type, listener) {
+
+	    type = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+
+	    //
+	    // Looks for two consecutive '**', if so, don't add the event at all.
+	    //
+	    for(var i = 0, len = type.length; i+1 < len; i++) {
+	      if(type[i] === '**' && type[i+1] === '**') {
+	        return;
+	      }
+	    }
+
+	    var tree = this.listenerTree;
+	    var name = type.shift();
+
+	    while (name) {
+
+	      if (!tree[name]) {
+	        tree[name] = {};
+	      }
+
+	      tree = tree[name];
+
+	      if (type.length === 0) {
+
+	        if (!tree._listeners) {
+	          tree._listeners = listener;
+	        }
+	        else if(typeof tree._listeners === 'function') {
+	          tree._listeners = [tree._listeners, listener];
+	        }
+	        else if (isArray(tree._listeners)) {
+
+	          tree._listeners.push(listener);
+
+	          if (!tree._listeners.warned) {
+
+	            var m = defaultMaxListeners;
+
+	            if (typeof this._events.maxListeners !== 'undefined') {
+	              m = this._events.maxListeners;
+	            }
+
+	            if (m > 0 && tree._listeners.length > m) {
+
+	              tree._listeners.warned = true;
+	              console.error('(node) warning: possible EventEmitter memory ' +
+	                            'leak detected. %d listeners added. ' +
+	                            'Use emitter.setMaxListeners() to increase limit.',
+	                            tree._listeners.length);
+	              console.trace();
+	            }
+	          }
+	        }
+	        return true;
+	      }
+	      name = type.shift();
+	    }
+	    return true;
+	  }
+
+	  // By default EventEmitters will print a warning if more than
+	  // 10 listeners are added to it. This is a useful default which
+	  // helps finding memory leaks.
+	  //
+	  // Obviously not all Emitters should be limited to 10. This function allows
+	  // that to be increased. Set to zero for unlimited.
+
+	  EventEmitter.prototype.delimiter = '.';
+
+	  EventEmitter.prototype.setMaxListeners = function(n) {
+	    this._events || init.call(this);
+	    this._events.maxListeners = n;
+	    if (!this._conf) this._conf = {};
+	    this._conf.maxListeners = n;
+	  };
+
+	  EventEmitter.prototype.event = '';
+
+	  EventEmitter.prototype.once = function(event, fn) {
+	    this.many(event, 1, fn);
+	    return this;
+	  };
+
+	  EventEmitter.prototype.many = function(event, ttl, fn) {
+	    var self = this;
+
+	    if (typeof fn !== 'function') {
+	      throw new Error('many only accepts instances of Function');
+	    }
+
+	    function listener() {
+	      if (--ttl === 0) {
+	        self.off(event, listener);
+	      }
+	      fn.apply(this, arguments);
+	    }
+
+	    listener._origin = fn;
+
+	    this.on(event, listener);
+
+	    return self;
+	  };
+
+	  EventEmitter.prototype.emit = function() {
+
+	    this._events || init.call(this);
+
+	    var type = arguments[0];
+
+	    if (type === 'newListener' && !this.newListener) {
+	      if (!this._events.newListener) { return false; }
+	    }
+
+	    // Loop through the *_all* functions and invoke them.
+	    if (this._all) {
+	      var l = arguments.length;
+	      var args = new Array(l - 1);
+	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+	      for (i = 0, l = this._all.length; i < l; i++) {
+	        this.event = type;
+	        this._all[i].apply(this, args);
+	      }
+	    }
+
+	    // If there is no 'error' event listener then throw.
+	    if (type === 'error') {
+
+	      if (!this._all &&
+	        !this._events.error &&
+	        !(this.wildcard && this.listenerTree.error)) {
+
+	        if (arguments[1] instanceof Error) {
+	          throw arguments[1]; // Unhandled 'error' event
+	        } else {
+	          throw new Error("Uncaught, unspecified 'error' event.");
+	        }
+	        return false;
+	      }
+	    }
+
+	    var handler;
+
+	    if(this.wildcard) {
+	      handler = [];
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
+	    }
+	    else {
+	      handler = this._events[type];
+	    }
+
+	    if (typeof handler === 'function') {
+	      this.event = type;
+	      if (arguments.length === 1) {
+	        handler.call(this);
+	      }
+	      else if (arguments.length > 1)
+	        switch (arguments.length) {
+	          case 2:
+	            handler.call(this, arguments[1]);
+	            break;
+	          case 3:
+	            handler.call(this, arguments[1], arguments[2]);
+	            break;
+	          // slower
+	          default:
+	            var l = arguments.length;
+	            var args = new Array(l - 1);
+	            for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+	            handler.apply(this, args);
+	        }
+	      return true;
+	    }
+	    else if (handler) {
+	      var l = arguments.length;
+	      var args = new Array(l - 1);
+	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+
+	      var listeners = handler.slice();
+	      for (var i = 0, l = listeners.length; i < l; i++) {
+	        this.event = type;
+	        listeners[i].apply(this, args);
+	      }
+	      return (listeners.length > 0) || !!this._all;
+	    }
+	    else {
+	      return !!this._all;
+	    }
+
+	  };
+
+	  EventEmitter.prototype.on = function(type, listener) {
+
+	    if (typeof type === 'function') {
+	      this.onAny(type);
+	      return this;
+	    }
+
+	    if (typeof listener !== 'function') {
+	      throw new Error('on only accepts instances of Function');
+	    }
+	    this._events || init.call(this);
+
+	    // To avoid recursion in the case that type == "newListeners"! Before
+	    // adding it to the listeners, first emit "newListeners".
+	    this.emit('newListener', type, listener);
+
+	    if(this.wildcard) {
+	      growListenerTree.call(this, type, listener);
+	      return this;
+	    }
+
+	    if (!this._events[type]) {
+	      // Optimize the case of one listener. Don't need the extra array object.
+	      this._events[type] = listener;
+	    }
+	    else if(typeof this._events[type] === 'function') {
+	      // Adding the second element, need to change to array.
+	      this._events[type] = [this._events[type], listener];
+	    }
+	    else if (isArray(this._events[type])) {
+	      // If we've already got an array, just append.
+	      this._events[type].push(listener);
+
+	      // Check for listener leak
+	      if (!this._events[type].warned) {
+
+	        var m = defaultMaxListeners;
+
+	        if (typeof this._events.maxListeners !== 'undefined') {
+	          m = this._events.maxListeners;
+	        }
+
+	        if (m > 0 && this._events[type].length > m) {
+
+	          this._events[type].warned = true;
+	          console.error('(node) warning: possible EventEmitter memory ' +
+	                        'leak detected. %d listeners added. ' +
+	                        'Use emitter.setMaxListeners() to increase limit.',
+	                        this._events[type].length);
+	          console.trace();
+	        }
+	      }
+	    }
+	    return this;
+	  };
+
+	  EventEmitter.prototype.onAny = function(fn) {
+
+	    if (typeof fn !== 'function') {
+	      throw new Error('onAny only accepts instances of Function');
+	    }
+
+	    if(!this._all) {
+	      this._all = [];
+	    }
+
+	    // Add the function to the event listener collection.
+	    this._all.push(fn);
+	    return this;
+	  };
+
+	  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+	  EventEmitter.prototype.off = function(type, listener) {
+	    if (typeof listener !== 'function') {
+	      throw new Error('removeListener only takes instances of Function');
+	    }
+
+	    var handlers,leafs=[];
+
+	    if(this.wildcard) {
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
+	    }
+	    else {
+	      // does not use listeners(), so no side effect of creating _events[type]
+	      if (!this._events[type]) return this;
+	      handlers = this._events[type];
+	      leafs.push({_listeners:handlers});
+	    }
+
+	    for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
+	      var leaf = leafs[iLeaf];
+	      handlers = leaf._listeners;
+	      if (isArray(handlers)) {
+
+	        var position = -1;
+
+	        for (var i = 0, length = handlers.length; i < length; i++) {
+	          if (handlers[i] === listener ||
+	            (handlers[i].listener && handlers[i].listener === listener) ||
+	            (handlers[i]._origin && handlers[i]._origin === listener)) {
+	            position = i;
+	            break;
+	          }
+	        }
+
+	        if (position < 0) {
+	          continue;
+	        }
+
+	        if(this.wildcard) {
+	          leaf._listeners.splice(position, 1);
+	        }
+	        else {
+	          this._events[type].splice(position, 1);
+	        }
+
+	        if (handlers.length === 0) {
+	          if(this.wildcard) {
+	            delete leaf._listeners;
+	          }
+	          else {
+	            delete this._events[type];
+	          }
+	        }
+	        return this;
+	      }
+	      else if (handlers === listener ||
+	        (handlers.listener && handlers.listener === listener) ||
+	        (handlers._origin && handlers._origin === listener)) {
+	        if(this.wildcard) {
+	          delete leaf._listeners;
+	        }
+	        else {
+	          delete this._events[type];
+	        }
+	      }
+	    }
+
+	    return this;
+	  };
+
+	  EventEmitter.prototype.offAny = function(fn) {
+	    var i = 0, l = 0, fns;
+	    if (fn && this._all && this._all.length > 0) {
+	      fns = this._all;
+	      for(i = 0, l = fns.length; i < l; i++) {
+	        if(fn === fns[i]) {
+	          fns.splice(i, 1);
+	          return this;
+	        }
+	      }
+	    } else {
+	      this._all = [];
+	    }
+	    return this;
+	  };
+
+	  EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
+
+	  EventEmitter.prototype.removeAllListeners = function(type) {
+	    if (arguments.length === 0) {
+	      !this._events || init.call(this);
+	      return this;
+	    }
+
+	    if(this.wildcard) {
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      var leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
+
+	      for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
+	        var leaf = leafs[iLeaf];
+	        leaf._listeners = null;
+	      }
+	    }
+	    else {
+	      if (!this._events[type]) return this;
+	      this._events[type] = null;
+	    }
+	    return this;
+	  };
+
+	  EventEmitter.prototype.listeners = function(type) {
+	    if(this.wildcard) {
+	      var handlers = [];
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
+	      return handlers;
+	    }
+
+	    this._events || init.call(this);
+
+	    if (!this._events[type]) this._events[type] = [];
+	    if (!isArray(this._events[type])) {
+	      this._events[type] = [this._events[type]];
+	    }
+	    return this._events[type];
+	  };
+
+	  EventEmitter.prototype.listenersAny = function() {
+
+	    if(this._all) {
+	      return this._all;
+	    }
+	    else {
+	      return [];
+	    }
+
+	  };
+
+	  if (true) {
+	     // AMD. Register as an anonymous module.
+	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	      return EventEmitter;
+	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports === 'object') {
+	    // CommonJS
+	    exports.EventEmitter2 = EventEmitter;
+	  }
+	  else {
+	    // Browser global.
+	    window.EventEmitter2 = EventEmitter;
+	  }
+	}();
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _earthViewJs = __webpack_require__(1);
+
+	var _earthViewJs2 = _interopRequireDefault(_earthViewJs);
+
+	var _orbitViewJs = __webpack_require__(4);
+
+	var _orbitViewJs2 = _interopRequireDefault(_orbitViewJs);
+
+	var _default = (function () {
+	  var _class = function _default(props) {
+	    _classCallCheck(this, _class);
+
+	    this.earthView = new _earthViewJs2['default'](document.getElementById('earth-view'), props);
+	    this.orbitView = new _orbitViewJs2['default'](document.getElementById('orbit-view'), props);
+
+	    // Export views to global namespace, so we can play with them using console.
+	    window.earthView = this.earthView;
+	    window.orbitView = this.orbitView;
+
+	    this._syncCameraAndViewAxis();
+	    this._startAnimation();
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(props) {
+	      this.earthView.setProps(props);
+	      this.orbitView.setProps(props);
+	    }
+	  }, {
+	    key: '_syncCameraAndViewAxis',
+
+	    // When earth view camera is changed, we need to update view axis in the orbit view.
+	    value: function _syncCameraAndViewAxis() {
+	      var _this = this;
+
+	      var sync = function sync() {
+	        var camVec = _this.earthView.getCameraEarthVec();
+	        _this.orbitView.setViewAxis(camVec);
+	      };
+	      // Initial sync.
+	      sync();
+	      // When earth view camera is changed, we need to update view axis in the orbit view.
+	      this.earthView.on('camera.change', sync);
+	    }
+	  }, {
+	    key: '_startAnimation',
+	    value: function _startAnimation() {
+	      var _this2 = this;
+
+	      var anim = function anim(timestamp) {
+	        _this2.earthView.render(timestamp);
+	        _this2.orbitView.render(timestamp);
+	        requestAnimationFrame(anim);
+	      };
+	      requestAnimationFrame(anim);
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
 	module.exports = exports['default'];
 
 /***/ }

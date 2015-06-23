@@ -1,9 +1,13 @@
 import models from './models/models.js';
 import * as data from './data.js';
 
-export default class {
+const DEF_PROPERTIES = {
+  day: 0,
+  earthTilt: true
+};
 
-  constructor(canvasEl) {
+export default class {
+  constructor(canvasEl, props = DEF_PROPERTIES) {
     var width = canvasEl.clientWidth;
     var height = canvasEl.clientHeight;
     this.scene = new THREE.Scene();
@@ -19,9 +23,38 @@ export default class {
     this._initScene();
     this._setInitialCamPos();
 
-    this.setDay(0);
-    this.setEarthTilt(true);
+    this.props = {};
+    this.setProps(props);
+
     this.render();
+  }
+
+  setProps(newProps) {
+    var oldProps = $.extend(this.props);
+    this.props = $.extend(this.props, newProps);
+
+    if (this.props.day !== oldProps.day) this._updateDay();
+    if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
+  }
+
+  setViewAxis(vec3) {
+    this.viewAxis.lookAt(vec3);
+    this.viewAxis.rotateX(Math.PI * 0.5);
+  }
+
+  render() {
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  _updateDay() {
+    var day = this.props.day;
+    var pos = data.earthEllipseLocationByDay(day);
+    this.earthPos.position.x = pos.x;
+    this.earthPos.position.z = pos.z;
+  }
+
+  _updateEarthTilt() {
+    this.earth.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
   }
 
   _initScene() {
@@ -71,24 +104,5 @@ export default class {
     this.scene.add(decLbl);
     this.scene.add(sepLbl);
     this.scene.add(marLbl);
-  }
-
-  setDay(day) {
-    var pos = data.earthEllipseLocationByDay(day);
-    this.earthPos.position.x = pos.x;
-    this.earthPos.position.z = pos.z;
-  }
-
-  setEarthTilt(tilt) {
-    this.earth.rotation.z = tilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
-  }
-
-  setViewAxis(vec3) {
-    this.viewAxis.lookAt(vec3);
-    this.viewAxis.rotateX(Math.PI * 0.5);
-  }
-
-  render() {
-    this.renderer.render(this.scene, this.camera);
   }
 }

@@ -1,26 +1,54 @@
-import EarthView from './earth-view.js';
-import OrbitView from './orbit-view.js';
+import ViewsManager from './views-manager.js';
 
-window.earthView = new EarthView(document.getElementById('earth-view'));
-window.orbitView = new OrbitView(document.getElementById('orbit-view'));
-
-earthView.onCameraChange = function(camVec) {
-  orbitView.setViewAxis(camVec);
+let state = {
+  day: 0,
+  earthTilt: true,
+  earthRotation: false,
+  lat: 0,
+  long: 0
+};
+let view = new ViewsManager(state);
+let ui = {
+  $daySlider: $('#day-slider'),
+  $earthRotation: $('#earth-rotation'),
+  $earthTilt: $('#earth-tilt'),
+  $latSlider: $('#latitude-slider')
 };
 
-function anim() {
-  requestAnimationFrame(anim);
-  earthView.render();
-  orbitView.render();
+function setState(newState) {
+  state = $.extend(state, newState);
+  view.setProps(state);
 }
-anim();
 
-$('#day-slider').slider({
+function updateUI() {
+  ui.$daySlider.slider('value', state.day);
+  ui.$earthRotation.prop('checked', state.earthRotation);
+  ui.$earthTilt.prop('checked', state.earthTilt);
+  ui.$latSlider.slider('value', state.lat);
+}
+
+ui.$daySlider.slider({
   min: 0,
   max: 364,
   step: 1
 }).on('slide', function (e, ui) {
-  earthView.setDay(ui.value);
-  orbitView.setDay(ui.value);
+  setState({day: ui.value});
 });
 
+ui.$earthRotation.on('change', function() {
+  setState({earthRotation: this.checked});
+});
+
+ui.$earthTilt.on('change', function() {
+  setState({earthTilt: this.checked});
+});
+
+ui.$latSlider.slider({
+  min: -90,
+  max: 90,
+  step: 1
+}).on('slide', function (e, ui) {
+  setState({lat: ui.value});
+});
+
+updateUI();
