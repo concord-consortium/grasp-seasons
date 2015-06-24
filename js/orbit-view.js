@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import models from './models/models.js';
 import * as data from './data.js';
 

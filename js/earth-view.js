@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import EventEmitter from 'eventemitter2';
 
 import models from './models/models.js';

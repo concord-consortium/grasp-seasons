@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import 'jquery-ui/slider';
+
 import ViewsManager from './views-manager.js';
 
 let state = {

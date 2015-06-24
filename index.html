@@ -52,11 +52,11 @@
   <div id="longitude-slider"></div>
 </div>
 
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.js"></script>
-<script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
-<script src="http://threejs.org/examples/fonts/helvetiker_regular.typeface.js"></script>
+<!--THREE.js doesn't work well with NPM modules, so import it manually.-->
+<!--vendor/threejs-r71 is a simple copy of git repository, but only necessary files are left.-->
+<script src="vendor/threejs-r71/build/three.min.js"></script>
+<script src="vendor/threejs-r71/examples/js/controls/OrbitControls.js"></script>
+<script src="vendor/threejs-r71/examples/fonts/helvetiker_regular.typeface.js"></script>
 <script src="dist/app.js"></script>
 </body>
 </html>

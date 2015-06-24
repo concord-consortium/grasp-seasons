@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 // Mouse position in pixels.
 export function mousePos(event, targetElement) {
   let $targetElement = $(targetElement);
