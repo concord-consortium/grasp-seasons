@@ -29,7 +29,7 @@ export default {
 
   sun: function () {
     var geometry = new THREE.SphereGeometry(15000000 * c.SF, 32, 32);
-    var material = new THREE.MeshPhongMaterial({emissive: 0x999900});
+    var material = new THREE.MeshPhongMaterial({emissive: 0xFF8935});
     var mesh = new THREE.Mesh(geometry, material);
     return mesh;
   },
@@ -37,19 +37,13 @@ export default {
   earth: function (params) {
     var simple = params && params.simple;
     var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    var COLORS = simple ? {color: 0x5555ff, emissive: 0x000044} : {};
-    var geometry = new THREE.SphereGeometry(RADIUS, 32, 32);
+    var COLORS = simple ? {color: 0x1286CD, emissive: 0x023757} : {};
+    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     var material = new THREE.MeshPhongMaterial(COLORS);
     if (!simple) {
-      material.map = THREE.ImageUtils.loadTexture('images/earth.jpg', null, function (texture) {
-        texture.minFilter = THREE.LinearFilter;
-      });
+      material.map = THREE.ImageUtils.loadTexture('images/earth-s.jpg');
     }
     return new THREE.Mesh(geometry, material);
-  },
-
-  latLongMarker: function () {
-
   },
 
   orbit: function () {
