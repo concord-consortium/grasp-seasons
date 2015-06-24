@@ -48,7 +48,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _viewsManagerJs = __webpack_require__(11);
+	var _viewsManagerJs = __webpack_require__(1);
 
 	var _viewsManagerJs2 = _interopRequireDefault(_viewsManagerJs);
 
@@ -60,16 +60,26 @@
 	  long: 0
 	};
 	var view = new _viewsManagerJs2['default'](state);
+
+	view.earthView.on('latitude.change', function (newLat) {
+	  setState({ lat: newLat });
+	});
+	view.earthView.on('longitude.change', function (newLong) {
+	  setState({ long: newLong });
+	});
+
 	var ui = {
 	  $daySlider: $('#day-slider'),
 	  $earthRotation: $('#earth-rotation'),
 	  $earthTilt: $('#earth-tilt'),
-	  $latSlider: $('#latitude-slider')
+	  $latSlider: $('#latitude-slider'),
+	  $longSlider: $('#longitude-slider')
 	};
 
 	function setState(newState) {
 	  state = $.extend(state, newState);
-	  view.setProps(state);
+	  view.setProps(newState);
+	  updateUI();
 	}
 
 	function updateUI() {
@@ -77,6 +87,7 @@
 	  ui.$earthRotation.prop('checked', state.earthRotation);
 	  ui.$earthTilt.prop('checked', state.earthTilt);
 	  ui.$latSlider.slider('value', state.lat);
+	  ui.$longSlider.slider('value', state.long);
 	}
 
 	ui.$daySlider.slider({
@@ -103,10 +114,99 @@
 	  setState({ lat: ui.value });
 	});
 
+	ui.$longSlider.slider({
+	  min: -180,
+	  max: 180,
+	  step: 1
+	}).on('slide', function (e, ui) {
+	  setState({ long: ui.value });
+	});
+
 	updateUI();
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _earthViewJs = __webpack_require__(2);
+
+	var _earthViewJs2 = _interopRequireDefault(_earthViewJs);
+
+	var _orbitViewJs = __webpack_require__(10);
+
+	var _orbitViewJs2 = _interopRequireDefault(_orbitViewJs);
+
+	var _default = (function () {
+	  var _class = function _default(props) {
+	    _classCallCheck(this, _class);
+
+	    this.earthView = new _earthViewJs2['default'](document.getElementById('earth-view'), props);
+	    this.orbitView = new _orbitViewJs2['default'](document.getElementById('orbit-view'), props);
+
+	    // Export views to global namespace, so we can play with them using console.
+	    window.earthView = this.earthView;
+	    window.orbitView = this.orbitView;
+
+	    this._syncCameraAndViewAxis();
+	    this._startAnimation();
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(props) {
+	      this.earthView.setProps(props);
+	      this.orbitView.setProps(props);
+	    }
+	  }, {
+	    key: '_syncCameraAndViewAxis',
+
+	    // When earth view camera is changed, we need to update view axis in the orbit view.
+	    value: function _syncCameraAndViewAxis() {
+	      var _this = this;
+
+	      var sync = function sync() {
+	        var camVec = _this.earthView.getCameraEarthVec();
+	        _this.orbitView.setViewAxis(camVec);
+	      };
+	      // Initial sync.
+	      sync();
+	      // When earth view camera is changed, we need to update view axis in the orbit view.
+	      this.earthView.on('camera.change', sync);
+	    }
+	  }, {
+	    key: '_startAnimation',
+	    value: function _startAnimation() {
+	      var _this2 = this;
+
+	      var anim = function anim(timestamp) {
+	        _this2.earthView.render(timestamp);
+	        _this2.orbitView.render(timestamp);
+	        requestAnimationFrame(anim);
+	      };
+	      requestAnimationFrame(anim);
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -123,27 +223,32 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _eventemitter2 = __webpack_require__(10);
+	var _eventemitter2 = __webpack_require__(7);
 
 	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
 
-	var _modelsModelsJs = __webpack_require__(5);
+	var _modelsModelsJs = __webpack_require__(8);
 
 	var _modelsModelsJs2 = _interopRequireDefault(_modelsModelsJs);
 
-	var _modelsLatitudeLineJs = __webpack_require__(7);
+	var _modelsLatitudeLineJs = __webpack_require__(9);
 
 	var _modelsLatitudeLineJs2 = _interopRequireDefault(_modelsLatitudeLineJs);
 
-	var _modelsLatLongMarkerJs = __webpack_require__(8);
+	var _modelsLatLongMarkerJs = __webpack_require__(3);
 
 	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
 
-	var _dataJs = __webpack_require__(3);
+	var _dataJs = __webpack_require__(5);
 
 	var data = _interopRequireWildcard(_dataJs);
 
+	var _utilsJs = __webpack_require__(6);
+
 	var DEG_2_RAD = Math.PI / 180;
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var EARTH_TILT = 0.41; // 23.5 deg
 
 	var DEF_PROPERTIES = {
 	  day: 0,
@@ -172,6 +277,10 @@
 	    this.controls.noPan = true;
 	    this.controls.noZoom = true;
 	    this.controls.rotateSpeed = 0.5;
+
+	    this.raycaster = new THREE.Raycaster();
+	    this.mouse = new THREE.Vector2(-1, -1);
+	    this._enableMousePicking();
 
 	    this.dispatch = new _eventemitter22['default']();
 
@@ -216,6 +325,7 @@
 	    key: 'render',
 	    value: function render(timestamp) {
 	      this._animate(timestamp);
+	      this._interactivityHandler();
 	      this.renderer.render(this.scene, this.camera);
 	      this.controls.update();
 	    }
@@ -250,7 +360,7 @@
 	  }, {
 	    key: '_updateEarthTilt',
 	    value: function _updateEarthTilt() {
-	      this.earthRot.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
+	      this.earthRot.rotation.z = this.props.earthTilt ? EARTH_TILT : 0;
 	    }
 	  }, {
 	    key: '_updateLatLong',
@@ -282,8 +392,8 @@
 	      this.latLine = new _modelsLatitudeLineJs2['default']();
 	      this.latLongMarker = new _modelsLatLongMarkerJs2['default']();
 	      this.earth.add(this.earthAxis);
-	      this.earth.add(this.latLine.mesh);
-	      this.earth.add(this.latLongMarker.mesh);
+	      this.earth.add(this.latLine.rootObject);
+	      this.earth.add(this.latLongMarker.rootObject);
 
 	      this.earthRot = new THREE.Object3D();
 	      this.earthRot.add(this.earth);
@@ -311,6 +421,140 @@
 	      this.earth.rotateY(angleDiff);
 	      this._prevFrame = timestamp;
 	    }
+	  }, {
+	    key: '_enableMousePicking',
+	    value: function _enableMousePicking() {
+	      var _this2 = this;
+
+	      var onMouseMove = function onMouseMove(event) {
+	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.renderer.domElement);
+	        _this2.mouse.x = pos.x;
+	        _this2.mouse.y = pos.y;
+	      };
+	      $(this.renderer.domElement).on('mousemove', onMouseMove);
+	    }
+	  }, {
+	    key: '_interactivityHandler',
+	    value: function _interactivityHandler() {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+	      if (this._isLatDragging) {
+	        var coords = this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          this.setProps({ lat: coords.lat });
+	          this.dispatch.emit('latitude.change', coords.lat);
+	        }
+	        return;
+	      } else if (this._isLatLongDragging) {
+	        var coords = this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          this.setProps({ lat: coords.lat, long: coords.long });
+	          this.dispatch.emit('latitude.change', coords.lat);
+	          this.dispatch.emit('longitude.change', coords.long);
+	        }
+	        return;
+	      }
+
+	      if (this._isUserPointing(this.latLongMarker.mesh)) {
+	        this._setLatLongDraggingEnabled(true);
+	      } else if (this._isUserPointing(this.latLine.mesh)) {
+	        this._setLatDraggingEnabled(true);
+	      } else {
+	        this._setLatLongDraggingEnabled(false);
+	        this._setLatDraggingEnabled(false);
+	      }
+	    }
+	  }, {
+	    key: '_isUserPointing',
+	    value: function _isUserPointing(mesh) {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+	      var intersects = this.raycaster.intersectObject(mesh);
+	      if (intersects.length > 0) {
+	        return intersects;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: '_setLatDraggingEnabled',
+	    value: function _setLatDraggingEnabled(v) {
+	      var _this3 = this;
+
+	      if (this._isLatDraggingEnabled === v) return; // exit, nothing has changed
+	      this._isLatDraggingEnabled = v;
+	      this.latLongMarker.setHighlighted(v);
+	      this.latLine.setHighlighted(v);
+	      this.controls.noRotate = v;
+	      var $elem = $(this.renderer.domElement);
+	      if (v) {
+	        var _$elem = $(this.renderer.domElement);
+	        _$elem.on('mousedown.latDragging touchstart.latDragging', function () {
+	          _this3._isLatDragging = true;
+	        });
+	        _$elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
+	          _this3._isLatDragging = false;
+	        });
+	      } else {
+	        $elem.off('.latDragging');
+	      }
+	    }
+	  }, {
+	    key: '_setLatLongDraggingEnabled',
+	    value: function _setLatLongDraggingEnabled(v) {
+	      var _this4 = this;
+
+	      if (this._isLatLongDraggingEnabled === v) return; // exit, nothing has changed
+	      this._isLatLongDraggingEnabled = v;
+	      this.latLongMarker.setHighlighted(v);
+	      this.controls.noRotate = v;
+	      var $elem = $(this.renderer.domElement);
+	      if (v) {
+	        $elem.on('mousedown.latLongDragging touchstart.latLongDragging', function () {
+	          _this4._isLatLongDragging = true;
+	        });
+	        $elem.on('mouseup.latLongDragging touchend.latLongDragging touchcancel.latLongDragging', function () {
+	          _this4._isLatLongDragging = false;
+	        });
+	      } else {
+	        $elem.off('.latLongDragging');
+	      }
+	    }
+	  }, {
+	    key: '_getPointerLatLong',
+
+	    // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
+	    value: function _getPointerLatLong() {
+	      var intersects = this._isUserPointing(this.earth);
+	      if (!intersects) {
+	        // Pointer does not intersect with earth, return null.
+	        return null;
+	      }
+	      // Calculate vector pointing from Earth center to intersection point.
+	      var intVec = intersects[0].point;
+	      intVec.sub(this.earthPos.position);
+	      // Take into account earth tilt if necessary.
+	      if (this.props.earthTilt) {
+	        intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -EARTH_TILT);
+	      }
+	      // Normal of the plane XZ.
+	      var xzNormal = new THREE.Vector3(0, 1, 0);
+	      var lat = Math.asin(intVec.dot(xzNormal) / (intVec.length() * xzNormal.length())) * RAD_2_DEG;
+	      // Normal of the plane XY.
+	      var xyNormal = new THREE.Vector3(0, 0, -1);
+	      // Take into account current rotation of the earth.
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation.y);
+	      // Map vector to XZ plane, so we measure desired angle.
+	      intVec.y = 0;
+	      var long = Math.asin(intVec.dot(xyNormal) / (intVec.length() * xyNormal.length())) * RAD_2_DEG;
+	      if (intVec.x < 0 && intVec.z < 0) {
+	        long = 180 - long;
+	      } else if (intVec.x < 0 && intVec.z > 0) {
+	        long = -180 - long;
+	      }
+	      return { lat: lat, long: long };
+	    }
 	  }]);
 
 	  return _class;
@@ -320,8 +564,99 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 2 */,
 /* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _constantsJs = __webpack_require__(4);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var _utilsJs = __webpack_require__(6);
+
+	var DEG_2_RAD = Math.PI / 180;
+	var DEF_COLOR = 0xffffff;
+	var HIGHLIGHT_COLOR = 0xff0000;
+
+	var LatLongMarker = (function () {
+	  function LatLongMarker() {
+	    _classCallCheck(this, LatLongMarker);
+
+	    var geometry = new THREE.SphereGeometry(200000 * c.SF, 32, 32);
+	    var material = new THREE.MeshBasicMaterial({ color: DEF_COLOR });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.position.x = c.EARTH_RADIUS;
+	    var pivot = new THREE.Object3D();
+	    pivot.add(mesh);
+
+	    this.rootObject = pivot;
+	    this.mesh = mesh;
+	    this.material = material;
+	  }
+
+	  _createClass(LatLongMarker, [{
+	    key: 'setLatLong',
+	    value: function setLatLong(lat, long) {
+	      if (lat != null) {
+	        lat = lat * DEG_2_RAD;
+	        this.rootObject.rotation.z = lat;
+	      }
+	      if (long != null) {
+	        long = long * DEG_2_RAD;
+	        this.rootObject.rotation.y = long;
+	      }
+	    }
+	  }, {
+	    key: 'setHighlighted',
+	    value: function setHighlighted(v) {
+	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
+	    }
+	  }]);
+
+	  return LatLongMarker;
+	})();
+
+	exports['default'] = LatLongMarker;
+	module.exports = exports['default'];
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _dataJs = __webpack_require__(5);
+
+	var data = _interopRequireWildcard(_dataJs);
+
+	var SF = 1 / data.scaleFactor;
+	exports.SF = SF;
+	var EARTH_RADIUS = 7000000 * SF;
+	exports.EARTH_RADIUS = EARTH_RADIUS;
+	var SIMPLE_EARTH_RADIUS = 10000000 * SF;
+	exports.SIMPLE_EARTH_RADIUS = SIMPLE_EARTH_RADIUS;
+	var SUN_RADIUS = 15000000 * SF;
+	exports.SUN_RADIUS = SUN_RADIUS;
+
+/***/ },
+/* 5 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -372,442 +707,39 @@
 	}
 
 /***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _modelsModelsJs = __webpack_require__(5);
-
-	var _modelsModelsJs2 = _interopRequireDefault(_modelsModelsJs);
-
-	var _dataJs = __webpack_require__(3);
-
-	var data = _interopRequireWildcard(_dataJs);
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true
-	};
-
-	var _default = (function () {
-	  var _class = function _default(canvasEl) {
-	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
-
-	    _classCallCheck(this, _class);
-
-	    var width = canvasEl.clientWidth;
-	    var height = canvasEl.clientHeight;
-	    this.scene = new THREE.Scene();
-	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.earthOrbitalRadius * 100);
-	    this.renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true });
-	    this.renderer.setSize(width, height);
-
-	    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
-	    this.controls.noPan = true;
-	    this.controls.noZoom = true;
-	    this.controls.rotateSpeed = 0.5;
-
-	    this._initScene();
-	    this._setInitialCamPos();
-
-	    this.props = {};
-	    this.setProps(props);
-
-	    this.render();
-	  };
-
-	  _createClass(_class, [{
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = $.extend(this.props);
-	      this.props = $.extend(this.props, newProps);
-
-	      if (this.props.day !== oldProps.day) this._updateDay();
-	      if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
-	    }
-	  }, {
-	    key: 'setViewAxis',
-	    value: function setViewAxis(vec3) {
-	      this.viewAxis.lookAt(vec3);
-	      this.viewAxis.rotateX(Math.PI * 0.5);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      this.renderer.render(this.scene, this.camera);
-	    }
-	  }, {
-	    key: '_updateDay',
-	    value: function _updateDay() {
-	      var day = this.props.day;
-	      var pos = data.earthEllipseLocationByDay(day);
-	      this.earthPos.position.x = pos.x;
-	      this.earthPos.position.z = pos.z;
-	    }
-	  }, {
-	    key: '_updateEarthTilt',
-	    value: function _updateEarthTilt() {
-	      this.earth.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      this.scene.add(_modelsModelsJs2['default'].stars());
-	      this.scene.add(_modelsModelsJs2['default'].ambientLight());
-	      this.scene.add(_modelsModelsJs2['default'].sunLight());
-	      this.scene.add(_modelsModelsJs2['default'].sunOnlyLight());
-	      this.scene.add(_modelsModelsJs2['default'].grid());
-	      this.scene.add(_modelsModelsJs2['default'].orbit());
-	      this._addLabels();
-	      this.scene.add(_modelsModelsJs2['default'].sun());
-
-	      this.earth = _modelsModelsJs2['default'].earth({ simple: true });
-	      this.earthPos = new THREE.Object3D();
-	      this.earthAxis = _modelsModelsJs2['default'].earthAxis({ simple: true });
-	      this.viewAxis = _modelsModelsJs2['default'].viewAxis();
-	      this.earth.add(this.earthAxis);
-	      this.earthPos.add(this.earth);
-	      this.earthPos.add(this.viewAxis);
-	      this.scene.add(this.earthPos);
-	    }
-	  }, {
-	    key: '_setInitialCamPos',
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = 0;
-	      this.camera.position.y = 245232773 / data.scaleFactor;
-	      this.camera.position.z = 228174616 / data.scaleFactor;
-	      this.controls.update();
-	    }
-	  }, {
-	    key: '_addLabels',
-	    value: function _addLabels() {
-	      var juneLbl = _modelsModelsJs2['default'].label('Jun');
-	      juneLbl.position.x = data.earthOrbitalRadius * 1.05;
-	      juneLbl.rotateZ(-Math.PI * 0.5);
-
-	      var decLbl = _modelsModelsJs2['default'].label('Dec');
-	      decLbl.position.x = -data.earthOrbitalRadius * 1.05;
-	      decLbl.rotateZ(Math.PI * 0.5);
-
-	      var sepLbl = _modelsModelsJs2['default'].label('Sep');
-	      sepLbl.position.z = -data.earthOrbitalRadius * 1.05;
-
-	      var marLbl = _modelsModelsJs2['default'].label('Mar');
-	      marLbl.position.z = data.earthOrbitalRadius * 1.05;
-	      marLbl.rotateZ(Math.PI);
-
-	      this.scene.add(juneLbl);
-	      this.scene.add(decLbl);
-	      this.scene.add(sepLbl);
-	      this.scene.add(marLbl);
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _dataJs = __webpack_require__(3);
-
-	var data = _interopRequireWildcard(_dataJs);
-
-	var _constantsJs = __webpack_require__(6);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	exports['default'] = {
-	  stars: function stars() {
-	    var geometry = new THREE.SphereGeometry(350000000 * c.SF, 32, 32);
-	    var material = new THREE.MeshBasicMaterial();
-	    material.map = THREE.ImageUtils.loadTexture('images/milky_way.jpg', null, function (texture) {
-	      texture.minFilter = THREE.LinearFilter;
-	    });
-	    material.side = THREE.BackSide;
-	    return new THREE.Mesh(geometry, material);
-	  },
-
-	  ambientLight: function ambientLight() {
-	    return new THREE.AmbientLight(0x111111);
-	  },
-
-	  sunLight: function sunLight() {
-	    return new THREE.PointLight(0xffffff, 1.2, 0);
-	  },
-
-	  // Light that affects only sun object (due to radius settings).
-	  sunOnlyLight: function sunOnlyLight() {
-	    var light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
-	    light.position.y = c.SUN_RADIUS * 4;
-	    return light;
-	  },
-
-	  sun: function sun() {
-	    var geometry = new THREE.SphereGeometry(15000000 * c.SF, 32, 32);
-	    var material = new THREE.MeshPhongMaterial({ emissive: 0x999900 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    return mesh;
-	  },
-
-	  earth: function earth(params) {
-	    var simple = params && params.simple;
-	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-	    var COLORS = simple ? { color: 0x5555ff, emissive: 0x000044 } : {};
-	    var geometry = new THREE.SphereGeometry(RADIUS, 32, 32);
-	    var material = new THREE.MeshPhongMaterial(COLORS);
-	    if (!simple) {
-	      material.map = THREE.ImageUtils.loadTexture('images/earth.jpg', null, function (texture) {
-	        texture.minFilter = THREE.LinearFilter;
-	      });
-	    }
-	    return new THREE.Mesh(geometry, material);
-	  },
-
-	  latLongMarker: function latLongMarker() {},
-
-	  orbit: function orbit() {
-	    var curve = new THREE.EllipseCurve(data.sunFocus * 2, 0, // ax, aY
-	    data.earthSemiMajorAxis * data.earthOrbitalRadius, data.earthOrbitalRadius, // xRadius, yRadius
-	    0, 2 * Math.PI, // aStartAngle, aEndAngle
-	    false // aClockwise
-	    );
-	    var path = new THREE.Path(curve.getPoints(150));
-	    var geometry = path.createPointsGeometry(150);
-	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
-	    var mesh = new THREE.Line(geometry, material);
-	    mesh.rotateX(Math.PI / 2);
-
-	    return mesh;
-	  },
-
-	  label: function label(txt) {
-	    var geometry = new THREE.TextGeometry(txt, {
-	      size: 50000000 * c.SF,
-	      height: 10000 * c.SF
-	    });
-	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.rotation.x = -Math.PI * 0.5;
-	    return mesh;
-	  },
-
-	  grid: function grid(params) {
-	    var steps = params && params.steps || 5;
-	    var size = params && params.size || data.earthOrbitalRadius;
-	    var step = size / steps;
-
-	    var geometry = new THREE.Geometry();
-	    var material = new THREE.LineBasicMaterial({ color: 0x005500 });
-
-	    for (var i = -size; i <= size; i += step) {
-	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
-	      geometry.vertices.push(new THREE.Vector3(size, 0, i));
-
-	      geometry.vertices.push(new THREE.Vector3(i, 0, -size));
-	      geometry.vertices.push(new THREE.Vector3(i, 0, size));
-	    }
-	    return new THREE.Line(geometry, material, THREE.LinePieces);
-	  },
-
-	  earthAxis: function earthAxis(params) {
-	    var simple = params && params.simple;
-	    var HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
-	    var RADIUS = simple ? 700000 * c.SF : 200000 * c.SF;
-	    var HEAD_RADIUS = simple ? 3 : 2;
-	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
-	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
-	    var mesh = new THREE.Mesh(geometry, material);
-
-	    var arrowHeadGeo = new THREE.CylinderGeometry(0, RADIUS * HEAD_RADIUS, HEIGHT * 0.05, 32);
-	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-	    arrowHeadMesh.position.y = HEIGHT * 0.5;
-	    mesh.add(arrowHeadMesh);
-
-	    return mesh;
-	  },
-
-	  viewAxis: function viewAxis() {
-	    var HEIGHT = 30000000 * c.SF;
-	    var RADIUS = 700000 * c.SF;
-	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS * 1.4;
-
-	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.05, 32);
-	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-	    arrowHeadMesh.position.y = -HEIGHT * 0.5;
-	    mesh.add(arrowHeadMesh);
-
-	    var pivot = new THREE.Object3D();
-	    pivot.add(mesh);
-	    return pivot;
-	  }
-	};
-	module.exports = exports['default'];
-
-/***/ },
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	'use strict';
+	// Mouse position in pixels.
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.mousePos = mousePos;
+	exports.mousePosNormalized = mousePosNormalized;
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	function mousePos(event, targetElement) {
+	  var $targetElement = $(targetElement);
+	  var parentX = $targetElement.offset().left;
+	  var parentY = $targetElement.offset().top;
+	  return { x: event.pageX - parentX, y: event.pageY - parentY };
+	}
 
-	var _dataJs = __webpack_require__(3);
+	// Normalized mouse position [-1, 1].
 
-	var data = _interopRequireWildcard(_dataJs);
-
-	var SF = 1 / data.scaleFactor;
-	exports.SF = SF;
-	var EARTH_RADIUS = 7000000 * SF;
-	exports.EARTH_RADIUS = EARTH_RADIUS;
-	var SIMPLE_EARTH_RADIUS = 10000000 * SF;
-	exports.SIMPLE_EARTH_RADIUS = SIMPLE_EARTH_RADIUS;
-	var SUN_RADIUS = 15000000 * SF;
-	exports.SUN_RADIUS = SUN_RADIUS;
+	function mousePosNormalized(event, targetElement) {
+	  var pos = mousePos(event, targetElement);
+	  var $targetElement = $(targetElement);
+	  var parentWidth = $targetElement.width();
+	  var parentHeight = $targetElement.height();
+	  pos.x = pos.x / parentWidth * 2 - 1;
+	  pos.y = -(pos.y / parentHeight) * 2 + 1;
+	  return pos;
+	}
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _constantsJs = __webpack_require__(6);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	var DEG_2_RAD = Math.PI / 180;
-
-	var LatitudeLine = (function () {
-	  function LatitudeLine() {
-	    _classCallCheck(this, LatitudeLine);
-
-	    var geometry = new THREE.TorusGeometry(c.EARTH_RADIUS, c.EARTH_RADIUS * 0.005, 16, 100);
-	    var material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.rotation.x = Math.PI * 0.5;
-
-	    this.mesh = mesh;
-	  }
-
-	  _createClass(LatitudeLine, [{
-	    key: 'setLat',
-	    value: function setLat(lat) {
-	      if (lat != null) {
-	        this.mesh.position.y = c.EARTH_RADIUS * Math.sin(lat * DEG_2_RAD);
-	        this.mesh.scale.x = Math.cos(lat * DEG_2_RAD);
-	        this.mesh.scale.y = Math.cos(lat * DEG_2_RAD);
-	      }
-	    }
-	  }]);
-
-	  return LatitudeLine;
-	})();
-
-	exports['default'] = LatitudeLine;
-	module.exports = exports['default'];
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _constantsJs = __webpack_require__(6);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	var DEG_2_RAD = Math.PI / 180;
-
-	var LatitudeLine = (function () {
-	  function LatitudeLine() {
-	    _classCallCheck(this, LatitudeLine);
-
-	    var geometry = new THREE.SphereGeometry(200000 * c.SF, 32, 32);
-	    var material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.position.x = c.EARTH_RADIUS;
-	    var pivot = new THREE.Object3D();
-	    pivot.add(mesh);
-
-	    this.mesh = pivot;
-	  }
-
-	  _createClass(LatitudeLine, [{
-	    key: 'setLatLong',
-	    value: function setLatLong(lat, long) {
-	      if (lat != null) {
-	        lat = lat * DEG_2_RAD;
-	        this.mesh.rotation.z = lat;
-	      }
-	      if (long != null) {
-	        long = long * DEG_2_RAD;
-	        this.mesh.rotation.y = long;
-	      }
-	    }
-	  }]);
-
-	  return LatitudeLine;
-	})();
-
-	exports['default'] = LatitudeLine;
-	module.exports = exports['default'];
-
-/***/ },
-/* 9 */,
-/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -1386,7 +1318,158 @@
 
 
 /***/ },
-/* 11 */
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _dataJs = __webpack_require__(5);
+
+	var data = _interopRequireWildcard(_dataJs);
+
+	var _constantsJs = __webpack_require__(4);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	exports['default'] = {
+	  stars: function stars() {
+	    var geometry = new THREE.SphereGeometry(350000000 * c.SF, 32, 32);
+	    var material = new THREE.MeshBasicMaterial();
+	    material.map = THREE.ImageUtils.loadTexture('images/milky_way.jpg', null, function (texture) {
+	      texture.minFilter = THREE.LinearFilter;
+	    });
+	    material.side = THREE.BackSide;
+	    return new THREE.Mesh(geometry, material);
+	  },
+
+	  ambientLight: function ambientLight() {
+	    return new THREE.AmbientLight(0x111111);
+	  },
+
+	  sunLight: function sunLight() {
+	    return new THREE.PointLight(0xffffff, 1.2, 0);
+	  },
+
+	  // Light that affects only sun object (due to radius settings).
+	  sunOnlyLight: function sunOnlyLight() {
+	    var light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
+	    light.position.y = c.SUN_RADIUS * 4;
+	    return light;
+	  },
+
+	  sun: function sun() {
+	    var geometry = new THREE.SphereGeometry(15000000 * c.SF, 32, 32);
+	    var material = new THREE.MeshPhongMaterial({ emissive: 0x999900 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    return mesh;
+	  },
+
+	  earth: function earth(params) {
+	    var simple = params && params.simple;
+	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+	    var COLORS = simple ? { color: 0x5555ff, emissive: 0x000044 } : {};
+	    var geometry = new THREE.SphereGeometry(RADIUS, 32, 32);
+	    var material = new THREE.MeshPhongMaterial(COLORS);
+	    if (!simple) {
+	      material.map = THREE.ImageUtils.loadTexture('images/earth.jpg', null, function (texture) {
+	        texture.minFilter = THREE.LinearFilter;
+	      });
+	    }
+	    return new THREE.Mesh(geometry, material);
+	  },
+
+	  latLongMarker: function latLongMarker() {},
+
+	  orbit: function orbit() {
+	    var curve = new THREE.EllipseCurve(data.sunFocus * 2, 0, // ax, aY
+	    data.earthSemiMajorAxis * data.earthOrbitalRadius, data.earthOrbitalRadius, // xRadius, yRadius
+	    0, 2 * Math.PI, // aStartAngle, aEndAngle
+	    false // aClockwise
+	    );
+	    var path = new THREE.Path(curve.getPoints(150));
+	    var geometry = path.createPointsGeometry(150);
+	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
+	    var mesh = new THREE.Line(geometry, material);
+	    mesh.rotateX(Math.PI / 2);
+
+	    return mesh;
+	  },
+
+	  label: function label(txt) {
+	    var geometry = new THREE.TextGeometry(txt, {
+	      size: 50000000 * c.SF,
+	      height: 10000 * c.SF
+	    });
+	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.rotation.x = -Math.PI * 0.5;
+	    return mesh;
+	  },
+
+	  grid: function grid(params) {
+	    var steps = params && params.steps || 5;
+	    var size = params && params.size || data.earthOrbitalRadius;
+	    var step = size / steps;
+
+	    var geometry = new THREE.Geometry();
+	    var material = new THREE.LineBasicMaterial({ color: 0x005500 });
+
+	    for (var i = -size; i <= size; i += step) {
+	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
+	      geometry.vertices.push(new THREE.Vector3(size, 0, i));
+
+	      geometry.vertices.push(new THREE.Vector3(i, 0, -size));
+	      geometry.vertices.push(new THREE.Vector3(i, 0, size));
+	    }
+	    return new THREE.Line(geometry, material, THREE.LinePieces);
+	  },
+
+	  earthAxis: function earthAxis(params) {
+	    var simple = params && params.simple;
+	    var HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
+	    var RADIUS = simple ? 700000 * c.SF : 200000 * c.SF;
+	    var HEAD_RADIUS = simple ? 3 : 2;
+	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
+	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
+	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
+	    var mesh = new THREE.Mesh(geometry, material);
+
+	    var arrowHeadGeo = new THREE.CylinderGeometry(0, RADIUS * HEAD_RADIUS, HEIGHT * 0.05, 32);
+	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
+	    arrowHeadMesh.position.y = HEIGHT * 0.5;
+	    mesh.add(arrowHeadMesh);
+
+	    return mesh;
+	  },
+
+	  viewAxis: function viewAxis() {
+	    var HEIGHT = 30000000 * c.SF;
+	    var RADIUS = 700000 * c.SF;
+	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
+	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS * 1.4;
+
+	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.05, 32);
+	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
+	    arrowHeadMesh.position.y = -HEIGHT * 0.5;
+	    mesh.add(arrowHeadMesh);
+
+	    var pivot = new THREE.Object3D();
+	    pivot.add(mesh);
+	    return pivot;
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1397,66 +1480,196 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _constantsJs = __webpack_require__(4);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var DEG_2_RAD = Math.PI / 180;
+	var DEF_COLOR = 0xffffff;
+	var HIGHLIGHT_COLOR = 0xff0000;
+
+	var LatitudeLine = (function () {
+	  function LatitudeLine() {
+	    _classCallCheck(this, LatitudeLine);
+
+	    var geometry = new THREE.TorusGeometry(c.EARTH_RADIUS, c.EARTH_RADIUS * 0.005, 16, 100);
+	    var material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.rotation.x = Math.PI * 0.5;
+
+	    this.rootObject = mesh;
+	    this.mesh = mesh;
+	    this.material = material;
+	  }
+
+	  _createClass(LatitudeLine, [{
+	    key: 'setLat',
+	    value: function setLat(lat) {
+	      if (lat != null) {
+	        this.rootObject.position.y = c.EARTH_RADIUS * Math.sin(lat * DEG_2_RAD);
+	        this.rootObject.scale.x = Math.cos(lat * DEG_2_RAD);
+	        this.rootObject.scale.y = Math.cos(lat * DEG_2_RAD);
+	      }
+	    }
+	  }, {
+	    key: 'setHighlighted',
+	    value: function setHighlighted(v) {
+	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
+	    }
+	  }]);
+
+	  return LatitudeLine;
+	})();
+
+	exports['default'] = LatitudeLine;
+	module.exports = exports['default'];
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _earthViewJs = __webpack_require__(1);
+	var _modelsModelsJs = __webpack_require__(8);
 
-	var _earthViewJs2 = _interopRequireDefault(_earthViewJs);
+	var _modelsModelsJs2 = _interopRequireDefault(_modelsModelsJs);
 
-	var _orbitViewJs = __webpack_require__(4);
+	var _dataJs = __webpack_require__(5);
 
-	var _orbitViewJs2 = _interopRequireDefault(_orbitViewJs);
+	var data = _interopRequireWildcard(_dataJs);
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true
+	};
 
 	var _default = (function () {
-	  var _class = function _default(props) {
+	  var _class = function _default(canvasEl) {
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+
 	    _classCallCheck(this, _class);
 
-	    this.earthView = new _earthViewJs2['default'](document.getElementById('earth-view'), props);
-	    this.orbitView = new _orbitViewJs2['default'](document.getElementById('orbit-view'), props);
+	    var width = canvasEl.clientWidth;
+	    var height = canvasEl.clientHeight;
+	    this.scene = new THREE.Scene();
+	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.earthOrbitalRadius * 100);
+	    this.renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true });
+	    this.renderer.setSize(width, height);
 
-	    // Export views to global namespace, so we can play with them using console.
-	    window.earthView = this.earthView;
-	    window.orbitView = this.orbitView;
+	    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
+	    this.controls.noPan = true;
+	    this.controls.noZoom = true;
+	    this.controls.rotateSpeed = 0.5;
 
-	    this._syncCameraAndViewAxis();
-	    this._startAnimation();
+	    this._initScene();
+	    this._setInitialCamPos();
+
+	    this.props = {};
+	    this.setProps(props);
+
+	    this.render();
 	  };
 
 	  _createClass(_class, [{
 	    key: 'setProps',
-	    value: function setProps(props) {
-	      this.earthView.setProps(props);
-	      this.orbitView.setProps(props);
+	    value: function setProps(newProps) {
+	      var oldProps = $.extend(this.props);
+	      this.props = $.extend(this.props, newProps);
+
+	      if (this.props.day !== oldProps.day) this._updateDay();
+	      if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
 	    }
 	  }, {
-	    key: '_syncCameraAndViewAxis',
-
-	    // When earth view camera is changed, we need to update view axis in the orbit view.
-	    value: function _syncCameraAndViewAxis() {
-	      var _this = this;
-
-	      var sync = function sync() {
-	        var camVec = _this.earthView.getCameraEarthVec();
-	        _this.orbitView.setViewAxis(camVec);
-	      };
-	      // Initial sync.
-	      sync();
-	      // When earth view camera is changed, we need to update view axis in the orbit view.
-	      this.earthView.on('camera.change', sync);
+	    key: 'setViewAxis',
+	    value: function setViewAxis(vec3) {
+	      this.viewAxis.lookAt(vec3);
+	      this.viewAxis.rotateX(Math.PI * 0.5);
 	    }
 	  }, {
-	    key: '_startAnimation',
-	    value: function _startAnimation() {
-	      var _this2 = this;
+	    key: 'render',
+	    value: function render() {
+	      this.renderer.render(this.scene, this.camera);
+	    }
+	  }, {
+	    key: '_updateDay',
+	    value: function _updateDay() {
+	      var day = this.props.day;
+	      var pos = data.earthEllipseLocationByDay(day);
+	      this.earthPos.position.x = pos.x;
+	      this.earthPos.position.z = pos.z;
+	    }
+	  }, {
+	    key: '_updateEarthTilt',
+	    value: function _updateEarthTilt() {
+	      this.earth.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      this.scene.add(_modelsModelsJs2['default'].stars());
+	      this.scene.add(_modelsModelsJs2['default'].ambientLight());
+	      this.scene.add(_modelsModelsJs2['default'].sunLight());
+	      this.scene.add(_modelsModelsJs2['default'].sunOnlyLight());
+	      this.scene.add(_modelsModelsJs2['default'].grid());
+	      this.scene.add(_modelsModelsJs2['default'].orbit());
+	      this._addLabels();
+	      this.scene.add(_modelsModelsJs2['default'].sun());
 
-	      var anim = function anim(timestamp) {
-	        _this2.earthView.render(timestamp);
-	        _this2.orbitView.render(timestamp);
-	        requestAnimationFrame(anim);
-	      };
-	      requestAnimationFrame(anim);
+	      this.earth = _modelsModelsJs2['default'].earth({ simple: true });
+	      this.earthPos = new THREE.Object3D();
+	      this.earthAxis = _modelsModelsJs2['default'].earthAxis({ simple: true });
+	      this.viewAxis = _modelsModelsJs2['default'].viewAxis();
+	      this.earth.add(this.earthAxis);
+	      this.earthPos.add(this.earth);
+	      this.earthPos.add(this.viewAxis);
+	      this.scene.add(this.earthPos);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = 0;
+	      this.camera.position.y = 245232773 / data.scaleFactor;
+	      this.camera.position.z = 228174616 / data.scaleFactor;
+	      this.controls.update();
+	    }
+	  }, {
+	    key: '_addLabels',
+	    value: function _addLabels() {
+	      var juneLbl = _modelsModelsJs2['default'].label('Jun');
+	      juneLbl.position.x = data.earthOrbitalRadius * 1.05;
+	      juneLbl.rotateZ(-Math.PI * 0.5);
+
+	      var decLbl = _modelsModelsJs2['default'].label('Dec');
+	      decLbl.position.x = -data.earthOrbitalRadius * 1.05;
+	      decLbl.rotateZ(Math.PI * 0.5);
+
+	      var sepLbl = _modelsModelsJs2['default'].label('Sep');
+	      sepLbl.position.z = -data.earthOrbitalRadius * 1.05;
+
+	      var marLbl = _modelsModelsJs2['default'].label('Mar');
+	      marLbl.position.z = data.earthOrbitalRadius * 1.05;
+	      marLbl.rotateZ(Math.PI);
+
+	      this.scene.add(juneLbl);
+	      this.scene.add(decLbl);
+	      this.scene.add(sepLbl);
+	      this.scene.add(marLbl);
 	    }
 	  }]);
 
