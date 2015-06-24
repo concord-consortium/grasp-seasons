@@ -305,6 +305,16 @@
 	      return this.camera.position.clone().sub(this.earthPos.position).normalize();
 	    }
 	  }, {
+	    key: 'getEarthTilt',
+	    value: function getEarthTilt() {
+	      return this.earthTiltPivot.rotation.z;
+	    }
+	  }, {
+	    key: 'getEarthRotation',
+	    value: function getEarthRotation() {
+	      return this.earth.rotation.y;
+	    }
+	  }, {
 	    key: 'setProps',
 	    value: function setProps(newProps) {
 	      var oldProps = $.extend(this.props);
@@ -338,7 +348,7 @@
 	      if (this._prevDay != null) {
 	        var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
 	        // Make sure that earth maintains its rotation.
-	        this.earth.rotateY(angle);
+	        this._rotateEarth(angle);
 	        // Update camera position, rotate it and adjust its orbit length.
 	        this._rotateCam(angle);
 	        var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
@@ -360,7 +370,7 @@
 	  }, {
 	    key: '_updateEarthTilt',
 	    value: function _updateEarthTilt() {
-	      this.earthRot.rotation.z = this.props.earthTilt ? EARTH_TILT : 0;
+	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? EARTH_TILT : 0;
 	    }
 	  }, {
 	    key: '_updateLatLong',
@@ -369,7 +379,16 @@
 	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
 	    }
 	  }, {
+	    key: '_rotateEarth',
+
+	    // Rotates earth around its own axis.
+	    value: function _rotateEarth(angleDiff) {
+	      this.earth.rotation.y += angleDiff;
+	    }
+	  }, {
 	    key: '_rotateCam',
+
+	    // Rotates camera around the sun.
 	    value: function _rotateCam(angle) {
 	      var p = this.camera.position;
 	      var newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
@@ -395,11 +414,11 @@
 	      this.earth.add(this.latLine.rootObject);
 	      this.earth.add(this.latLongMarker.rootObject);
 
-	      this.earthRot = new THREE.Object3D();
-	      this.earthRot.add(this.earth);
+	      this.earthTiltPivot = new THREE.Object3D();
+	      this.earthTiltPivot.add(this.earth);
 	      this.earthPos = new THREE.Object3D();
 	      this.earthPos.add(_modelsModelsJs2['default'].grid({ size: data.earthOrbitalRadius / 8, steps: 15 }));
-	      this.earthPos.add(this.earthRot);
+	      this.earthPos.add(this.earthTiltPivot);
 	      this.scene.add(this.earthPos);
 	    }
 	  }, {
@@ -418,7 +437,7 @@
 	      }
 	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
 	      var angleDiff = progress * 0.0001 * Math.PI;
-	      this.earth.rotateY(angleDiff);
+	      this.earth.rotation.y += angleDiff;
 	      this._prevFrame = timestamp;
 	    }
 	  }, {
@@ -534,25 +553,19 @@
 	      // Calculate vector pointing from Earth center to intersection point.
 	      var intVec = intersects[0].point;
 	      intVec.sub(this.earthPos.position);
-	      // Take into account earth tilt if necessary.
-	      if (this.props.earthTilt) {
-	        intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -EARTH_TILT);
-	      }
-	      // Normal of the plane XZ.
-	      var xzNormal = new THREE.Vector3(0, 1, 0);
-	      var lat = Math.asin(intVec.dot(xzNormal) / (intVec.length() * xzNormal.length())) * RAD_2_DEG;
-	      // Normal of the plane XY.
-	      var xyNormal = new THREE.Vector3(0, 0, -1);
-	      // Take into account current rotation of the earth.
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation.y);
-	      // Map vector to XZ plane, so we measure desired angle.
-	      intVec.y = 0;
-	      var long = Math.asin(intVec.dot(xyNormal) / (intVec.length() * xyNormal.length())) * RAD_2_DEG;
-	      if (intVec.x < 0 && intVec.z < 0) {
-	        long = 180 - long;
-	      } else if (intVec.x < 0 && intVec.z > 0) {
-	        long = -180 - long;
-	      }
+	      // Take into account earth tilt and rotation.
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
+
+	      // Latitude calculations.
+	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
+	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
+	      // .angleTo returns always positive number.
+	      if (intVec.y < 0) lat *= -1;
+	      // Longitude calculations.
+	      var xVec = new THREE.Vector3(1, 0, 0);
+	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
+	      if (intVec.z > 0) long *= -1;
 	      return { lat: lat, long: long };
 	    }
 	  }]);

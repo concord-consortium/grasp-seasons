@@ -57,6 +57,14 @@ export default class {
     return this.camera.position.clone().sub(this.earthPos.position).normalize();
   }
 
+  getEarthTilt() {
+    return this.earthTiltPivot.rotation.z;
+  }
+
+  getEarthRotation() {
+    return this.earth.rotation.y;
+  }
+
   setProps(newProps) {
     var oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
@@ -85,7 +93,7 @@ export default class {
     if (this._prevDay != null) {
       var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
       // Make sure that earth maintains its rotation.
-      this.earth.rotateY(angle);
+      this._rotateEarth(angle);
       // Update camera position, rotate it and adjust its orbit length.
       this._rotateCam(angle);
       var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
@@ -106,7 +114,7 @@ export default class {
   }
 
   _updateEarthTilt() {
-    this.earthRot.rotation.z = this.props.earthTilt ? EARTH_TILT : 0;
+    this.earthTiltPivot.rotation.z = this.props.earthTilt ? EARTH_TILT : 0;
   }
 
   _updateLatLong() {
@@ -114,6 +122,12 @@ export default class {
     this.latLongMarker.setLatLong(this.props.lat, this.props.long)
   }
 
+  // Rotates earth around its own axis.
+  _rotateEarth(angleDiff) {
+    this.earth.rotation.y += angleDiff;
+  }
+
+  // Rotates camera around the sun.
   _rotateCam(angle) {
     var p = this.camera.position;
     var newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
@@ -138,11 +152,11 @@ export default class {
     this.earth.add(this.latLine.rootObject);
     this.earth.add(this.latLongMarker.rootObject);
 
-    this.earthRot = new THREE.Object3D();
-    this.earthRot.add(this.earth);
+    this.earthTiltPivot = new THREE.Object3D();
+    this.earthTiltPivot.add(this.earth);
     this.earthPos = new THREE.Object3D();
     this.earthPos.add(models.grid({size: data.earthOrbitalRadius / 8, steps: 15}));
-    this.earthPos.add(this.earthRot);
+    this.earthPos.add(this.earthTiltPivot);
     this.scene.add(this.earthPos);
   }
 
@@ -159,7 +173,7 @@ export default class {
     }
     let progress = this._prevFrame ? timestamp - this._prevFrame : 0;
     let angleDiff = progress * 0.0001 * Math.PI;
-    this.earth.rotateY(angleDiff);
+    this.earth.rotation.y += angleDiff;
     this._prevFrame = timestamp;
   }
 
@@ -262,25 +276,19 @@ export default class {
     // Calculate vector pointing from Earth center to intersection point.
     let intVec = intersects[0].point;
     intVec.sub(this.earthPos.position);
-    // Take into account earth tilt if necessary.
-    if (this.props.earthTilt) {
-      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -EARTH_TILT);
-    }
-    // Normal of the plane XZ.
-    let xzNormal = new THREE.Vector3(0, 1, 0);
-    let lat = Math.asin(intVec.dot(xzNormal) / (intVec.length() * xzNormal.length())) * RAD_2_DEG;
-    // Normal of the plane XY.
-    let xyNormal = new THREE.Vector3(0, 0, -1);
-    // Take into account current rotation of the earth.
-    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation.y);
-    // Map vector to XZ plane, so we measure desired angle.
-    intVec.y = 0;
-    let long = Math.asin(intVec.dot(xyNormal) / (intVec.length() * xyNormal.length())) * RAD_2_DEG;
-    if (intVec.x < 0 && intVec.z < 0) {
-      long = 180 - long;
-    } else if (intVec.x < 0 && intVec.z > 0) {
-      long = -180 - long;
-    }
+    // Take into account earth tilt and rotation.
+    intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
+    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
+
+    // Latitude calculations.
+    let xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
+    let lat = intVec.angleTo(xzVec) * RAD_2_DEG;
+    // .angleTo returns always positive number.
+    if (intVec.y < 0) lat *= -1;
+    // Longitude calculations.
+    let xVec = new THREE.Vector3(1, 0, 0);
+    let long = xVec.angleTo(xzVec) * RAD_2_DEG;
+    if (intVec.z > 0) long *= -1;
     return {lat: lat, long: long};
   }
 }
