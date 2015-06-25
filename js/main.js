@@ -2,6 +2,7 @@ import $ from 'jquery';
 import 'jquery-ui/slider';
 
 import ViewsManager from './views-manager.js';
+import CITY_DATA from './city-data.js';
 
 let state = {
   day: 0,
@@ -23,6 +24,7 @@ let ui = {
   $daySlider: $('#day-slider'),
   $earthRotation: $('#earth-rotation'),
   $earthTilt: $('#earth-tilt'),
+  $citySelect: $('#city-pulldown'),
   $latSlider: $('#latitude-slider'),
   $longSlider: $('#longitude-slider')
 };
@@ -39,6 +41,15 @@ function updateUI() {
   ui.$earthTilt.prop('checked', state.earthTilt);
   ui.$latSlider.slider('value', state.lat);
   ui.$longSlider.slider('value', state.long);
+  // Unselect city if longitude or latitude has been changed manually.
+  let city = getSelectedCity();
+  if (city && (state.lat !== city.lat || state.long !== city.long)) {
+    ui.$citySelect.val('');
+  }
+}
+
+function getSelectedCity() {
+  return CITY_DATA[ui.$citySelect.val()];
 }
 
 ui.$daySlider.slider({
@@ -57,6 +68,16 @@ ui.$earthTilt.on('change', function() {
   setState({earthTilt: this.checked});
 });
 
+for(let i = 0; i < CITY_DATA.length; i++) {
+  ui.$citySelect.append(`<option value=${i}>${CITY_DATA[i].name}</option>`);
+}
+ui.$citySelect.on('change', function() {
+  let city = getSelectedCity();
+  if (city) {
+    setState({lat: city.lat, long: city.long});
+  }
+});
+
 ui.$latSlider.slider({
   min: -90,
   max: 90,
@@ -73,4 +94,7 @@ ui.$longSlider.slider({
   setState({long: ui.value});
 });
 
-updateUI();
+// Select the first city on page load.
+ui.$citySelect.trigger('change');
+// Export view manager to global namespace (so it's possible to use browser console to play with it).
+window.view = view;

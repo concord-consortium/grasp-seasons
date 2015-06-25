@@ -163,6 +163,9 @@ export default class {
     this.camera.position.x = -128207750 / data.scaleFactor;
     this.camera.position.y = 5928580 / data.scaleFactor;
     this.camera.position.z = 24799310 / data.scaleFactor;
+
+    // Rotate earth a bit so USA is visible.
+    this._rotateEarth(2);
   }
 
   _animate(timestamp) {

@@ -58,6 +58,10 @@
 
 	var _viewsManagerJs2 = _interopRequireDefault(_viewsManagerJs);
 
+	var _cityDataJs = __webpack_require__(17);
+
+	var _cityDataJs2 = _interopRequireDefault(_cityDataJs);
+
 	var state = {
 	  day: 0,
 	  earthTilt: true,
@@ -78,6 +82,7 @@
 	  $daySlider: (0, _jquery2['default'])('#day-slider'),
 	  $earthRotation: (0, _jquery2['default'])('#earth-rotation'),
 	  $earthTilt: (0, _jquery2['default'])('#earth-tilt'),
+	  $citySelect: (0, _jquery2['default'])('#city-pulldown'),
 	  $latSlider: (0, _jquery2['default'])('#latitude-slider'),
 	  $longSlider: (0, _jquery2['default'])('#longitude-slider')
 	};
@@ -94,6 +99,15 @@
 	  ui.$earthTilt.prop('checked', state.earthTilt);
 	  ui.$latSlider.slider('value', state.lat);
 	  ui.$longSlider.slider('value', state.long);
+	  // Unselect city if longitude or latitude has been changed manually.
+	  var city = getSelectedCity();
+	  if (city && (state.lat !== city.lat || state.long !== city.long)) {
+	    ui.$citySelect.val('');
+	  }
+	}
+
+	function getSelectedCity() {
+	  return _cityDataJs2['default'][ui.$citySelect.val()];
 	}
 
 	ui.$daySlider.slider({
@@ -112,6 +126,16 @@
 	  setState({ earthTilt: this.checked });
 	});
 
+	for (var i = 0; i < _cityDataJs2['default'].length; i++) {
+	  ui.$citySelect.append('<option value=' + i + '>' + _cityDataJs2['default'][i].name + '</option>');
+	}
+	ui.$citySelect.on('change', function () {
+	  var city = getSelectedCity();
+	  if (city) {
+	    setState({ lat: city.lat, long: city.long });
+	  }
+	});
+
 	ui.$latSlider.slider({
 	  min: -90,
 	  max: 90,
@@ -128,7 +152,10 @@
 	  setState({ long: ui.value });
 	});
 
-	updateUI();
+	// Select the first city on page load.
+	ui.$citySelect.trigger('change');
+	// Export view manager to global namespace (so it's possible to use browser console to play with it).
+	window.view = view;
 
 /***/ },
 /* 1 */
@@ -11421,6 +11448,9 @@
 	      this.camera.position.x = -128207750 / data.scaleFactor;
 	      this.camera.position.y = 5928580 / data.scaleFactor;
 	      this.camera.position.z = 24799310 / data.scaleFactor;
+
+	      // Rotate earth a bit so USA is visible.
+	      this._rotateEarth(2);
 	    }
 	  }, {
 	    key: '_animate',
@@ -12898,6 +12928,40 @@
 
 	exports['default'] = _default;
 	module.exports = exports['default'];
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var CITY_DATA = [{
+	  "name": "Urbana, Illinois",
+	  "lat": 40.11,
+	  "long": -88.2
+	}, {
+	  "name": "Washington, D.C.",
+	  "lat": 38.54,
+	  "long": -77.02
+	}, {
+	  "name": "Singapore",
+	  "lat": 1.14,
+	  "long": 103.55
+	}, {
+	  "name": "Canberra",
+	  "lat": -35.15,
+	  "long": 149.08
+	}, {
+	  "name": "McMurdo Station",
+	  "lat": -77.88,
+	  "long": 166.73
+	}];
+
+	exports["default"] = CITY_DATA;
+	module.exports = exports["default"];
 
 /***/ }
 /******/ ]);
