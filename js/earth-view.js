@@ -10,8 +10,6 @@ import {mousePosNormalized} from './utils.js';
 const DEG_2_RAD = Math.PI / 180;
 const RAD_2_DEG = 180 / Math.PI;
 
-const EARTH_TILT = 0.41; // 23.5 deg
-
 const DEF_PROPERTIES = {
   day: 0,
   earthTilt: true,
@@ -115,7 +113,7 @@ export default class {
   }
 
   _updateEarthTilt() {
-    this.earthTiltPivot.rotation.z = this.props.earthTilt ? EARTH_TILT : 0;
+    this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
   }
 
   _updateLatLong() {
@@ -184,7 +182,7 @@ export default class {
       this.mouse.x = pos.x;
       this.mouse.y = pos.y;
     };
-    $(this.renderer.domElement).on('mousemove', onMouseMove);
+    $(this.renderer.domElement).on('mousemove touchmove', onMouseMove);
   }
 
   _interactivityHandler() {
@@ -209,9 +207,13 @@ export default class {
       return;
     }
 
+    // Note that order of calls below is very important. First, we need to disable old interaction
+    // and then enable new one (as they're both modifying camera controls).
     if (this._isUserPointing(this.latLongMarker.mesh)) {
+      this._setLatDraggingEnabled(false);
       this._setLatLongDraggingEnabled(true);
     } else if (this._isUserPointing(this.latLine.mesh)) {
+      this._setLatLongDraggingEnabled(false);
       this._setLatDraggingEnabled(true);
     } else {
       this._setLatLongDraggingEnabled(false);

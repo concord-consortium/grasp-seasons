@@ -1,22 +1,23 @@
 import EarthView from './earth-view.js';
 import OrbitView from './orbit-view.js';
+import RaysView from './rays-view.js';
 
 export default class {
   constructor(props) {
     this.earthView = new EarthView(document.getElementById('earth-view'), props);
     this.orbitView = new OrbitView(document.getElementById('orbit-view'), props);
+    this.raysView = new RaysView(document.getElementById('rays-view'), props);
 
-    // Export views to global namespace, so we can play with them using console.
-    window.earthView = this.earthView;
-    window.orbitView = this.orbitView;
+    this.views = [this.earthView, this.orbitView, this.raysView];
 
     this._syncCameraAndViewAxis();
     this._startAnimation();
   }
 
   setProps(props) {
-    this.earthView.setProps(props);
-    this.orbitView.setProps(props);
+    for (let view of this.views) {
+      view.setProps(props);
+    }
   }
 
   // When earth view camera is changed, we need to update view axis in the orbit view.
@@ -33,8 +34,9 @@ export default class {
 
   _startAnimation() {
     let anim = (timestamp) => {
-      this.earthView.render(timestamp);
-      this.orbitView.render(timestamp);
+      for (let view of this.views) {
+        view.render && view.render(timestamp);
+      }
       requestAnimationFrame(anim);
     };
     requestAnimationFrame(anim);

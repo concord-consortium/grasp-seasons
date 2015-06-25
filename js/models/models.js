@@ -3,13 +3,24 @@ import * as c from './constants.js';
 
 export default {
   stars: function () {
-    var geometry = new THREE.SphereGeometry(350000000 * c.SF, 32, 32);
-    var material = new THREE.MeshBasicMaterial();
-    material.map = THREE.ImageUtils.loadTexture('images/milky_way.jpg', null, function (texture) {
-      texture.minFilter = THREE.LinearFilter;
-    });
-    material.side = THREE.BackSide;
-    return new THREE.Mesh(geometry, material);
+    let SIZE = 4000000 * c.SF;
+    let MIN_RADIUS = 500000000 * c.SF;
+    let MAX_RADIUS = 3 * MIN_RADIUS;
+    let geometry = new THREE.Geometry();
+
+    for (let i = 0; i < 2000; i++) {
+      let vertex = new THREE.Vector3();
+      let theta = 2 * Math.PI * Math.random();
+      let u = Math.random() * 2 - 1;
+      vertex.x = Math.sqrt(1 - u * u) * Math.cos(theta);
+      vertex.y = Math.sqrt(1 - u * u) * Math.sin(theta);
+      vertex.z = u;
+      vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
+      geometry.vertices.push(vertex);
+    }
+    let material = new THREE.PointCloudMaterial({size: SIZE, color: 0xffffee});
+    let particles = new THREE.PointCloud(geometry, material);
+    return particles;
   },
 
   ambientLight: function () {
@@ -37,11 +48,14 @@ export default {
   earth: function (params) {
     var simple = params && params.simple;
     var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    var COLORS = simple ? {color: 0x1286CD, emissive: 0x023757} : {};
+    var COLORS = simple ? {color: 0x1286CD, emissive: 0x023757} : {specular: 0x252525};
     var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     var material = new THREE.MeshPhongMaterial(COLORS);
     if (!simple) {
-      material.map = THREE.ImageUtils.loadTexture('images/earth-s.jpg');
+      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
+      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
+      material.bumpScale = 0.7;
+      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
     }
     return new THREE.Mesh(geometry, material);
   },
@@ -79,7 +93,7 @@ export default {
     var step = size / steps;
 
     var geometry = new THREE.Geometry();
-    var material = new THREE.LineBasicMaterial({color: 0x005500});
+    var material = new THREE.LineBasicMaterial({color: 0x444444});
 
     for (var i = -size; i <= size; i += step) {
       geometry.vertices.push(new THREE.Vector3(-size, 0, i));

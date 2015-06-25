@@ -5,26 +5,37 @@
   <title>Earth Orbit</title>
   <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" media="all">
   <style>
-    body {
-      font-family: Helvetica, Arial, sans-serif;
-      font-size: 18px;
+    html, body, div {
+      line-height: 1;
       margin: 0;
       padding: 0;
     }
-    canvas {
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 18px;
+    }
+    .view-container {
       display: inline-block;
       vertical-align: top;
-    }
-    #earth-view {
-      width: 1000px;
+      margin: 0;
+      padding: 0;
       height: 700px;
     }
-    #orbit-view {
-      width: 400px;
-      height: 350px;
+    .view-container.big {
+      width: 69%;
     }
-    #day-slider {
-
+    .view-container.small {
+      width: 29%;
+    }
+    canvas {
+      display: inline-block;
+      width: 100%;
+    }
+    .view-container.big canvas {
+      height: 100%;
+    }
+    .view-container.small canvas {
+      height: 49.7%;
     }
     .controls {
       width: 800px;
@@ -38,9 +49,14 @@
 </head>
 <body>
 
+<div class="view-container big">
+  <canvas id="earth-view"></canvas>
+</div>
+<div class="view-container small">
+  <canvas id="orbit-view"></canvas>
+  <canvas id="rays-view"></canvas>
+</div>
 
-<canvas id="earth-view"></canvas>
-<canvas id="orbit-view"></canvas>
 <div class="controls">
   Day:
   <div id="day-slider"></div>

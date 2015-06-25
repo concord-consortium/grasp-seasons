@@ -11092,16 +11092,19 @@
 
 	var _orbitViewJs2 = _interopRequireDefault(_orbitViewJs);
 
+	var _raysViewJs = __webpack_require__(16);
+
+	var _raysViewJs2 = _interopRequireDefault(_raysViewJs);
+
 	var _default = (function () {
 	  var _class = function _default(props) {
 	    _classCallCheck(this, _class);
 
 	    this.earthView = new _earthViewJs2['default'](document.getElementById('earth-view'), props);
 	    this.orbitView = new _orbitViewJs2['default'](document.getElementById('orbit-view'), props);
+	    this.raysView = new _raysViewJs2['default'](document.getElementById('rays-view'), props);
 
-	    // Export views to global namespace, so we can play with them using console.
-	    window.earthView = this.earthView;
-	    window.orbitView = this.orbitView;
+	    this.views = [this.earthView, this.orbitView, this.raysView];
 
 	    this._syncCameraAndViewAxis();
 	    this._startAnimation();
@@ -11110,8 +11113,30 @@
 	  _createClass(_class, [{
 	    key: 'setProps',
 	    value: function setProps(props) {
-	      this.earthView.setProps(props);
-	      this.orbitView.setProps(props);
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = this.views[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var view = _step.value;
+
+	          view.setProps(props);
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator['return']) {
+	            _iterator['return']();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
 	    }
 	  }, {
 	    key: '_syncCameraAndViewAxis',
@@ -11135,8 +11160,31 @@
 	      var _this2 = this;
 
 	      var anim = function anim(timestamp) {
-	        _this2.earthView.render(timestamp);
-	        _this2.orbitView.render(timestamp);
+	        var _iteratorNormalCompletion2 = true;
+	        var _didIteratorError2 = false;
+	        var _iteratorError2 = undefined;
+
+	        try {
+	          for (var _iterator2 = _this2.views[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	            var view = _step2.value;
+
+	            view.render && view.render(timestamp);
+	          }
+	        } catch (err) {
+	          _didIteratorError2 = true;
+	          _iteratorError2 = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+	              _iterator2['return']();
+	            }
+	          } finally {
+	            if (_didIteratorError2) {
+	              throw _iteratorError2;
+	            }
+	          }
+	        }
+
 	        requestAnimationFrame(anim);
 	      };
 	      requestAnimationFrame(anim);
@@ -11195,8 +11243,6 @@
 
 	var DEG_2_RAD = Math.PI / 180;
 	var RAD_2_DEG = 180 / Math.PI;
-
-	var EARTH_TILT = 0.41; // 23.5 deg
 
 	var DEF_PROPERTIES = {
 	  day: 0,
@@ -11318,7 +11364,7 @@
 	  }, {
 	    key: '_updateEarthTilt',
 	    value: function _updateEarthTilt() {
-	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? EARTH_TILT : 0;
+	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
 	    }
 	  }, {
 	    key: '_updateLatLong',
@@ -11398,7 +11444,7 @@
 	        _this2.mouse.x = pos.x;
 	        _this2.mouse.y = pos.y;
 	      };
-	      (0, _jquery2['default'])(this.renderer.domElement).on('mousemove', onMouseMove);
+	      (0, _jquery2['default'])(this.renderer.domElement).on('mousemove touchmove', onMouseMove);
 	    }
 	  }, {
 	    key: '_interactivityHandler',
@@ -11424,9 +11470,13 @@
 	        return;
 	      }
 
+	      // Note that order of calls below is very important. First, we need to disable old interaction
+	      // and then enable new one (as they're both modifying camera controls).
 	      if (this._isUserPointing(this.latLongMarker.mesh)) {
+	        this._setLatDraggingEnabled(false);
 	        this._setLatLongDraggingEnabled(true);
 	      } else if (this._isUserPointing(this.latLine.mesh)) {
+	        this._setLatLongDraggingEnabled(false);
 	        this._setLatDraggingEnabled(true);
 	      } else {
 	        this._setLatLongDraggingEnabled(false);
@@ -12125,13 +12175,24 @@
 
 	exports['default'] = {
 	  stars: function stars() {
-	    var geometry = new THREE.SphereGeometry(350000000 * c.SF, 32, 32);
-	    var material = new THREE.MeshBasicMaterial();
-	    material.map = THREE.ImageUtils.loadTexture('images/milky_way.jpg', null, function (texture) {
-	      texture.minFilter = THREE.LinearFilter;
-	    });
-	    material.side = THREE.BackSide;
-	    return new THREE.Mesh(geometry, material);
+	    var SIZE = 4000000 * c.SF;
+	    var MIN_RADIUS = 500000000 * c.SF;
+	    var MAX_RADIUS = 3 * MIN_RADIUS;
+	    var geometry = new THREE.Geometry();
+
+	    for (var i = 0; i < 2000; i++) {
+	      var vertex = new THREE.Vector3();
+	      var theta = 2 * Math.PI * Math.random();
+	      var u = Math.random() * 2 - 1;
+	      vertex.x = Math.sqrt(1 - u * u) * Math.cos(theta);
+	      vertex.y = Math.sqrt(1 - u * u) * Math.sin(theta);
+	      vertex.z = u;
+	      vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
+	      geometry.vertices.push(vertex);
+	    }
+	    var material = new THREE.PointCloudMaterial({ size: SIZE, color: 0xffffee });
+	    var particles = new THREE.PointCloud(geometry, material);
+	    return particles;
 	  },
 
 	  ambientLight: function ambientLight() {
@@ -12159,11 +12220,14 @@
 	  earth: function earth(params) {
 	    var simple = params && params.simple;
 	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x023757 } : {};
+	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x023757 } : { specular: 0x252525 };
 	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
 	    var material = new THREE.MeshPhongMaterial(COLORS);
 	    if (!simple) {
-	      material.map = THREE.ImageUtils.loadTexture('images/earth-s.jpg');
+	      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
+	      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
+	      material.bumpScale = 0.7;
+	      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
 	    }
 	    return new THREE.Mesh(geometry, material);
 	  },
@@ -12200,7 +12264,7 @@
 	    var step = size / steps;
 
 	    var geometry = new THREE.Geometry();
-	    var material = new THREE.LineBasicMaterial({ color: 0x005500 });
+	    var material = new THREE.LineBasicMaterial({ color: 0x444444 });
 
 	    for (var i = -size; i <= size; i += step) {
 	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
@@ -12271,27 +12335,29 @@
 	var earthSemiMajorAxis = 1.00000261;
 	exports.earthSemiMajorAxis = earthSemiMajorAxis;
 	var sunFocus = earthEccentricity / earthSemiMajorAxis / 2 * au2km / scaleFactor;
-
 	exports.sunFocus = sunFocus;
-	var dayNumberByMonth = {
-	  jan: 19,
-	  feb: 50,
-	  mar: 78, // mar 20 17:42
-	  apr: 109,
-	  may: 139,
-	  jun: 171, // jun 21 17:16
-	  jul: 200,
-	  aug: 231,
-	  sep: 265, // sep 23 09:04
-	  oct: 292,
-	  nov: 323,
-	  dec: 355 // dec 22 05:30
+	var EARTH_TILT = 0.41;
+
+	exports.EARTH_TILT = EARTH_TILT;
+	var DAY_NUMBER_BY_MONTH = {
+	  JAN: 19,
+	  FEB: 50,
+	  MAR: 78, // mar 20 17:42
+	  APR: 109,
+	  MAY: 139,
+	  JUN: 171, // jun 21 17:16
+	  JUL: 200,
+	  AUG: 231,
+	  SEP: 265, // sep 23 09:04
+	  OCT: 292,
+	  NOV: 323,
+	  DEC: 355 // dec 22 05:30
 	};
 
-	exports.dayNumberByMonth = dayNumberByMonth;
+	exports.DAY_NUMBER_BY_MONTH = DAY_NUMBER_BY_MONTH;
 
 	function earthEllipseLocationByDay(day) {
-	  var index = (dayNumberByMonth.jun - day) / 365;
+	  var index = (DAY_NUMBER_BY_MONTH.JUN - day) / 365;
 	  var z = 1 / earthSemiMajorAxis * Math.sin(index * 2 * Math.PI);
 	  var x = earthSemiMajorAxis * Math.cos(index * 2 * Math.PI);
 
@@ -12644,6 +12710,186 @@
 	      this.scene.add(decLbl);
 	      this.scene.add(sepLbl);
 	      this.scene.add(marLbl);
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _jquery = __webpack_require__(1);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _dataJs = __webpack_require__(10);
+
+	window.$ = _jquery2['default'];
+
+	var DARK_BLUE = '#6E9CEF';
+	var LIGHT_BLUE = '#99ADF1';
+	var LIGHT_GREEN = '#84A44A';
+	var DARK_GREEN = '#4C7F19';
+	var RAY_COLOR = '#D8D8AC';
+	var SKY_FRACTION = 0.8;
+
+	var DEFAULT_PROPS = {
+	  day: 0,
+	  lat: 0,
+	  earthTilt: true
+	};
+
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var _default = (function () {
+	  var _class = function _default(canvasEl) {
+	    var props = arguments[1] === undefined ? DEFAULT_PROPS : arguments[1];
+
+	    _classCallCheck(this, _class);
+
+	    this.canvas = canvasEl;
+	    this.ctx = this.canvas.getContext('2d');
+
+	    this.props = {};
+	    this.setProps(props);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = _jquery2['default'].extend(this.props);
+	      this.props = _jquery2['default'].extend(this.props, newProps);
+
+	      if (this.props.day !== oldProps.day || this.props.earthTilt !== oldProps.earthTilt || this.props.lat !== oldProps.lat) {
+	        this._drawRaysView();
+	      }
+	    }
+	  }, {
+	    key: 'getNoonSolarAltitude',
+	    value: function getNoonSolarAltitude() {
+	      // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
+	      // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
+	      var tiltAxisZRadians = 2 * Math.PI * (this.props.day - _dataJs.DAY_NUMBER_BY_MONTH.JUN) / 365;
+	      // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
+	      // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
+	      var orbitalTiltDegrees = this.props.earthTilt ? _dataJs.EARTH_TILT * RAD_2_DEG : 0;
+	      var effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
+	      return 90 - (this.props.lat + effectiveTiltDegrees);
+	    }
+	  }, {
+	    key: '_drawRaysView',
+	    value: function _drawRaysView() {
+	      var solarAngle = this.getNoonSolarAltitude();
+	      var width = (0, _jquery2['default'])(this.canvas).width();
+	      var height = (0, _jquery2['default'])(this.canvas).height();
+	      // Update canvas attributes (they can be undefined if canvas size is set using CSS).
+	      this.canvas.width = width;
+	      this.canvas.height = height;
+	      var skyHeight = SKY_FRACTION * height;
+	      var groundHeight = height - skyHeight;
+
+	      var skyGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
+	      skyGradient.addColorStop(0, DARK_BLUE);
+	      skyGradient.addColorStop(1, LIGHT_BLUE);
+
+	      this.ctx.fillStyle = skyGradient;
+	      this.ctx.fillRect(0, 0, width, skyHeight);
+
+	      var groundGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
+	      groundGradient.addColorStop(0, LIGHT_GREEN);
+	      groundGradient.addColorStop(1, DARK_GREEN);
+
+	      this.ctx.fillStyle = groundGradient;
+	      this.ctx.fillRect(0, skyHeight, width, groundHeight);
+
+	      if (solarAngle < 0 || solarAngle > 180) {
+	        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+	        this.ctx.fillRect(0, 0, width, height);
+	        return;
+	      }
+
+	      // Longest possible line.
+	      var maxLength = Math.sqrt(skyHeight * skyHeight + width * width);
+	      var NUM_BEAMS = 10;
+	      var x = undefined;
+	      var dx = width / (NUM_BEAMS + 1) / Math.sin(solarAngle * Math.PI / 180);
+	      var lineRotationRadians = (90 - solarAngle) * (Math.PI / 180);
+
+	      this.ctx.strokeStyle = RAY_COLOR;
+	      this.ctx.fillStyle = RAY_COLOR;
+
+	      // Could be +/- Infinity when solarAngle is 0
+	      if (isFinite(dx)) {
+	        for (x = dx / 2; x < width; x += dx) {
+	          this.ctx.save();
+	          this.ctx.translate(x, skyHeight);
+	          this._drawLine(lineRotationRadians, 5, maxLength);
+	          this._drawArrow(lineRotationRadians);
+	          this.ctx.restore();
+	        }
+	      }
+
+	      var dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle * Math.PI / 180));
+	      var yInitial = solarAngle < 90 ? dy / 2 : (x - width) / dx * dy;
+	      var xEdge = solarAngle < 90 ? 0 : width;
+	      if (isFinite(dy)) {
+	        for (var y = skyHeight - yInitial; y > 0; y -= dy) {
+	          this.ctx.save();
+	          this.ctx.translate(xEdge, y);
+	          this._drawLine(lineRotationRadians, 0, maxLength);
+	          this.ctx.restore();
+	        }
+	      }
+	    }
+	  }, {
+	    key: '_drawLine',
+	    value: function _drawLine(angle, lengthAdjustment, maxLength) {
+	      this.ctx.save();
+
+	      this.ctx.rotate(angle);
+	      this.ctx.lineWidth = 4;
+
+	      this.ctx.beginPath();
+	      this.ctx.moveTo(0, -lengthAdjustment);
+	      this.ctx.lineTo(0, -maxLength);
+	      this.ctx.stroke();
+
+	      this.ctx.restore();
+	    }
+	  }, {
+	    key: '_drawArrow',
+	    value: function _drawArrow(angle) {
+	      this.ctx.save();
+
+	      this.ctx.rotate(angle);
+	      this.ctx.lineWidth = 1;
+
+	      this.ctx.beginPath();
+	      this.ctx.moveTo(0, 0);
+	      this.ctx.lineTo(-10, -20);
+	      this.ctx.lineTo(0, -16);
+	      this.ctx.lineTo(10, -20);
+	      this.ctx.lineTo(0, 0);
+	      this.ctx.fill();
+
+	      this.ctx.restore();
 	    }
 	  }]);
 
