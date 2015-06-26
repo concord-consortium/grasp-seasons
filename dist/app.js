@@ -56,7 +56,7 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	__webpack_require__(2);
+	__webpack_require__(18);
 
 	var _viewsManagerJs = __webpack_require__(6);
 
@@ -173,12 +173,13 @@
 	    value: function _initDaySlider() {
 	      var _this2 = this;
 
-	      this.ui.$daySlider.slider({
+	      this.ui.$daySlider.wrappingSlider({
 	        min: 0,
 	        max: 364,
-	        step: 1
-	      }).on('slide', function (e, ui) {
-	        _this2.setState({ day: ui.value });
+	        step: 1,
+	        slide: function slide(e, ui) {
+	          _this2.setState({ day: ui.value });
+	        }
 	      });
 	    }
 	  }, {
@@ -222,23 +223,25 @@
 	      this.ui.$latSlider.slider({
 	        min: -90,
 	        max: 90,
-	        step: 1
-	      }).on('slide', function (e, ui) {
-	        _this6.setState({ lat: ui.value });
+	        step: 1,
+	        slide: function slide(e, ui) {
+	          _this6.setState({ lat: ui.value });
+	        }
 	      });
 
 	      this.ui.$longSlider.slider({
 	        min: -180,
 	        max: 180,
-	        step: 1
-	      }).on('slide', function (e, ui) {
-	        _this6.setState({ long: ui.value });
+	        step: 1,
+	        slide: function slide(e, ui) {
+	          _this6.setState({ long: ui.value });
+	        }
 	      });
 	    }
 	  }, {
 	    key: '_updateUI',
 	    value: function _updateUI() {
-	      this.ui.$daySlider.slider('value', this.state.day);
+	      this.ui.$daySlider.wrappingSlider('value', this.state.day);
 	      this.ui.$dayValue.html(this.getFormattedDay());
 	      this.ui.$earthRotation.prop('checked', this.state.earthRotation);
 	      this.ui.$earthTilt.prop('checked', this.state.earthTilt);
@@ -13069,6 +13072,59 @@
 
 	exports["default"] = CITY_DATA;
 	module.exports = exports["default"];
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _jquery = __webpack_require__(1);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	__webpack_require__(2);
+
+	// Patched jQueryUI slider that can wrap. When user drags slider handle over max (or min) value,
+	// it will jump back to min (or max).
+	_jquery2['default'].widget('ui.wrappingSlider', _jquery2['default'].ui.slider, {
+	  _normValueFromMouse: function _normValueFromMouse(position) {
+	    var pixelTotal, pixelMouse, percentMouse, valueTotal, valueMouse;
+
+	    if (this.orientation === 'horizontal') {
+	      pixelTotal = this.elementSize.width;
+	      pixelMouse = position.x - this.elementOffset.left - (this._clickOffset ? this._clickOffset.left : 0);
+	    } else {
+	      pixelTotal = this.elementSize.height;
+	      pixelMouse = position.y - this.elementOffset.top - (this._clickOffset ? this._clickOffset.top : 0);
+	    }
+
+	    percentMouse = pixelMouse / pixelTotal;
+	    // Original jQuery UI code:
+	    // if ( percentMouse > 1 ) {
+	    //   percentMouse = 1;
+	    // }
+	    // if ( percentMouse < 0 ) {
+	    //   percentMouse = 0;
+	    // }
+	    // === Customization ===
+	    percentMouse = percentMouse % 1;
+	    if (percentMouse < 0) {
+	      percentMouse += 1;
+	    }
+	    // =====================
+	    if (this.orientation === 'vertical') {
+	      percentMouse = 1 - percentMouse;
+	    }
+
+	    valueTotal = this._valueMax() - this._valueMin();
+	    valueMouse = this._valueMin() + percentMouse * valueTotal;
+
+	    return this._trimAlignValue(valueMouse);
+	  }
+	});
 
 /***/ }
 /******/ ]);

@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import 'jquery-ui/slider';
+import './ui/wrapping-slider.js';
 
 import ViewsManager from './views-manager.js';
 import CITY_DATA from './city-data.js';
@@ -95,12 +95,13 @@ class SeasonsApp {
   }
 
   _initDaySlider() {
-    this.ui.$daySlider.slider({
+    this.ui.$daySlider.wrappingSlider({
       min: 0,
       max: 364,
-      step: 1
-    }).on('slide', (e, ui) => {
-      this.setState({day: ui.value});
+      step: 1,
+      slide: (e, ui) => {
+        this.setState({day: ui.value});
+      }
     });
   }
 
@@ -132,22 +133,24 @@ class SeasonsApp {
     this.ui.$latSlider.slider({
       min: -90,
       max: 90,
-      step: 1
-    }).on('slide', (e, ui) => {
-      this.setState({lat: ui.value});
+      step: 1,
+      slide: (e, ui) => {
+        this.setState({lat: ui.value});
+      }
     });
 
     this.ui.$longSlider.slider({
       min: -180,
       max: 180,
-      step: 1
-    }).on('slide', (e, ui) => {
-      this.setState({long: ui.value});
+      step: 1,
+      slide: (e, ui) => {
+        this.setState({long: ui.value});
+      }
     });
   }
 
   _updateUI() {
-    this.ui.$daySlider.slider('value', this.state.day);
+    this.ui.$daySlider.wrappingSlider('value', this.state.day);
     this.ui.$dayValue.html(this.getFormattedDay());
     this.ui.$earthRotation.prop('checked', this.state.earthRotation);
     this.ui.$earthTilt.prop('checked', this.state.earthTilt);
