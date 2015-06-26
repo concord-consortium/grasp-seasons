@@ -4,7 +4,10 @@ import 'jquery-ui/slider';
 import ViewsManager from './views-manager.js';
 import CITY_DATA from './city-data.js';
 
-let DEF_STATE = {
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July",
+                     "August", "September", "October", "November", "December"];
+
+const DEF_STATE = {
   day: 171,
   earthTilt: true,
   earthRotation: false,
@@ -38,14 +41,51 @@ class SeasonsApp {
     this.ui.$citySelect.val(0).trigger('change');
   }
 
+  getSelectedCity() {
+    return CITY_DATA[this.ui.$citySelect.val()];
+  }
+
+  getFormattedDay() {
+    // Initialize a date in `2015-01-01` (it's not a leap year).
+    let date = new Date(2015, 0);
+    // Add the number of days.
+    date.setDate(this.state.day + 1);
+    return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
+  }
+
+  getFormattedLat() {
+    let dir = '';
+    if (this.state.lat > 0) {
+      dir = 'N';
+    } else  if (this.state.lat < 0) {
+      dir = 'S';
+    }
+    let lat = Math.abs(this.state.lat).toFixed(2);
+    return `${lat}&deg;${dir}`;
+  }
+
+  getFormattedLong() {
+    let dir = '';
+    if (this.state.long > 0) {
+      dir = 'E';
+    } else if (this.state.long < 0) {
+      dir = 'W';
+    }
+    let long = Math.abs(this.state.long).toFixed(2);
+    return `${long}&deg;${dir}`;
+  }
+
   _initUI() {
     this.ui = {
       $daySlider: $('#day-slider'),
+      $dayValue: $('#day-value'),
       $earthRotation: $('#earth-rotation'),
       $earthTilt: $('#earth-tilt'),
       $citySelect: $('#city-pulldown'),
       $latSlider: $('#latitude-slider'),
-      $longSlider: $('#longitude-slider')
+      $latValue: $('#lat-value'),
+      $longSlider: $('#longitude-slider'),
+      $longValue: $('#long-value')
     };
     this._initDaySlider();
     this._initRotationCheckbox();
@@ -77,11 +117,11 @@ class SeasonsApp {
   }
 
   _initCitySelect() {
-    for(let i = 0; i < CITY_DATA.length; i++) {
+    for (let i = 0; i < CITY_DATA.length; i++) {
       this.ui.$citySelect.append(`<option value=${i}>${CITY_DATA[i].name}</option>`);
     }
     this.ui.$citySelect.on('change', () => {
-      let city = this._getSelectedCity();
+      let city = this.getSelectedCity();
       if (city) {
         this.setState({lat: city.lat, long: city.long});
       }
@@ -108,19 +148,18 @@ class SeasonsApp {
 
   _updateUI() {
     this.ui.$daySlider.slider('value', this.state.day);
+    this.ui.$dayValue.html(this.getFormattedDay());
     this.ui.$earthRotation.prop('checked', this.state.earthRotation);
     this.ui.$earthTilt.prop('checked', this.state.earthTilt);
     this.ui.$latSlider.slider('value', this.state.lat);
+    this.ui.$latValue.html(this.getFormattedLat());
     this.ui.$longSlider.slider('value', this.state.long);
+    this.ui.$longValue.html(this.getFormattedLong());
     // Unselect city if longitude or latitude has been changed manually.
-    let city = this._getSelectedCity();
+    let city = this.getSelectedCity();
     if (city && (this.state.lat !== city.lat || this.state.long !== city.long)) {
       this.ui.$citySelect.val('');
     }
-  }
-
-  _getSelectedCity() {
-    return CITY_DATA[this.ui.$citySelect.val()];
   }
 }
 

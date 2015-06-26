@@ -33,3 +33,4 @@ export function earthEllipseLocationByDay(day) {
 
   return {x: x, y: 0, z: z};
 }
+

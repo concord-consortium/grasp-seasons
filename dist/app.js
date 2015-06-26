@@ -66,6 +66,8 @@
 
 	var _cityDataJs2 = _interopRequireDefault(_cityDataJs);
 
+	var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 	var DEF_STATE = {
 	  day: 171,
 	  earthTilt: true,
@@ -109,15 +111,56 @@
 	      this.ui.$citySelect.val(0).trigger('change');
 	    }
 	  }, {
+	    key: 'getSelectedCity',
+	    value: function getSelectedCity() {
+	      return _cityDataJs2['default'][this.ui.$citySelect.val()];
+	    }
+	  }, {
+	    key: 'getFormattedDay',
+	    value: function getFormattedDay() {
+	      // Initialize a date in `2015-01-01` (it's not a leap year).
+	      var date = new Date(2015, 0);
+	      // Add the number of days.
+	      date.setDate(this.state.day + 1);
+	      return MONTH_NAMES[date.getMonth()] + ' ' + date.getDate();
+	    }
+	  }, {
+	    key: 'getFormattedLat',
+	    value: function getFormattedLat() {
+	      var dir = '';
+	      if (this.state.lat > 0) {
+	        dir = 'N';
+	      } else if (this.state.lat < 0) {
+	        dir = 'S';
+	      }
+	      var lat = Math.abs(this.state.lat).toFixed(2);
+	      return lat + '&deg;' + dir;
+	    }
+	  }, {
+	    key: 'getFormattedLong',
+	    value: function getFormattedLong() {
+	      var dir = '';
+	      if (this.state.long > 0) {
+	        dir = 'E';
+	      } else if (this.state.long < 0) {
+	        dir = 'W';
+	      }
+	      var long = Math.abs(this.state.long).toFixed(2);
+	      return long + '&deg;' + dir;
+	    }
+	  }, {
 	    key: '_initUI',
 	    value: function _initUI() {
 	      this.ui = {
 	        $daySlider: (0, _jquery2['default'])('#day-slider'),
+	        $dayValue: (0, _jquery2['default'])('#day-value'),
 	        $earthRotation: (0, _jquery2['default'])('#earth-rotation'),
 	        $earthTilt: (0, _jquery2['default'])('#earth-tilt'),
 	        $citySelect: (0, _jquery2['default'])('#city-pulldown'),
 	        $latSlider: (0, _jquery2['default'])('#latitude-slider'),
-	        $longSlider: (0, _jquery2['default'])('#longitude-slider')
+	        $latValue: (0, _jquery2['default'])('#lat-value'),
+	        $longSlider: (0, _jquery2['default'])('#longitude-slider'),
+	        $longValue: (0, _jquery2['default'])('#long-value')
 	      };
 	      this._initDaySlider();
 	      this._initRotationCheckbox();
@@ -165,7 +208,7 @@
 	        this.ui.$citySelect.append('<option value=' + i + '>' + _cityDataJs2['default'][i].name + '</option>');
 	      }
 	      this.ui.$citySelect.on('change', function () {
-	        var city = _this5._getSelectedCity();
+	        var city = _this5.getSelectedCity();
 	        if (city) {
 	          _this5.setState({ lat: city.lat, long: city.long });
 	        }
@@ -196,20 +239,18 @@
 	    key: '_updateUI',
 	    value: function _updateUI() {
 	      this.ui.$daySlider.slider('value', this.state.day);
+	      this.ui.$dayValue.html(this.getFormattedDay());
 	      this.ui.$earthRotation.prop('checked', this.state.earthRotation);
 	      this.ui.$earthTilt.prop('checked', this.state.earthTilt);
 	      this.ui.$latSlider.slider('value', this.state.lat);
+	      this.ui.$latValue.html(this.getFormattedLat());
 	      this.ui.$longSlider.slider('value', this.state.long);
+	      this.ui.$longValue.html(this.getFormattedLong());
 	      // Unselect city if longitude or latitude has been changed manually.
-	      var city = this._getSelectedCity();
+	      var city = this.getSelectedCity();
 	      if (city && (this.state.lat !== city.lat || this.state.long !== city.long)) {
 	        this.ui.$citySelect.val('');
 	      }
-	    }
-	  }, {
-	    key: '_getSelectedCity',
-	    value: function _getSelectedCity() {
-	      return _cityDataJs2['default'][this.ui.$citySelect.val()];
 	    }
 	  }]);
 

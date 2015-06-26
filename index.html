@@ -43,7 +43,7 @@
     }
     label {
       display: block;
-      margin: 20px 0;
+      margin: 5px 0;
     }
   </style>
 </head>
@@ -58,15 +58,15 @@
 </div>
 
 <div class="controls">
-  Day:
-  <div id="day-slider"></div>
-  <label><input type="checkbox" id="earth-rotation">Rotating?</label>
-  <label><input type="checkbox" id="earth-tilt">Tilted?</label>
+  <label>Day: <span id="day-value"></span>
+  <div id="day-slider"></div></label>
+  <label><input type="checkbox" id="earth-rotation">Rotating</label>
+  <label><input type="checkbox" id="earth-tilt">Tilted</label>
   <label>Select city: <select id="city-pulldown"></select></label>
-  Latitude:
-  <div id="latitude-slider"></div>
-  Longitude:
-  <div id="longitude-slider"></div>
+  <label>Latitude: <span id="lat-value"></span>
+  <div id="latitude-slider"></div></label>
+  <label>Longitude: <span id="long-value"></span>
+  <div id="longitude-slider"></div></label>
 </div>
 
 <!--THREE.js doesn't work well with NPM modules, so import it manually.-->
