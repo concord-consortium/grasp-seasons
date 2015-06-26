@@ -46,7 +46,11 @@
 
 	'use strict';
 
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	var _jquery = __webpack_require__(1);
 
@@ -62,100 +66,159 @@
 
 	var _cityDataJs2 = _interopRequireDefault(_cityDataJs);
 
-	var state = {
+	var DEF_STATE = {
 	  day: 171,
 	  earthTilt: true,
 	  earthRotation: false,
 	  lat: 0,
 	  long: 0
 	};
-	var view = new _viewsManagerJs2['default'](state);
 
-	view.earthView.on('latitude.change', function (newLat) {
-	  setState({ lat: newLat });
-	});
-	view.earthView.on('longitude.change', function (newLong) {
-	  setState({ long: newLong });
-	});
+	var SeasonsApp = (function () {
+	  function SeasonsApp() {
+	    var _this = this;
 
-	var ui = {
-	  $daySlider: (0, _jquery2['default'])('#day-slider'),
-	  $earthRotation: (0, _jquery2['default'])('#earth-rotation'),
-	  $earthTilt: (0, _jquery2['default'])('#earth-tilt'),
-	  $citySelect: (0, _jquery2['default'])('#city-pulldown'),
-	  $latSlider: (0, _jquery2['default'])('#latitude-slider'),
-	  $longSlider: (0, _jquery2['default'])('#longitude-slider')
-	};
+	    var state = arguments[0] === undefined ? DEF_STATE : arguments[0];
 
-	function setState(newState) {
-	  state = _jquery2['default'].extend(state, newState);
-	  view.setProps(newState);
-	  updateUI();
-	}
+	    _classCallCheck(this, SeasonsApp);
 
-	function updateUI() {
-	  ui.$daySlider.slider('value', state.day);
-	  ui.$earthRotation.prop('checked', state.earthRotation);
-	  ui.$earthTilt.prop('checked', state.earthTilt);
-	  ui.$latSlider.slider('value', state.lat);
-	  ui.$longSlider.slider('value', state.long);
-	  // Unselect city if longitude or latitude has been changed manually.
-	  var city = getSelectedCity();
-	  if (city && (state.lat !== city.lat || state.long !== city.long)) {
-	    ui.$citySelect.val('');
+	    this.view = new _viewsManagerJs2['default'](state);
+	    this._initUI();
+
+	    this.state = {};
+	    this.setState(state);
+
+	    this.view.earthView.on('latitude.change', function (newLat) {
+	      _this.setState({ lat: newLat });
+	    });
+	    this.view.earthView.on('longitude.change', function (newLong) {
+	      _this.setState({ long: newLong });
+	    });
 	  }
-	}
 
-	function getSelectedCity() {
-	  return _cityDataJs2['default'][ui.$citySelect.val()];
-	}
+	  _createClass(SeasonsApp, [{
+	    key: 'setState',
+	    value: function setState(newState) {
+	      this.state = _jquery2['default'].extend(this.state, newState);
+	      this.view.setProps(newState);
+	      this._updateUI();
+	    }
+	  }, {
+	    key: 'selectCity',
+	    value: function selectCity(index) {
+	      this.ui.$citySelect.val(0).trigger('change');
+	    }
+	  }, {
+	    key: '_initUI',
+	    value: function _initUI() {
+	      this.ui = {
+	        $daySlider: (0, _jquery2['default'])('#day-slider'),
+	        $earthRotation: (0, _jquery2['default'])('#earth-rotation'),
+	        $earthTilt: (0, _jquery2['default'])('#earth-tilt'),
+	        $citySelect: (0, _jquery2['default'])('#city-pulldown'),
+	        $latSlider: (0, _jquery2['default'])('#latitude-slider'),
+	        $longSlider: (0, _jquery2['default'])('#longitude-slider')
+	      };
+	      this._initDaySlider();
+	      this._initRotationCheckbox();
+	      this._initEarthTiltCheckbox();
+	      this._initCitySelect();
+	      this._initLatLongSliders();
+	    }
+	  }, {
+	    key: '_initDaySlider',
+	    value: function _initDaySlider() {
+	      var _this2 = this;
 
-	ui.$daySlider.slider({
-	  min: 0,
-	  max: 364,
-	  step: 1
-	}).on('slide', function (e, ui) {
-	  setState({ day: ui.value });
-	});
+	      this.ui.$daySlider.slider({
+	        min: 0,
+	        max: 364,
+	        step: 1
+	      }).on('slide', function (e, ui) {
+	        _this2.setState({ day: ui.value });
+	      });
+	    }
+	  }, {
+	    key: '_initRotationCheckbox',
+	    value: function _initRotationCheckbox() {
+	      var _this3 = this;
 
-	ui.$earthRotation.on('change', function () {
-	  setState({ earthRotation: this.checked });
-	});
+	      this.ui.$earthRotation.on('change', function (e) {
+	        _this3.setState({ earthRotation: e.target.checked });
+	      });
+	    }
+	  }, {
+	    key: '_initEarthTiltCheckbox',
+	    value: function _initEarthTiltCheckbox() {
+	      var _this4 = this;
 
-	ui.$earthTilt.on('change', function () {
-	  setState({ earthTilt: this.checked });
-	});
+	      this.ui.$earthTilt.on('change', function (e) {
+	        _this4.setState({ earthTilt: e.target.checked });
+	      });
+	    }
+	  }, {
+	    key: '_initCitySelect',
+	    value: function _initCitySelect() {
+	      var _this5 = this;
 
-	for (var i = 0; i < _cityDataJs2['default'].length; i++) {
-	  ui.$citySelect.append('<option value=' + i + '>' + _cityDataJs2['default'][i].name + '</option>');
-	}
-	ui.$citySelect.on('change', function () {
-	  var city = getSelectedCity();
-	  if (city) {
-	    setState({ lat: city.lat, long: city.long });
-	  }
-	});
+	      for (var i = 0; i < _cityDataJs2['default'].length; i++) {
+	        this.ui.$citySelect.append('<option value=' + i + '>' + _cityDataJs2['default'][i].name + '</option>');
+	      }
+	      this.ui.$citySelect.on('change', function () {
+	        var city = _this5._getSelectedCity();
+	        if (city) {
+	          _this5.setState({ lat: city.lat, long: city.long });
+	        }
+	      });
+	    }
+	  }, {
+	    key: '_initLatLongSliders',
+	    value: function _initLatLongSliders() {
+	      var _this6 = this;
 
-	ui.$latSlider.slider({
-	  min: -90,
-	  max: 90,
-	  step: 1
-	}).on('slide', function (e, ui) {
-	  setState({ lat: ui.value });
-	});
+	      this.ui.$latSlider.slider({
+	        min: -90,
+	        max: 90,
+	        step: 1
+	      }).on('slide', function (e, ui) {
+	        _this6.setState({ lat: ui.value });
+	      });
 
-	ui.$longSlider.slider({
-	  min: -180,
-	  max: 180,
-	  step: 1
-	}).on('slide', function (e, ui) {
-	  setState({ long: ui.value });
-	});
+	      this.ui.$longSlider.slider({
+	        min: -180,
+	        max: 180,
+	        step: 1
+	      }).on('slide', function (e, ui) {
+	        _this6.setState({ long: ui.value });
+	      });
+	    }
+	  }, {
+	    key: '_updateUI',
+	    value: function _updateUI() {
+	      this.ui.$daySlider.slider('value', this.state.day);
+	      this.ui.$earthRotation.prop('checked', this.state.earthRotation);
+	      this.ui.$earthTilt.prop('checked', this.state.earthTilt);
+	      this.ui.$latSlider.slider('value', this.state.lat);
+	      this.ui.$longSlider.slider('value', this.state.long);
+	      // Unselect city if longitude or latitude has been changed manually.
+	      var city = this._getSelectedCity();
+	      if (city && (this.state.lat !== city.lat || this.state.long !== city.long)) {
+	        this.ui.$citySelect.val('');
+	      }
+	    }
+	  }, {
+	    key: '_getSelectedCity',
+	    value: function _getSelectedCity() {
+	      return _cityDataJs2['default'][this.ui.$citySelect.val()];
+	    }
+	  }]);
 
-	// Select the first city on page load.
-	ui.$citySelect.trigger('change');
-	// Export view manager to global namespace (so it's possible to use browser console to play with it).
-	window.view = view;
+	  return SeasonsApp;
+	})();
+
+	window.seasons = new SeasonsApp();
+	// Select the first city.
+	window.seasons.selectCity(0);
 
 /***/ },
 /* 1 */
