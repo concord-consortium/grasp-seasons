@@ -11262,7 +11262,7 @@
 
 	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
 
-	var _solarSystemDataJs = __webpack_require__(18);
+	var _solarSystemDataJs = __webpack_require__(10);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
@@ -11368,21 +11368,25 @@
 	      var day = this.props.day;
 	      var pos = data.earthEllipseLocationByDay(day);
 
-	      var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
-	      // Make sure that earth maintains its rotation.
-	      this._rotateEarth(angle);
+	      var angleDiff = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
+	      // Make sure that earth maintains its current rotation.
+	      this._rotateEarth(angleDiff);
 	      // Update camera position, rotate it and adjust its orbit length.
-	      this._rotateCam(angle);
+	      this._rotateCam(angleDiff);
 	      var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
 	      var newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
 	      this.camera.position.x *= newOrbitLength / oldOrbitLength;
 	      this.camera.position.z *= newOrbitLength / oldOrbitLength;
 
+	      // Finally update earth position.
+	      this.earthPos.position.copy(pos);
 	      // Set orbit controls target to new position too.
 	      this.controls.target.copy(pos);
-	      this.controls.update();
 
-	      this.earthPos.position.copy(pos);
+	      // Make sure that this call is at the very end, as otherwise 'camera.change' event can be fired before
+	      // earth position is updated. This causes problems when client code tries to call .getCameraEarthVec()
+	      // in handler (as earth position is still outdated).
+	      this.controls.update();
 	    }
 	  }, {
 	    key: '_updateEarthTilt',
@@ -11422,6 +11426,7 @@
 	      this.scene.add(_modelsModelsJs2['default'].sunOnlyLight());
 	      this.scene.add(_modelsModelsJs2['default'].orbit());
 	      this.scene.add(_modelsModelsJs2['default'].sun());
+	      this.scene.add(_modelsModelsJs2['default'].grid({ steps: 60 }));
 
 	      this.earth = _modelsModelsJs2['default'].earth();
 	      this.earthAxis = _modelsModelsJs2['default'].earthAxis();
@@ -11434,10 +11439,11 @@
 	      this.earthTiltPivot = new THREE.Object3D();
 	      this.earthTiltPivot.add(this.earth);
 	      this.earthPos = new THREE.Object3D();
-	      this.earthPos.add(_modelsModelsJs2['default'].grid({ size: data.EARTH_ORBITAL_RADIUS / 8, steps: 15 }));
-	      this.earthPos.add(this.earthTiltPivot);
+	      // Make sure that earth is at day 0 position.
+	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
 	      var pos = data.earthEllipseLocationByDay(0);
 	      this.earthPos.position.copy(pos);
+	      this.earthPos.add(this.earthTiltPivot);
 	      this.scene.add(this.earthPos);
 	    }
 	  }, {
@@ -11445,7 +11451,7 @@
 
 	    // Sets camera next to earth at day 0 position.
 	    value: function _setInitialCamPos() {
-	      this.camera.position.x = -130000000 / data.SCALE_FACTOR;
+	      this.camera.position.x = -129000000 / data.SCALE_FACTOR;
 	      this.camera.position.y = 5000000 / data.SCALE_FACTOR;
 	      this.camera.position.z = 25000000 / data.SCALE_FACTOR;
 	    }
@@ -12192,7 +12198,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _solarSystemDataJs = __webpack_require__(18);
+	var _solarSystemDataJs = __webpack_require__(10);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
@@ -12343,7 +12349,59 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 10 */,
+/* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.earthEllipseLocationByDay = earthEllipseLocationByDay;
+	var AU = 149597870.691;
+	var AU_2_KM = 149597870.7;
+	var EARTH_ECCENTRICITY = 0.01671123;
+
+	var SCALE_FACTOR = 100000;
+	exports.SCALE_FACTOR = SCALE_FACTOR;
+	var EARTH_ORBITAL_RADIUS = AU / SCALE_FACTOR;
+	exports.EARTH_ORBITAL_RADIUS = EARTH_ORBITAL_RADIUS;
+	var EARTH_SEMI_MAJOR_AXIS = 1.00000261;
+	exports.EARTH_SEMI_MAJOR_AXIS = EARTH_SEMI_MAJOR_AXIS;
+	var SUN_FOCUS = EARTH_ECCENTRICITY / EARTH_SEMI_MAJOR_AXIS / 2 * AU_2_KM / SCALE_FACTOR;
+	exports.SUN_FOCUS = SUN_FOCUS;
+	var EARTH_TILT = 0.41;
+
+	exports.EARTH_TILT = EARTH_TILT;
+	var DAY_NUMBER_BY_MONTH = {
+	  JAN: 19,
+	  FEB: 50,
+	  MAR: 78, // mar 20 17:42
+	  APR: 109,
+	  MAY: 139,
+	  JUN: 171, // jun 21 17:16
+	  JUL: 200,
+	  AUG: 231,
+	  SEP: 265, // sep 23 09:04
+	  OCT: 292,
+	  NOV: 323,
+	  DEC: 355 // dec 22 05:30
+	};
+
+	exports.DAY_NUMBER_BY_MONTH = DAY_NUMBER_BY_MONTH;
+
+	function earthEllipseLocationByDay(day) {
+	  var index = (DAY_NUMBER_BY_MONTH.JUN - day) / 365;
+	  var z = 1 / EARTH_SEMI_MAJOR_AXIS * Math.sin(index * 2 * Math.PI);
+	  var x = EARTH_SEMI_MAJOR_AXIS * Math.cos(index * 2 * Math.PI);
+
+	  x = x * EARTH_ORBITAL_RADIUS + SUN_FOCUS * 2;
+	  z = z * EARTH_ORBITAL_RADIUS;
+
+	  return { x: x, y: 0, z: z };
+	}
+
+/***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -12355,7 +12413,7 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _solarSystemDataJs = __webpack_require__(18);
+	var _solarSystemDataJs = __webpack_require__(10);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
@@ -12566,7 +12624,7 @@
 
 	var _modelsModelsJs2 = _interopRequireDefault(_modelsModelsJs);
 
-	var _solarSystemDataJs = __webpack_require__(18);
+	var _solarSystemDataJs = __webpack_require__(10);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
@@ -12627,13 +12685,12 @@
 	    value: function _updateDay() {
 	      var day = this.props.day;
 	      var pos = data.earthEllipseLocationByDay(day);
-	      this.earthPos.position.x = pos.x;
-	      this.earthPos.position.z = pos.z;
+	      this.earthPos.position.copy(pos);
 	    }
 	  }, {
 	    key: '_updateEarthTilt',
 	    value: function _updateEarthTilt() {
-	      this.earth.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
+	      this.earth.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
 	    }
 	  }, {
 	    key: '_initScene',
@@ -12715,7 +12772,7 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _solarSystemDataJs = __webpack_require__(18);
+	var _solarSystemDataJs = __webpack_require__(10);
 
 	window.$ = _jquery2['default'];
 
@@ -12908,59 +12965,6 @@
 
 	exports["default"] = CITY_DATA;
 	module.exports = exports["default"];
-
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.earthEllipseLocationByDay = earthEllipseLocationByDay;
-	var AU = 149597870.691;
-	var AU_2_KM = 149597870.7;
-	var EARTH_ECCENTRICITY = 0.01671123;
-
-	var SCALE_FACTOR = 100000;
-	exports.SCALE_FACTOR = SCALE_FACTOR;
-	var EARTH_ORBITAL_RADIUS = AU / SCALE_FACTOR;
-	exports.EARTH_ORBITAL_RADIUS = EARTH_ORBITAL_RADIUS;
-	var EARTH_SEMI_MAJOR_AXIS = 1.00000261;
-	exports.EARTH_SEMI_MAJOR_AXIS = EARTH_SEMI_MAJOR_AXIS;
-	var SUN_FOCUS = EARTH_ECCENTRICITY / EARTH_SEMI_MAJOR_AXIS / 2 * AU_2_KM / SCALE_FACTOR;
-	exports.SUN_FOCUS = SUN_FOCUS;
-	var EARTH_TILT = 0.41;
-
-	exports.EARTH_TILT = EARTH_TILT;
-	var DAY_NUMBER_BY_MONTH = {
-	  JAN: 19,
-	  FEB: 50,
-	  MAR: 78, // mar 20 17:42
-	  APR: 109,
-	  MAY: 139,
-	  JUN: 171, // jun 21 17:16
-	  JUL: 200,
-	  AUG: 231,
-	  SEP: 265, // sep 23 09:04
-	  OCT: 292,
-	  NOV: 323,
-	  DEC: 355 // dec 22 05:30
-	};
-
-	exports.DAY_NUMBER_BY_MONTH = DAY_NUMBER_BY_MONTH;
-
-	function earthEllipseLocationByDay(day) {
-	  var index = (DAY_NUMBER_BY_MONTH.JUN - day) / 365;
-	  var z = 1 / EARTH_SEMI_MAJOR_AXIS * Math.sin(index * 2 * Math.PI);
-	  var x = EARTH_SEMI_MAJOR_AXIS * Math.cos(index * 2 * Math.PI);
-
-	  x = x * EARTH_ORBITAL_RADIUS + SUN_FOCUS * 2;
-	  z = z * EARTH_ORBITAL_RADIUS;
-
-	  return { x: x, y: 0, z: z };
-	}
 
 /***/ }
 /******/ ]);

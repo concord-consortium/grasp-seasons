@@ -50,12 +50,11 @@ export default class {
   _updateDay() {
     let day = this.props.day;
     let pos = data.earthEllipseLocationByDay(day);
-    this.earthPos.position.x = pos.x;
-    this.earthPos.position.z = pos.z;
+    this.earthPos.position.copy(pos);
   }
 
   _updateEarthTilt() {
-    this.earth.rotation.z = this.props.earthTilt ? 0.41 : 0; // 0.41 rad = 23.5 deg
+    this.earth.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
   }
 
   _initScene() {
