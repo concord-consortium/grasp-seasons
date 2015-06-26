@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter2';
 import models from './models/models.js';
 import LatitudeLine from './models/latitude-line.js';
 import LatLongMarker from './models/lat-long-marker.js';
-import * as data from './data.js';
+import * as data from './solar-system-data.js';
 import {mousePosNormalized} from './utils.js';
 
 const DEG_2_RAD = Math.PI / 180;
@@ -20,10 +20,10 @@ const DEF_PROPERTIES = {
 
 export default class {
   constructor(canvasEl, props = DEF_PROPERTIES) {
-    var width = canvasEl.clientWidth;
-    var height = canvasEl.clientHeight;
+    let width = canvasEl.clientWidth;
+    let height = canvasEl.clientHeight;
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.earthOrbitalRadius * 10);
+    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 10);
     this.renderer = new THREE.WebGLRenderer({canvas: canvasEl, antialias: true});
     this.renderer.setSize(width, height);
 
@@ -65,7 +65,7 @@ export default class {
   }
 
   setProps(newProps) {
-    var oldProps = $.extend(this.props);
+    let oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
 
     if (this.props.day !== oldProps.day) this._updateDay();
@@ -86,17 +86,17 @@ export default class {
   }
 
   _updateDay() {
-    var day = this.props.day;
-    var pos = data.earthEllipseLocationByDay(day);
+    let day = this.props.day;
+    let pos = data.earthEllipseLocationByDay(day);
 
     if (this._prevDay != null) {
-      var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
+      let angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
       // Make sure that earth maintains its rotation.
       this._rotateEarth(angle);
       // Update camera position, rotate it and adjust its orbit length.
       this._rotateCam(angle);
-      var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
-      var newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
+      let oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
+      let newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
       this.camera.position.x *= newOrbitLength / oldOrbitLength;
       this.camera.position.z *= newOrbitLength / oldOrbitLength;
     }
@@ -128,9 +128,9 @@ export default class {
 
   // Rotates camera around the sun.
   _rotateCam(angle) {
-    var p = this.camera.position;
-    var newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
-    var newX = p.z * Math.sin(angle) + p.x * Math.cos(angle);
+    let p = this.camera.position;
+    let newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
+    let newX = p.z * Math.sin(angle) + p.x * Math.cos(angle);
     this.camera.position.x = newX;
     this.camera.position.z = newZ;
   }
@@ -154,15 +154,15 @@ export default class {
     this.earthTiltPivot = new THREE.Object3D();
     this.earthTiltPivot.add(this.earth);
     this.earthPos = new THREE.Object3D();
-    this.earthPos.add(models.grid({size: data.earthOrbitalRadius / 8, steps: 15}));
+    this.earthPos.add(models.grid({size: data.EARTH_ORBITAL_RADIUS / 8, steps: 15}));
     this.earthPos.add(this.earthTiltPivot);
     this.scene.add(this.earthPos);
   }
 
   _setInitialCamPos() {
-    this.camera.position.x = -128207750 / data.scaleFactor;
-    this.camera.position.y = 5928580 / data.scaleFactor;
-    this.camera.position.z = 24799310 / data.scaleFactor;
+    this.camera.position.x = -128207750 / data.SCALE_FACTOR;
+    this.camera.position.y = 5928580 / data.SCALE_FACTOR;
+    this.camera.position.z = 24799310 / data.SCALE_FACTOR;
 
     // Rotate earth a bit so USA is visible.
     this._rotateEarth(2);

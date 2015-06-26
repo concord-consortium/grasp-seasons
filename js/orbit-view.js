@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import models from './models/models.js';
-import * as data from './data.js';
+import * as data from './solar-system-data.js';
 
 const DEF_PROPERTIES = {
   day: 0,
@@ -9,10 +9,10 @@ const DEF_PROPERTIES = {
 
 export default class {
   constructor(canvasEl, props = DEF_PROPERTIES) {
-    var width = canvasEl.clientWidth;
-    var height = canvasEl.clientHeight;
+    let width = canvasEl.clientWidth;
+    let height = canvasEl.clientHeight;
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.earthOrbitalRadius * 100);
+    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
     this.renderer = new THREE.WebGLRenderer({canvas: canvasEl, antialias: true});
     this.renderer.setSize(width, height);
 
@@ -31,7 +31,7 @@ export default class {
   }
 
   setProps(newProps) {
-    var oldProps = $.extend(this.props);
+    let oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
 
     if (this.props.day !== oldProps.day) this._updateDay();
@@ -48,8 +48,8 @@ export default class {
   }
 
   _updateDay() {
-    var day = this.props.day;
-    var pos = data.earthEllipseLocationByDay(day);
+    let day = this.props.day;
+    let pos = data.earthEllipseLocationByDay(day);
     this.earthPos.position.x = pos.x;
     this.earthPos.position.z = pos.z;
   }
@@ -80,25 +80,25 @@ export default class {
 
   _setInitialCamPos() {
     this.camera.position.x = 0;
-    this.camera.position.y = 245232773 / data.scaleFactor;
-    this.camera.position.z = 228174616 / data.scaleFactor;
+    this.camera.position.y = 245232773 / data.SCALE_FACTOR;
+    this.camera.position.z = 228174616 / data.SCALE_FACTOR;
     this.controls.update();
   }
 
   _addLabels() {
-    var juneLbl = models.label('Jun');
-    juneLbl.position.x = data.earthOrbitalRadius * 1.05;
+    let juneLbl = models.label('Jun');
+    juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
     juneLbl.rotateZ(-Math.PI * 0.5);
 
-    var decLbl = models.label('Dec');
-    decLbl.position.x = -data.earthOrbitalRadius * 1.05;
+    let decLbl = models.label('Dec');
+    decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
     decLbl.rotateZ(Math.PI * 0.5);
 
-    var sepLbl = models.label('Sep');
-    sepLbl.position.z = -data.earthOrbitalRadius * 1.05;
+    let sepLbl = models.label('Sep');
+    sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
 
-    var marLbl = models.label('Mar');
-    marLbl.position.z = data.earthOrbitalRadius * 1.05;
+    let marLbl = models.label('Mar');
+    marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
     marLbl.rotateZ(Math.PI);
 
     this.scene.add(juneLbl);

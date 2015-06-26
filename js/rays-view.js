@@ -1,6 +1,6 @@
 import $ from 'jquery';
 window.$ = $;
-import {EARTH_TILT, DAY_NUMBER_BY_MONTH} from './data.js';
+import {EARTH_TILT, DAY_NUMBER_BY_MONTH} from './solar-system-data.js';
 
 const DARK_BLUE = '#6E9CEF';
 const LIGHT_BLUE = '#99ADF1';
@@ -27,7 +27,7 @@ export default class {
   }
 
   setProps(newProps) {
-    var oldProps = $.extend(this.props);
+    let oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
 
     if (this.props.day !== oldProps.day ||
