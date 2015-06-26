@@ -44,6 +44,8 @@ export default class {
 
     this._initScene();
     this._setInitialCamPos();
+    // Rotate earth a bit so USA is visible.
+    this._rotateEarth(2);
 
     this.props = {};
     this.setProps(props);
@@ -89,27 +91,21 @@ export default class {
     let day = this.props.day;
     let pos = data.earthEllipseLocationByDay(day);
 
-    if (this._prevDay != null) {
-      let angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
-      // Make sure that earth maintains its rotation.
-      this._rotateEarth(angle);
-      // Update camera position, rotate it and adjust its orbit length.
-      this._rotateCam(angle);
-      let oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
-      let newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
-      this.camera.position.x *= newOrbitLength / oldOrbitLength;
-      this.camera.position.z *= newOrbitLength / oldOrbitLength;
-    }
+    let angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
+    // Make sure that earth maintains its rotation.
+    this._rotateEarth(angle);
+    // Update camera position, rotate it and adjust its orbit length.
+    this._rotateCam(angle);
+    let oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
+    let newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
+    this.camera.position.x *= newOrbitLength / oldOrbitLength;
+    this.camera.position.z *= newOrbitLength / oldOrbitLength;
 
-    this.earthPos.position.x = pos.x;
-    this.earthPos.position.z = pos.z;
-
-    // Set camera target to new position too.
-    this.controls.target.x = pos.x;
-    this.controls.target.z = pos.z;
+    // Set orbit controls target to new position too.
+    this.controls.target.copy(pos);
     this.controls.update();
 
-    this._prevDay = day;
+    this.earthPos.position.copy(pos);
   }
 
   _updateEarthTilt() {
@@ -156,16 +152,16 @@ export default class {
     this.earthPos = new THREE.Object3D();
     this.earthPos.add(models.grid({size: data.EARTH_ORBITAL_RADIUS / 8, steps: 15}));
     this.earthPos.add(this.earthTiltPivot);
+    let pos = data.earthEllipseLocationByDay(0);
+    this.earthPos.position.copy(pos);
     this.scene.add(this.earthPos);
   }
 
+  // Sets camera next to earth at day 0 position.
   _setInitialCamPos() {
-    this.camera.position.x = -128207750 / data.SCALE_FACTOR;
-    this.camera.position.y = 5928580 / data.SCALE_FACTOR;
-    this.camera.position.z = 24799310 / data.SCALE_FACTOR;
-
-    // Rotate earth a bit so USA is visible.
-    this._rotateEarth(2);
+    this.camera.position.x = -130000000 / data.SCALE_FACTOR;
+    this.camera.position.y = 5000000 / data.SCALE_FACTOR;
+    this.camera.position.z = 25000000 / data.SCALE_FACTOR;
   }
 
   _animate(timestamp) {

@@ -5,7 +5,7 @@ import ViewsManager from './views-manager.js';
 import CITY_DATA from './city-data.js';
 
 let state = {
-  day: 0,
+  day: 171,
   earthTilt: true,
   earthRotation: false,
   lat: 0,

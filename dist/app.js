@@ -63,7 +63,7 @@
 	var _cityDataJs2 = _interopRequireDefault(_cityDataJs);
 
 	var state = {
-	  day: 0,
+	  day: 171,
 	  earthTilt: true,
 	  earthRotation: false,
 	  lat: 0,
@@ -11311,6 +11311,8 @@
 
 	    this._initScene();
 	    this._setInitialCamPos();
+	    // Rotate earth a bit so USA is visible.
+	    this._rotateEarth(2);
 
 	    this.props = {};
 	    this.setProps(props);
@@ -11366,27 +11368,21 @@
 	      var day = this.props.day;
 	      var pos = data.earthEllipseLocationByDay(day);
 
-	      if (this._prevDay != null) {
-	        var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
-	        // Make sure that earth maintains its rotation.
-	        this._rotateEarth(angle);
-	        // Update camera position, rotate it and adjust its orbit length.
-	        this._rotateCam(angle);
-	        var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
-	        var newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
-	        this.camera.position.x *= newOrbitLength / oldOrbitLength;
-	        this.camera.position.z *= newOrbitLength / oldOrbitLength;
-	      }
+	      var angle = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
+	      // Make sure that earth maintains its rotation.
+	      this._rotateEarth(angle);
+	      // Update camera position, rotate it and adjust its orbit length.
+	      this._rotateCam(angle);
+	      var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
+	      var newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
+	      this.camera.position.x *= newOrbitLength / oldOrbitLength;
+	      this.camera.position.z *= newOrbitLength / oldOrbitLength;
 
-	      this.earthPos.position.x = pos.x;
-	      this.earthPos.position.z = pos.z;
-
-	      // Set camera target to new position too.
-	      this.controls.target.x = pos.x;
-	      this.controls.target.z = pos.z;
+	      // Set orbit controls target to new position too.
+	      this.controls.target.copy(pos);
 	      this.controls.update();
 
-	      this._prevDay = day;
+	      this.earthPos.position.copy(pos);
 	    }
 	  }, {
 	    key: '_updateEarthTilt',
@@ -11440,17 +11436,18 @@
 	      this.earthPos = new THREE.Object3D();
 	      this.earthPos.add(_modelsModelsJs2['default'].grid({ size: data.EARTH_ORBITAL_RADIUS / 8, steps: 15 }));
 	      this.earthPos.add(this.earthTiltPivot);
+	      var pos = data.earthEllipseLocationByDay(0);
+	      this.earthPos.position.copy(pos);
 	      this.scene.add(this.earthPos);
 	    }
 	  }, {
 	    key: '_setInitialCamPos',
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = -128207750 / data.SCALE_FACTOR;
-	      this.camera.position.y = 5928580 / data.SCALE_FACTOR;
-	      this.camera.position.z = 24799310 / data.SCALE_FACTOR;
 
-	      // Rotate earth a bit so USA is visible.
-	      this._rotateEarth(2);
+	    // Sets camera next to earth at day 0 position.
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = -130000000 / data.SCALE_FACTOR;
+	      this.camera.position.y = 5000000 / data.SCALE_FACTOR;
+	      this.camera.position.z = 25000000 / data.SCALE_FACTOR;
 	    }
 	  }, {
 	    key: '_animate',
@@ -12256,7 +12253,7 @@
 	    if (!simple) {
 	      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
 	      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
-	      material.bumpScale = 0.7;
+	      material.bumpScale = 100000 * c.SF;
 	      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
 	    }
 	    return new THREE.Mesh(geometry, material);
@@ -12270,7 +12267,7 @@
 	    );
 	    var path = new THREE.Path(curve.getPoints(150));
 	    var geometry = path.createPointsGeometry(150);
-	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
+	    var material = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
 	    var mesh = new THREE.Line(geometry, material);
 	    mesh.rotateX(Math.PI / 2);
 
@@ -12280,7 +12277,7 @@
 	  label: function label(txt) {
 	    var geometry = new THREE.TextGeometry(txt, {
 	      size: 50000000 * c.SF,
-	      height: 10000 * c.SF
+	      height: 1000000 * c.SF
 	    });
 	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
 	    var mesh = new THREE.Mesh(geometry, material);
@@ -12294,7 +12291,7 @@
 	    var step = size / steps;
 
 	    var geometry = new THREE.Geometry();
-	    var material = new THREE.LineBasicMaterial({ color: 0x444444 });
+	    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 });
 
 	    for (var i = -size; i <= size; i += step) {
 	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
@@ -12309,14 +12306,15 @@
 	  earthAxis: function earthAxis(params) {
 	    var simple = params && params.simple;
 	    var HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
-	    var RADIUS = simple ? 700000 * c.SF : 200000 * c.SF;
-	    var HEAD_RADIUS = simple ? 3 : 2;
+	    var RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
+	    var HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
+	    var HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
 	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
 	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
 	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
 	    var mesh = new THREE.Mesh(geometry, material);
 
-	    var arrowHeadGeo = new THREE.CylinderGeometry(0, RADIUS * HEAD_RADIUS, HEIGHT * 0.05, 32);
+	    var arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
 	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
 	    arrowHeadMesh.position.y = HEIGHT * 0.5;
 	    mesh.add(arrowHeadMesh);
@@ -12325,14 +12323,14 @@
 	  },
 
 	  viewAxis: function viewAxis() {
-	    var HEIGHT = 30000000 * c.SF;
-	    var RADIUS = 700000 * c.SF;
+	    var HEIGHT = 70000000 * c.SF;
+	    var RADIUS = 2000000 * c.SF;
 	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
 	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
 	    var mesh = new THREE.Mesh(geometry, material);
 	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS * 1.4;
 
-	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.05, 32);
+	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.3, 32);
 	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
 	    arrowHeadMesh.position.y = -HEIGHT * 0.5;
 	    mesh.add(arrowHeadMesh);
@@ -12961,7 +12959,7 @@
 	  x = x * EARTH_ORBITAL_RADIUS + SUN_FOCUS * 2;
 	  z = z * EARTH_ORBITAL_RADIUS;
 
-	  return { x: x, z: z };
+	  return { x: x, y: 0, z: z };
 	}
 
 /***/ }
