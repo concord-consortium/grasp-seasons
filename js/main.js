@@ -1,11 +1,15 @@
 import $ from 'jquery';
-import './ui/wrapping-slider.js';
 
 import ViewsManager from './views-manager.js';
 import CITY_DATA from './city-data.js';
+import './ui/grasp-slider.js';
+import '../css/main.css';
+import '../css/jquery-ui-theme.css';
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July",
                      "August", "September", "October", "November", "December"];
+const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                           "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const DEF_STATE = {
   day: 171,
@@ -95,13 +99,26 @@ class SeasonsApp {
   }
 
   _initDaySlider() {
-    this.ui.$daySlider.wrappingSlider({
+    this.ui.$daySlider.graspSlider({
       min: 0,
       max: 364,
       step: 1,
       slide: (e, ui) => {
         this.setState({day: ui.value});
       }
+    });
+    // Generate month ticks.
+    let ticks = [];
+    for (let m = 0; m < 12; m++) {
+      ticks.push({value: m * 30.4, name: MONTH_NAMES_SHORT[m]});
+    }
+    this.ui.$daySlider.graspSlider('option', 'ticks', ticks);
+    // Shift tick labels so they are in the middle of the month section on the slider.
+    let monthWidth = this.ui.$daySlider.width() / 12;
+    this.ui.$daySlider.find('.ui-slider-tick-label').each(function () {
+      let $label = $(this);
+      let labelWidth = $label.width();
+      $label.css('margin-left', -labelWidth * 0.5 + monthWidth * 0.5);
     });
   }
 
@@ -150,7 +167,7 @@ class SeasonsApp {
   }
 
   _updateUI() {
-    this.ui.$daySlider.wrappingSlider('value', this.state.day);
+    this.ui.$daySlider.graspSlider('value', this.state.day);
     this.ui.$dayValue.html(this.getFormattedDay());
     this.ui.$earthRotation.prop('checked', this.state.earthRotation);
     this.ui.$earthTilt.prop('checked', this.state.earthTilt);

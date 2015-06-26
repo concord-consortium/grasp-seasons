@@ -10,6 +10,10 @@ module.exports = {
       {
         test: path.join(__dirname, 'js'),
         loader: 'babel-loader'
+      },
+      {
+        test: path.join(__dirname, 'css'),
+        loader: 'style-loader!css-loader'
       }
     ]
   }

@@ -1,9 +1,39 @@
 import $ from 'jquery';
 import 'jquery-ui/slider';
 
+var TICK_WIDTH = 1;
+
 // Patched jQueryUI slider that can wrap. When user drags slider handle over max (or min) value,
 // it will jump back to min (or max).
-$.widget( "ui.wrappingSlider", $.ui.slider, {
+// It also supports 'ticks' option.
+$.widget( "ui.graspSlider", $.ui.slider, {
+  _setOption: function (key, value) {
+    this._superApply(arguments);
+    if (key === 'ticks') {
+      var valueTotal = this._valueMax() - this._valueMin();
+      value.forEach(function (t) {
+        var percentValue = t.value / valueTotal * 100;
+        var tick = $('<div></div>').addClass('ui-slider-tick').css({
+          position: 'absolute',
+          left: percentValue + '%'
+        });
+        var mark = $('<div></div>').addClass('ui-slider-tick-mark').css({
+          height: this.element.height(),
+          width: TICK_WIDTH + 'px',
+          'margin-left': (-0.5 * TICK_WIDTH) + 'px',
+          background: '#aaaaaa'
+        });
+        var label = $('<div></div>').addClass('ui-slider-tick-label').text(t.name);
+        mark.appendTo(tick);
+        label.appendTo(tick);
+        tick.appendTo(this.element);
+        // We can do it at the very end, when the element is rendered and its width can be calculated.
+        label.css('margin-left', (-0.5 * label.width()) + 'px');
+      }.bind(this));
+      this.element.addClass('ui-slider-with-tick-labels');
+    }
+  },
+
   _normValueFromMouse: function( position ) {
     var pixelTotal,
       pixelMouse,
