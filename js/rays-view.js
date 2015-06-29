@@ -1,5 +1,4 @@
 import $ from 'jquery';
-window.$ = $;
 import {EARTH_TILT, DAY_NUMBER_BY_MONTH} from './solar-system-data.js';
 
 const DARK_BLUE = '#6E9CEF';
@@ -18,12 +17,15 @@ const DEFAULT_PROPS = {
 const RAD_2_DEG = 180 / Math.PI;
 
 export default class {
-  constructor(canvasEl, props = DEFAULT_PROPS) {
-    this.canvas = canvasEl;
+  constructor(parentEl, props = DEFAULT_PROPS) {
+    this.canvas = document.createElement('canvas');
+    parentEl.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
 
     this.props = {};
     this.setProps(props);
+
+    this.resize();
   }
 
   setProps(newProps) {
@@ -48,13 +50,21 @@ export default class {
     return 90 - (this.props.lat + effectiveTiltDegrees);
   }
 
+  // Resizes canvas to fill its parent.
+  resize() {
+    let $parent = $(this.canvas).parent();
+    this.width = $parent.width();
+    this.height = $parent.height();
+    // Update canvas attributes (they can be undefined if canvas size is set using CSS).
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+    this._drawRaysView();
+  }
+
   _drawRaysView() {
     let solarAngle = this.getNoonSolarAltitude();
-    let width = $(this.canvas).width();
-    let height = $(this.canvas).height();
-    // Update canvas attributes (they can be undefined if canvas size is set using CSS).
-    this.canvas.width = width;
-    this.canvas.height = height;
+    let width = this.width;
+    let height = this.height;
     let skyHeight = SKY_FRACTION * height;
     let groundHeight = height - skyHeight;
 

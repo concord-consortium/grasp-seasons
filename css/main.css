@@ -3,38 +3,50 @@ html, body, div {
   margin: 0;
   padding: 0;
 }
+
 body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 18px;
 }
+
 .view-container {
-  display: inline-block;
-  vertical-align: top;
-  margin: 0;
-  padding: 0;
-  height: 700px;
+  width: 1200px;
+  height: 800px;
+  margin: 0 auto;
+  position: relative;
 }
-.view-container.big {
-  width: 69%;
+
+.view {
+  position: absolute;
 }
-.view-container.small {
-  width: 29%;
+
+.view.main {
+  width: 800px;
+  height: 800px;
+  left: 0;
 }
-canvas {
-  display: inline-block;
-  width: 100%;
+
+.view.small-top {
+  width: 400px;
+  height: 400px;
+  right: 0;
+  top: 0;
 }
-.view-container.big canvas {
-  height: 100%;
+
+.view.small-bottom {
+  width: 400px;
+  height: 400px;
+  right: 0;
+  bottom: 0;
 }
-.view-container.small canvas {
-  height: 49.7%;
-}
+
 .controls {
   width: 800px;
   margin: 20px auto;
 }
+
 label {
   display: block;
   margin: 5px 0;
 }
+

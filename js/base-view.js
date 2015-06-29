@@ -10,20 +10,21 @@ const DEF_PROPERTIES = {
 };
 
 export default class {
-  constructor(canvasEl, props = DEF_PROPERTIES, modelType) {
-    let width = canvasEl.clientWidth;
-    let height = canvasEl.clientHeight;
+  constructor(parentEl, props = DEF_PROPERTIES, modelType) {
+    let width = parentEl.clientWidth;
+    let height = parentEl.clientHeight;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-    this.renderer = new THREE.WebGLRenderer({canvas: canvasEl, antialias: true});
+    this.renderer = new THREE.WebGLRenderer({antialias: true});
     this.renderer.setSize(width, height);
+    parentEl.appendChild(this.renderer.domElement);
 
     // Type is passed to 3D models.
     this.type = modelType;
     this._initScene();
     this._setInitialCamPos();
 
-    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
+    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     this.controls.noPan = true;
     this.controls.noZoom = true;
     this.controls.rotateSpeed = 0.5;
@@ -74,6 +75,16 @@ export default class {
 
   render(timestamp) {
     this.renderer.render(this.scene, this.camera);
+  }
+
+  // Resizes canvas to fill its parent.
+  resize() {
+    let $parent = $(this.renderer.domElement).parent();
+    let newWidth = $parent.width();
+    let newHeight = $parent.height();
+    this.camera.aspect = newWidth / newHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(newWidth, newHeight);
   }
 
   // Called automatically when 'day' property is updated.

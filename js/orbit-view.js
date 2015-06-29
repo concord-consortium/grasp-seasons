@@ -10,8 +10,8 @@ const DEF_PROPERTIES = {
 };
 
 export default class extends BaseView {
-  constructor(canvasEl, props = DEF_PROPERTIES) {
-    super(canvasEl, props, 'orbit-view');
+  constructor(parentEl, props = DEF_PROPERTIES) {
+    super(parentEl, props, 'orbit-view');
   }
 
   setViewAxis(vec3) {

@@ -11332,6 +11332,10 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
 	var _earthViewJs = __webpack_require__(8);
 
 	var _earthViewJs2 = _interopRequireDefault(_earthViewJs);
@@ -11344,13 +11348,24 @@
 
 	var _raysViewJs2 = _interopRequireDefault(_raysViewJs);
 
+	window.$ = _jquery2['default'];
+
+	var VIEW_CLASS = 'view';
+	var EARTH_VIEW_ID = 'earth-view';
+	var ORBIT_VIEW_ID = 'orbit-view';
+	var RAYS_VIEW_ID = 'rays-view';
+
+	var MAIN_CLASS = 'main';
+	var SMALL_TOP_CLASS = 'small-top';
+	var SMALL_BOTTOM_CLASS = 'small-bottom';
+
 	var _default = (function () {
 	  var _class = function _default(props) {
 	    _classCallCheck(this, _class);
 
-	    this.earthView = new _earthViewJs2['default'](document.getElementById('earth-view'), props);
-	    this.orbitView = new _orbitViewJs2['default'](document.getElementById('orbit-view'), props);
-	    this.raysView = new _raysViewJs2['default'](document.getElementById('rays-view'), props);
+	    this.earthView = new _earthViewJs2['default']((0, _jquery2['default'])('#' + EARTH_VIEW_ID)[0], props);
+	    this.orbitView = new _orbitViewJs2['default']((0, _jquery2['default'])('#' + ORBIT_VIEW_ID)[0], props);
+	    this.raysView = new _raysViewJs2['default']((0, _jquery2['default'])('#' + RAYS_VIEW_ID)[0], props);
 
 	    this.views = [this.earthView, this.orbitView, this.raysView];
 
@@ -11387,6 +11402,55 @@
 	      }
 	    }
 	  }, {
+	    key: 'selectMainView',
+	    value: function selectMainView(view) {
+	      (0, _jquery2['default'])('.' + VIEW_CLASS).removeClass(MAIN_CLASS + ' ' + SMALL_TOP_CLASS + ' ' + SMALL_BOTTOM_CLASS);
+	      var $earthView = (0, _jquery2['default'])('#' + EARTH_VIEW_ID);
+	      var $orbitView = (0, _jquery2['default'])('#' + ORBIT_VIEW_ID);
+	      var $raysView = (0, _jquery2['default'])('#' + RAYS_VIEW_ID);
+	      switch (view) {
+	        case EARTH_VIEW_ID:
+	          $earthView.addClass(MAIN_CLASS);
+	          $orbitView.addClass(SMALL_TOP_CLASS);
+	          $raysView.addClass(SMALL_BOTTOM_CLASS);
+	          break;
+	        case ORBIT_VIEW_ID:
+	          $earthView.addClass(SMALL_TOP_CLASS);
+	          $orbitView.addClass(MAIN_CLASS);
+	          $raysView.addClass(SMALL_BOTTOM_CLASS);
+	          break;
+	        case RAYS_VIEW_ID:
+	          $earthView.addClass(SMALL_TOP_CLASS);
+	          $orbitView.addClass(SMALL_BOTTOM_CLASS);
+	          $raysView.addClass(MAIN_CLASS);
+	          break;
+	      }
+	      var _iteratorNormalCompletion2 = true;
+	      var _didIteratorError2 = false;
+	      var _iteratorError2 = undefined;
+
+	      try {
+	        for (var _iterator2 = this.views[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	          var _view = _step2.value;
+
+	          _view.resize && _view.resize();
+	        }
+	      } catch (err) {
+	        _didIteratorError2 = true;
+	        _iteratorError2 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+	            _iterator2['return']();
+	          }
+	        } finally {
+	          if (_didIteratorError2) {
+	            throw _iteratorError2;
+	          }
+	        }
+	      }
+	    }
+	  }, {
 	    key: '_syncCameraAndViewAxis',
 
 	    // When earth view camera is changed, we need to update view axis in the orbit view.
@@ -11408,27 +11472,27 @@
 	      var _this2 = this;
 
 	      var anim = function anim(timestamp) {
-	        var _iteratorNormalCompletion2 = true;
-	        var _didIteratorError2 = false;
-	        var _iteratorError2 = undefined;
+	        var _iteratorNormalCompletion3 = true;
+	        var _didIteratorError3 = false;
+	        var _iteratorError3 = undefined;
 
 	        try {
-	          for (var _iterator2 = _this2.views[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	            var view = _step2.value;
+	          for (var _iterator3 = _this2.views[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	            var view = _step3.value;
 
 	            view.render && view.render(timestamp);
 	          }
 	        } catch (err) {
-	          _didIteratorError2 = true;
-	          _iteratorError2 = err;
+	          _didIteratorError3 = true;
+	          _iteratorError3 = err;
 	        } finally {
 	          try {
-	            if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-	              _iterator2['return']();
+	            if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+	              _iterator3['return']();
 	            }
 	          } finally {
-	            if (_didIteratorError2) {
-	              throw _iteratorError2;
+	            if (_didIteratorError3) {
+	              throw _iteratorError3;
 	            }
 	          }
 	        }
@@ -11510,14 +11574,14 @@
 	};
 
 	var _default = (function (_BaseView) {
-	  var _class = function _default(canvasEl) {
+	  var _class = function _default(parentEl) {
 	    var _this = this;
 
 	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
 
 	    _classCallCheck(this, _class);
 
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, canvasEl, props, 'earth-view');
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'earth-view');
 
 	    // Rotate earth a bit so USA is visible.
 	    this.rotateEarth(2);
@@ -12530,24 +12594,25 @@
 	};
 
 	var _default = (function () {
-	  var _class = function _default(canvasEl, props, modelType) {
+	  var _class = function _default(parentEl, props, modelType) {
 	    if (props === undefined) props = DEF_PROPERTIES;
 
 	    _classCallCheck(this, _class);
 
-	    var width = canvasEl.clientWidth;
-	    var height = canvasEl.clientHeight;
+	    var width = parentEl.clientWidth;
+	    var height = parentEl.clientHeight;
 	    this.scene = new THREE.Scene();
 	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-	    this.renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true });
+	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
 	    this.renderer.setSize(width, height);
+	    parentEl.appendChild(this.renderer.domElement);
 
 	    // Type is passed to 3D models.
 	    this.type = modelType;
 	    this._initScene();
 	    this._setInitialCamPos();
 
-	    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
+	    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 	    this.controls.noPan = true;
 	    this.controls.noZoom = true;
 	    this.controls.rotateSpeed = 0.5;
@@ -12629,6 +12694,18 @@
 	    key: 'render',
 	    value: function render(timestamp) {
 	      this.renderer.render(this.scene, this.camera);
+	    }
+	  }, {
+	    key: 'resize',
+
+	    // Resizes canvas to fill its parent.
+	    value: function resize() {
+	      var $parent = (0, _jquery2['default'])(this.renderer.domElement).parent();
+	      var newWidth = $parent.width();
+	      var newHeight = $parent.height();
+	      this.camera.aspect = newWidth / newHeight;
+	      this.camera.updateProjectionMatrix();
+	      this.renderer.setSize(newWidth, newHeight);
 	    }
 	  }, {
 	    key: '_updateDay',
@@ -13108,12 +13185,12 @@
 	};
 
 	var _default = (function (_BaseView) {
-	  var _class = function _default(canvasEl) {
+	  var _class = function _default(parentEl) {
 	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
 
 	    _classCallCheck(this, _class);
 
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, canvasEl, props, 'orbit-view');
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'orbit-view');
 	  };
 
 	  _inherits(_class, _BaseView);
@@ -13192,8 +13269,6 @@
 
 	var _solarSystemDataJs = __webpack_require__(11);
 
-	window.$ = _jquery2['default'];
-
 	var DARK_BLUE = '#6E9CEF';
 	var LIGHT_BLUE = '#99ADF1';
 	var LIGHT_GREEN = '#84A44A';
@@ -13210,16 +13285,19 @@
 	var RAD_2_DEG = 180 / Math.PI;
 
 	var _default = (function () {
-	  var _class = function _default(canvasEl) {
+	  var _class = function _default(parentEl) {
 	    var props = arguments[1] === undefined ? DEFAULT_PROPS : arguments[1];
 
 	    _classCallCheck(this, _class);
 
-	    this.canvas = canvasEl;
+	    this.canvas = document.createElement('canvas');
+	    parentEl.appendChild(this.canvas);
 	    this.ctx = this.canvas.getContext('2d');
 
 	    this.props = {};
 	    this.setProps(props);
+
+	    this.resize();
 	  };
 
 	  _createClass(_class, [{
@@ -13245,14 +13323,24 @@
 	      return 90 - (this.props.lat + effectiveTiltDegrees);
 	    }
 	  }, {
+	    key: 'resize',
+
+	    // Resizes canvas to fill its parent.
+	    value: function resize() {
+	      var $parent = (0, _jquery2['default'])(this.canvas).parent();
+	      this.width = $parent.width();
+	      this.height = $parent.height();
+	      // Update canvas attributes (they can be undefined if canvas size is set using CSS).
+	      this.canvas.width = this.width;
+	      this.canvas.height = this.height;
+	      this._drawRaysView();
+	    }
+	  }, {
 	    key: '_drawRaysView',
 	    value: function _drawRaysView() {
 	      var solarAngle = this.getNoonSolarAltitude();
-	      var width = (0, _jquery2['default'])(this.canvas).width();
-	      var height = (0, _jquery2['default'])(this.canvas).height();
-	      // Update canvas attributes (they can be undefined if canvas size is set using CSS).
-	      this.canvas.width = width;
-	      this.canvas.height = height;
+	      var width = this.width;
+	      var height = this.height;
 	      var skyHeight = SKY_FRACTION * height;
 	      var groundHeight = height - skyHeight;
 
@@ -13419,7 +13507,7 @@
 
 
 	// module
-	exports.push([module.id, "html, body, div {\n  line-height: 1;\n  margin: 0;\n  padding: 0;\n}\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 18px;\n}\n.view-container {\n  display: inline-block;\n  vertical-align: top;\n  margin: 0;\n  padding: 0;\n  height: 700px;\n}\n.view-container.big {\n  width: 69%;\n}\n.view-container.small {\n  width: 29%;\n}\ncanvas {\n  display: inline-block;\n  width: 100%;\n}\n.view-container.big canvas {\n  height: 100%;\n}\n.view-container.small canvas {\n  height: 49.7%;\n}\n.controls {\n  width: 800px;\n  margin: 20px auto;\n}\nlabel {\n  display: block;\n  margin: 5px 0;\n}\n", ""]);
+	exports.push([module.id, "html, body, div {\n  line-height: 1;\n  margin: 0;\n  padding: 0;\n}\n\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 18px;\n}\n\n.view-container {\n  width: 1200px;\n  height: 800px;\n  margin: 0 auto;\n  position: relative;\n}\n\n.view {\n  position: absolute;\n}\n\n.view.main {\n  width: 800px;\n  height: 800px;\n  left: 0;\n}\n\n.view.small-top {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  top: 0;\n}\n\n.view.small-bottom {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  bottom: 0;\n}\n\n.controls {\n  width: 800px;\n  margin: 20px auto;\n}\n\nlabel {\n  display: block;\n  margin: 5px 0;\n}\n\n", ""]);
 
 	// exports
 

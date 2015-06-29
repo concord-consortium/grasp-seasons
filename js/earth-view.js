@@ -21,8 +21,8 @@ const DEF_PROPERTIES = {
 };
 
 export default class extends BaseView {
-  constructor(canvasEl, props = DEF_PROPERTIES) {
-    super(canvasEl, props, 'earth-view');
+  constructor(parentEl, props = DEF_PROPERTIES) {
+    super(parentEl, props, 'earth-view');
 
     // Rotate earth a bit so USA is visible.
     this.rotateEarth(2);
