@@ -31,6 +31,5 @@ export function earthEllipseLocationByDay(day) {
   x = x * EARTH_ORBITAL_RADIUS + SUN_FOCUS * 2;
   z = z * EARTH_ORBITAL_RADIUS;
 
-  return {x: x, y: 0, z: z};
+  return new THREE.Vector3(x, 0, z);
 }
-

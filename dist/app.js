@@ -12378,7 +12378,7 @@
 	  x = x * EARTH_ORBITAL_RADIUS + SUN_FOCUS * 2;
 	  z = z * EARTH_ORBITAL_RADIUS;
 
-	  return { x: x, y: 0, z: z };
+	  return new THREE.Vector3(x, 0, z);
 	}
 
 /***/ },
@@ -12408,6 +12408,8 @@
 	exports.SIMPLE_EARTH_RADIUS = SIMPLE_EARTH_RADIUS;
 	var SUN_RADIUS = 15000000 * SF;
 	exports.SUN_RADIUS = SUN_RADIUS;
+	var SUN_COLOR = 0xFF8935;
+	exports.SUN_COLOR = SUN_COLOR;
 
 /***/ },
 /* 13 */
@@ -13288,6 +13290,10 @@
 
 	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
 
+	var _modelsSunEarthLineJs = __webpack_require__(27);
+
+	var _modelsSunEarthLineJs2 = _interopRequireDefault(_modelsSunEarthLineJs);
+
 	var _solarSystemDataJs = __webpack_require__(11);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
@@ -13406,6 +13412,7 @@
 	      var day = this.props.day;
 	      var pos = data.earthEllipseLocationByDay(day);
 	      this.earthPos.position.copy(pos);
+	      this.sunEarthLine.setEarthPos(pos);
 	    }
 	  }, {
 	    key: '_updateEarthTilt',
@@ -13439,6 +13446,9 @@
 	      this.earthPos.position.copy(pos);
 	      this.earthPos.add(this.earthTiltPivot);
 	      this.scene.add(this.earthPos);
+
+	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
+	      this.scene.add(this.sunEarthLine.rootObject);
 	    }
 	  }, {
 	    key: '_setInitialCamPos',
@@ -13514,7 +13524,7 @@
 
 	  sun: function sun() {
 	    var geometry = new THREE.SphereGeometry(15000000 * c.SF, 32, 32);
-	    var material = new THREE.MeshPhongMaterial({ emissive: 0xFF8935 });
+	    var material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
 	    var mesh = new THREE.Mesh(geometry, material);
 	    return mesh;
 	  },
@@ -13615,6 +13625,96 @@
 	    return pivot;
 	  }
 	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _constantsJs = __webpack_require__(12);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var LINE_RADIUS = 30000 * c.SF;
+	var SIMPLE_LINE_RADIUS = 800000 * c.SF;
+	var POINTER_RADIUS = 100000 * c.SF;
+	var POINTER_TUBE = 45000 * c.SF;
+
+	var _default = (function () {
+	  var _class = function _default(props) {
+	    _classCallCheck(this, _class);
+
+	    var simple = props.type === 'orbit-view';
+
+	    // _refVector is used to calculate angle between it and the current earth position.
+	    this._refVector = new THREE.Vector3(-1, 0, 0);
+	    this._earthRadius = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+
+	    this._init3DObjects(simple);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setEarthPos',
+	    value: function setEarthPos(newPos) {
+	      var len = newPos.length() - this._earthRadius;
+	      var angleDiff = newPos.angleTo(this._refVector);
+	      if (newPos.z < 0) angleDiff *= -1;
+	      this.rootObject.rotation.y = angleDiff;
+	      this._lineMesh.scale.y = len;
+	      this._lineMesh.position.x = -len * 0.5;
+	      if (this._pointerMesh) {
+	        this._pointerMesh.position.x = -len;
+	      }
+	    }
+	  }, {
+	    key: '_init3DObjects',
+	    value: function _init3DObjects(simple) {
+	      var radius = simple ? SIMPLE_LINE_RADIUS : LINE_RADIUS;
+	      var segments = simple ? 4 : 8;
+	      var material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
+	      var geometry = new THREE.CylinderGeometry(radius, radius, 1, segments);
+	      this._lineMesh = new THREE.Mesh(geometry, material);
+	      this._lineMesh.rotation.z = Math.PI * 0.5;
+
+	      var container = new THREE.Object3D();
+	      container.add(this._lineMesh);
+	      var pivot = new THREE.Object3D();
+	      pivot.add(container);
+
+	      if (!simple) {
+	        this._pointerMesh = this._initPointer();
+	        container.add(this._pointerMesh);
+	      }
+
+	      this.rootObject = pivot;
+	    }
+	  }, {
+	    key: '_initPointer',
+	    value: function _initPointer() {
+	      var material = new THREE.MeshPhongMaterial({ color: c.SUN_COLOR });
+	      var geometry = new THREE.TorusGeometry(POINTER_RADIUS, POINTER_TUBE, 4, 16);
+	      var mesh = new THREE.Mesh(geometry, material);
+	      mesh.rotation.y = Math.PI * 0.5;
+	      return mesh;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
 	module.exports = exports['default'];
 
 /***/ }

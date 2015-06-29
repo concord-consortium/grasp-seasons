@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import models from './models/common-models.js';
+import SunEarthLine from './models/sun-earth-line.js';
 import * as data from './solar-system-data.js';
 
 const DEF_PROPERTIES = {
@@ -79,6 +80,7 @@ export default class {
     let day = this.props.day;
     let pos = data.earthEllipseLocationByDay(day);
     this.earthPos.position.copy(pos);
+    this.sunEarthLine.setEarthPos(pos);
   }
 
   // Called automatically when 'earthTilt' property is updated.
@@ -109,6 +111,9 @@ export default class {
     this.earthPos.position.copy(pos);
     this.earthPos.add(this.earthTiltPivot);
     this.scene.add(this.earthPos);
+
+    this.sunEarthLine = new SunEarthLine(basicProps);
+    this.scene.add(this.sunEarthLine.rootObject);
   }
 
   _setInitialCamPos() {

@@ -40,7 +40,7 @@ export default {
 
   sun: function () {
     let geometry = new THREE.SphereGeometry(15000000 * c.SF, 32, 32);
-    let material = new THREE.MeshPhongMaterial({emissive: 0xFF8935});
+    let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR});
     let mesh = new THREE.Mesh(geometry, material);
     return mesh;
   },
