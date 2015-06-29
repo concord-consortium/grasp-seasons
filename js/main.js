@@ -12,6 +12,7 @@ const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
                            "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const DEF_STATE = {
+  mainView: 'earth-view',
   day: 171,
   earthTilt: true,
   earthRotation: false,
@@ -82,6 +83,7 @@ class SeasonsApp {
 
   _initUI() {
     this.ui = {
+      $mainViewButtons: $('.main-view'),
       $daySlider: $('#day-slider'),
       $dayValue: $('#day-value'),
       $earthRotation: $('#earth-rotation'),
@@ -93,12 +95,19 @@ class SeasonsApp {
       $longSlider: $('#longitude-slider'),
       $longValue: $('#long-value')
     };
+    this._initMainViewButtons();
     this._initDaySlider();
     this._initRotationCheckbox();
     this._initEarthTiltCheckbox();
     this._initSunEarthLineCheckbox();
     this._initCitySelect();
     this._initLatLongSliders();
+  }
+
+  _initMainViewButtons() {
+    this.ui.$mainViewButtons.on('change', (e) => {
+      this.setState({mainView: e.target.value});
+    });
   }
 
   _initDaySlider() {
@@ -176,6 +185,12 @@ class SeasonsApp {
   }
 
   _updateUI() {
+    this.ui.$mainViewButtons.each((idx, radio) => {
+      let $radio = $(radio);
+      if ($radio.val() === this.state.mainView) {
+        $radio.prop('checked', true);
+      }
+    });
     this.ui.$daySlider.graspSlider('value', this.state.day);
     this.ui.$dayValue.html(this.getFormattedDay());
     this.ui.$earthRotation.prop('checked', this.state.earthRotation);

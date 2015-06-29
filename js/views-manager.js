@@ -13,7 +13,7 @@ const MAIN_CLASS = 'main';
 const SMALL_TOP_CLASS = 'small-top';
 const SMALL_BOTTOM_CLASS = 'small-bottom';
 
-export default class {
+export default class ViewManager {
   constructor(props) {
     this.earthView = new EarthView($(`#${EARTH_VIEW_ID}`)[0], props);
     this.orbitView = new OrbitView($(`#${ORBIT_VIEW_ID}`)[0], props);
@@ -21,22 +21,28 @@ export default class {
 
     this.views = [this.earthView, this.orbitView, this.raysView];
 
+    this._mainView = props.mainView;
+    this._updateMainView();
     this._syncCameraAndViewAxis();
     this._startAnimation();
   }
 
   setProps(props) {
+    if (props.mainView && props.mainView !== this._mainView) {
+      this._mainView = props.mainView;
+      this._updateMainView();
+    }
     for (let view of this.views) {
       view.setProps(props);
     }
   }
 
-  selectMainView(view) {
+  _updateMainView() {
     $(`.${VIEW_CLASS}`).removeClass(`${MAIN_CLASS} ${SMALL_TOP_CLASS} ${SMALL_BOTTOM_CLASS}`);
     let $earthView = $(`#${EARTH_VIEW_ID}`);
     let $orbitView = $(`#${ORBIT_VIEW_ID}`);
     let $raysView = $(`#${RAYS_VIEW_ID}`);
-    switch(view) {
+    switch(this._mainView) {
       case EARTH_VIEW_ID:
         $earthView.addClass(MAIN_CLASS);
         $orbitView.addClass(SMALL_TOP_CLASS);
@@ -80,3 +86,7 @@ export default class {
     requestAnimationFrame(anim);
   }
 }
+
+ViewManager.EARTH_VIEW_ID = EARTH_VIEW_ID;
+ViewManager.ORBIT_VIEW_ID = ORBIT_VIEW_ID;
+ViewManager.RAYS_VIEW_ID = RAYS_VIEW_ID;

@@ -9,6 +9,10 @@ body {
   font-size: 18px;
 }
 
+.inline {
+  display: inline;
+}
+
 .view-container {
   width: 1200px;
   height: 800px;
@@ -49,4 +53,3 @@ label {
   display: block;
   margin: 5px 0;
 }
-

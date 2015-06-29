@@ -8,12 +8,17 @@
 <body>
 
 <div class="view-container">
-  <div id="earth-view" class="view main"></div>
-  <div id="orbit-view" class="view small-top"></div>
-  <div id="rays-view" class="view small-bottom"></div>
+  <div id="earth-view" class="view"></div>
+  <div id="orbit-view" class="view"></div>
+  <div id="rays-view" class="view"></div>
 </div>
 
 <div class="controls">
+  Main view:
+  <label class="inline"><input type="radio" name="main-view" class="main-view" value="earth-view"> Earth</label>
+  <label class="inline"><input type="radio" name="main-view" class="main-view" value="orbit-view"> Orbit</label>
+  <label class="inline"><input type="radio" name="main-view" class="main-view" value="rays-view"> Sun rays</label>
+
   <label>Day: <span id="day-value"></span>
   <div id="day-slider"></div></label>
   <label><input type="checkbox" id="earth-rotation">Rotating</label>

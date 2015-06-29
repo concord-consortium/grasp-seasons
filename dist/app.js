@@ -74,6 +74,7 @@
 	var MONTH_NAMES_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 	var DEF_STATE = {
+	  mainView: 'earth-view',
 	  day: 171,
 	  earthTilt: true,
 	  earthRotation: false,
@@ -158,6 +159,7 @@
 	    key: '_initUI',
 	    value: function _initUI() {
 	      this.ui = {
+	        $mainViewButtons: (0, _jquery2['default'])('.main-view'),
 	        $daySlider: (0, _jquery2['default'])('#day-slider'),
 	        $dayValue: (0, _jquery2['default'])('#day-value'),
 	        $earthRotation: (0, _jquery2['default'])('#earth-rotation'),
@@ -169,6 +171,7 @@
 	        $longSlider: (0, _jquery2['default'])('#longitude-slider'),
 	        $longValue: (0, _jquery2['default'])('#long-value')
 	      };
+	      this._initMainViewButtons();
 	      this._initDaySlider();
 	      this._initRotationCheckbox();
 	      this._initEarthTiltCheckbox();
@@ -177,16 +180,25 @@
 	      this._initLatLongSliders();
 	    }
 	  }, {
+	    key: '_initMainViewButtons',
+	    value: function _initMainViewButtons() {
+	      var _this2 = this;
+
+	      this.ui.$mainViewButtons.on('change', function (e) {
+	        _this2.setState({ mainView: e.target.value });
+	      });
+	    }
+	  }, {
 	    key: '_initDaySlider',
 	    value: function _initDaySlider() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      this.ui.$daySlider.graspSlider({
 	        min: 0,
 	        max: 364,
 	        step: 1,
 	        slide: function slide(e, ui) {
-	          _this2.setState({ day: ui.value });
+	          _this3.setState({ day: ui.value });
 	        }
 	      });
 	      // Generate month ticks.
@@ -206,56 +218,56 @@
 	  }, {
 	    key: '_initRotationCheckbox',
 	    value: function _initRotationCheckbox() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      this.ui.$earthRotation.on('change', function (e) {
-	        _this3.setState({ earthRotation: e.target.checked });
+	        _this4.setState({ earthRotation: e.target.checked });
 	      });
 	    }
 	  }, {
 	    key: '_initEarthTiltCheckbox',
 	    value: function _initEarthTiltCheckbox() {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      this.ui.$earthTilt.on('change', function (e) {
-	        _this4.setState({ earthTilt: e.target.checked });
+	        _this5.setState({ earthTilt: e.target.checked });
 	      });
 	    }
 	  }, {
 	    key: '_initSunEarthLineCheckbox',
 	    value: function _initSunEarthLineCheckbox() {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      this.ui.$sunEarthLine.on('change', function (e) {
-	        _this5.setState({ sunEarthLine: e.target.checked });
+	        _this6.setState({ sunEarthLine: e.target.checked });
 	      });
 	    }
 	  }, {
 	    key: '_initCitySelect',
 	    value: function _initCitySelect() {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      for (var i = 0; i < _cityDataJs2['default'].length; i++) {
 	        this.ui.$citySelect.append('<option value=' + i + '>' + _cityDataJs2['default'][i].name + '</option>');
 	      }
 	      this.ui.$citySelect.on('change', function () {
-	        var city = _this6.getSelectedCity();
+	        var city = _this7.getSelectedCity();
 	        if (city) {
-	          _this6.setState({ lat: city.lat, long: city.long });
+	          _this7.setState({ lat: city.lat, long: city.long });
 	        }
 	      });
 	    }
 	  }, {
 	    key: '_initLatLongSliders',
 	    value: function _initLatLongSliders() {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      this.ui.$latSlider.slider({
 	        min: -90,
 	        max: 90,
 	        step: 1,
 	        slide: function slide(e, ui) {
-	          _this7.setState({ lat: ui.value });
+	          _this8.setState({ lat: ui.value });
 	        }
 	      });
 
@@ -264,13 +276,21 @@
 	        max: 180,
 	        step: 1,
 	        slide: function slide(e, ui) {
-	          _this7.setState({ long: ui.value });
+	          _this8.setState({ long: ui.value });
 	        }
 	      });
 	    }
 	  }, {
 	    key: '_updateUI',
 	    value: function _updateUI() {
+	      var _this9 = this;
+
+	      this.ui.$mainViewButtons.each(function (idx, radio) {
+	        var $radio = (0, _jquery2['default'])(radio);
+	        if ($radio.val() === _this9.state.mainView) {
+	          $radio.prop('checked', true);
+	        }
+	      });
 	      this.ui.$daySlider.graspSlider('value', this.state.day);
 	      this.ui.$dayValue.html(this.getFormattedDay());
 	      this.ui.$earthRotation.prop('checked', this.state.earthRotation);
@@ -11359,9 +11379,9 @@
 	var SMALL_TOP_CLASS = 'small-top';
 	var SMALL_BOTTOM_CLASS = 'small-bottom';
 
-	var _default = (function () {
-	  var _class = function _default(props) {
-	    _classCallCheck(this, _class);
+	var ViewManager = (function () {
+	  function ViewManager(props) {
+	    _classCallCheck(this, ViewManager);
 
 	    this.earthView = new _earthViewJs2['default']((0, _jquery2['default'])('#' + EARTH_VIEW_ID)[0], props);
 	    this.orbitView = new _orbitViewJs2['default']((0, _jquery2['default'])('#' + ORBIT_VIEW_ID)[0], props);
@@ -11369,13 +11389,19 @@
 
 	    this.views = [this.earthView, this.orbitView, this.raysView];
 
+	    this._mainView = props.mainView;
+	    this._updateMainView();
 	    this._syncCameraAndViewAxis();
 	    this._startAnimation();
-	  };
+	  }
 
-	  _createClass(_class, [{
+	  _createClass(ViewManager, [{
 	    key: 'setProps',
 	    value: function setProps(props) {
+	      if (props.mainView && props.mainView !== this._mainView) {
+	        this._mainView = props.mainView;
+	        this._updateMainView();
+	      }
 	      var _iteratorNormalCompletion = true;
 	      var _didIteratorError = false;
 	      var _iteratorError = undefined;
@@ -11402,13 +11428,13 @@
 	      }
 	    }
 	  }, {
-	    key: 'selectMainView',
-	    value: function selectMainView(view) {
+	    key: '_updateMainView',
+	    value: function _updateMainView() {
 	      (0, _jquery2['default'])('.' + VIEW_CLASS).removeClass(MAIN_CLASS + ' ' + SMALL_TOP_CLASS + ' ' + SMALL_BOTTOM_CLASS);
 	      var $earthView = (0, _jquery2['default'])('#' + EARTH_VIEW_ID);
 	      var $orbitView = (0, _jquery2['default'])('#' + ORBIT_VIEW_ID);
 	      var $raysView = (0, _jquery2['default'])('#' + RAYS_VIEW_ID);
-	      switch (view) {
+	      switch (this._mainView) {
 	        case EARTH_VIEW_ID:
 	          $earthView.addClass(MAIN_CLASS);
 	          $orbitView.addClass(SMALL_TOP_CLASS);
@@ -11431,9 +11457,9 @@
 
 	      try {
 	        for (var _iterator2 = this.views[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	          var _view = _step2.value;
+	          var view = _step2.value;
 
-	          _view.resize && _view.resize();
+	          view.resize && view.resize();
 	        }
 	      } catch (err) {
 	        _didIteratorError2 = true;
@@ -11503,10 +11529,14 @@
 	    }
 	  }]);
 
-	  return _class;
+	  return ViewManager;
 	})();
 
-	exports['default'] = _default;
+	exports['default'] = ViewManager;
+
+	ViewManager.EARTH_VIEW_ID = EARTH_VIEW_ID;
+	ViewManager.ORBIT_VIEW_ID = ORBIT_VIEW_ID;
+	ViewManager.RAYS_VIEW_ID = RAYS_VIEW_ID;
 	module.exports = exports['default'];
 
 /***/ },
@@ -12923,15 +12953,16 @@
 
 	  viewAxis: function viewAxis() {
 	    var HEIGHT = 70000000 * c.SF;
+	    var HEAD_HEIGHT = HEIGHT * 0.2;
 	    var RADIUS = 2000000 * c.SF;
 	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
 	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
 	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS * 1.4;
+	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS + HEAD_HEIGHT;
 
-	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.3, 32);
+	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEAD_HEIGHT, 32);
 	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-	    arrowHeadMesh.position.y = -HEIGHT * 0.5;
+	    arrowHeadMesh.position.y = -HEIGHT * 0.5 - HEAD_HEIGHT * 0.5;
 	    mesh.add(arrowHeadMesh);
 
 	    var pivot = new THREE.Object3D();
@@ -13507,7 +13538,7 @@
 
 
 	// module
-	exports.push([module.id, "html, body, div {\n  line-height: 1;\n  margin: 0;\n  padding: 0;\n}\n\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 18px;\n}\n\n.view-container {\n  width: 1200px;\n  height: 800px;\n  margin: 0 auto;\n  position: relative;\n}\n\n.view {\n  position: absolute;\n}\n\n.view.main {\n  width: 800px;\n  height: 800px;\n  left: 0;\n}\n\n.view.small-top {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  top: 0;\n}\n\n.view.small-bottom {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  bottom: 0;\n}\n\n.controls {\n  width: 800px;\n  margin: 20px auto;\n}\n\nlabel {\n  display: block;\n  margin: 5px 0;\n}\n\n", ""]);
+	exports.push([module.id, "html, body, div {\n  line-height: 1;\n  margin: 0;\n  padding: 0;\n}\n\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 18px;\n}\n\n.inline {\n  display: inline;\n}\n\n.view-container {\n  width: 1200px;\n  height: 800px;\n  margin: 0 auto;\n  position: relative;\n}\n\n.view {\n  position: absolute;\n}\n\n.view.main {\n  width: 800px;\n  height: 800px;\n  left: 0;\n}\n\n.view.small-top {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  top: 0;\n}\n\n.view.small-bottom {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  bottom: 0;\n}\n\n.controls {\n  width: 800px;\n  margin: 20px auto;\n}\n\nlabel {\n  display: block;\n  margin: 5px 0;\n}\n", ""]);
 
 	// exports
 
@@ -13828,7 +13859,7 @@
 
 
 	// module
-	exports.push([module.id, ".ui-slider-handle {\n  font-size: 20px;\n  border-radius: 50px;\n  background: #fff !important;\n  box-shadow: 0 0 6px #666;\n}\n\n.ui-slider-with-tick-labels {\n  margin-bottom: 20px;\n}\n\n.ui-slider-tick-label {\n  font-size: 15px;\n  margin-top: 2px;\n}\n\n\n\n", ""]);
+	exports.push([module.id, ".ui-slider-handle {\n  font-size: 20px;\n  border-radius: 50px;\n  background: #fff !important;\n  box-shadow: 0 0 6px #666;\n}\n\n.ui-slider-with-tick-labels {\n  margin-bottom: 20px;\n}\n\n.ui-slider-tick-label {\n  font-size: 15px;\n  margin-top: 2px;\n}\n", ""]);
 
 	// exports
 

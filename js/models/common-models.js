@@ -128,15 +128,16 @@ export default {
 
   viewAxis: function () {
     let HEIGHT = 70000000 * c.SF;
+    let HEAD_HEIGHT = HEIGHT * 0.2;
     let RADIUS = 2000000 * c.SF;
     let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
     let material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x009900});
     let mesh = new THREE.Mesh(geometry, material);
-    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS * 1.4;
+    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS + HEAD_HEIGHT;
 
-    let arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.3, 32);
+    let arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEAD_HEIGHT, 32);
     let arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-    arrowHeadMesh.position.y = -HEIGHT * 0.5;
+    arrowHeadMesh.position.y = -HEIGHT * 0.5 - HEAD_HEIGHT * 0.5;
     mesh.add(arrowHeadMesh);
 
     let pivot = new THREE.Object3D();
