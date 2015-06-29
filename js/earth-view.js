@@ -14,6 +14,7 @@ const RAD_2_DEG = 180 / Math.PI;
 const DEF_PROPERTIES = {
   day: 0,
   earthTilt: true,
+  sunEarthLine: true,
   earthRotation: false,
   lat: 0,
   long: 0

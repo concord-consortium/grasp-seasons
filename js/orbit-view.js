@@ -5,7 +5,8 @@ import * as data from './solar-system-data.js';
 
 const DEF_PROPERTIES = {
   day: 0,
-  earthTilt: true
+  earthTilt: true,
+  sunEarthLine: true
 };
 
 export default class extends BaseView {
