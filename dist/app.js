@@ -52,23 +52,23 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _jquery = __webpack_require__(1);
+	var _jquery = __webpack_require__(2);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _viewsManagerJs = __webpack_require__(11);
+	var _viewsManagerJs = __webpack_require__(7);
 
 	var _viewsManagerJs2 = _interopRequireDefault(_viewsManagerJs);
 
-	var _cityDataJs = __webpack_require__(22);
+	var _cityDataJs = __webpack_require__(18);
 
 	var _cityDataJs2 = _interopRequireDefault(_cityDataJs);
 
+	__webpack_require__(1);
+
+	__webpack_require__(19);
+
 	__webpack_require__(23);
-
-	__webpack_require__(26);
-
-	__webpack_require__(7);
 
 	var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	var MONTH_NAMES_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -284,6 +284,89 @@
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	__webpack_require__(3);
+
+	var TICK_WIDTH = 1;
+
+	// Patched jQueryUI slider that can wrap. When user drags slider handle over max (or min) value,
+	// it will jump back to min (or max).
+	// It also supports 'ticks' option.
+	_jquery2['default'].widget('ui.graspSlider', _jquery2['default'].ui.slider, {
+	  _setOption: function _setOption(key, value) {
+	    this._superApply(arguments);
+	    if (key === 'ticks') {
+	      var valueTotal = this._valueMax() - this._valueMin();
+	      value.forEach((function (t) {
+	        var percentValue = t.value / valueTotal * 100;
+	        var tick = (0, _jquery2['default'])('<div></div>').addClass('ui-slider-tick').css({
+	          position: 'absolute',
+	          left: percentValue + '%'
+	        });
+	        var mark = (0, _jquery2['default'])('<div></div>').addClass('ui-slider-tick-mark').css({
+	          height: this.element.height(),
+	          width: TICK_WIDTH + 'px',
+	          'margin-left': -0.5 * TICK_WIDTH + 'px',
+	          background: '#aaaaaa'
+	        });
+	        var label = (0, _jquery2['default'])('<div></div>').addClass('ui-slider-tick-label').text(t.name);
+	        mark.appendTo(tick);
+	        label.appendTo(tick);
+	        tick.appendTo(this.element);
+	        // We can do it at the very end, when the element is rendered and its width can be calculated.
+	        label.css('margin-left', -0.5 * label.width() + 'px');
+	      }).bind(this));
+	      this.element.addClass('ui-slider-with-tick-labels');
+	    }
+	  },
+
+	  _normValueFromMouse: function _normValueFromMouse(position) {
+	    var pixelTotal, pixelMouse, percentMouse, valueTotal, valueMouse;
+
+	    if (this.orientation === 'horizontal') {
+	      pixelTotal = this.elementSize.width;
+	      pixelMouse = position.x - this.elementOffset.left - (this._clickOffset ? this._clickOffset.left : 0);
+	    } else {
+	      pixelTotal = this.elementSize.height;
+	      pixelMouse = position.y - this.elementOffset.top - (this._clickOffset ? this._clickOffset.top : 0);
+	    }
+
+	    percentMouse = pixelMouse / pixelTotal;
+	    // Original jQuery UI code:
+	    // if ( percentMouse > 1 ) {
+	    //   percentMouse = 1;
+	    // }
+	    // if ( percentMouse < 0 ) {
+	    //   percentMouse = 0;
+	    // }
+	    // === Customization ===
+	    percentMouse = percentMouse % 1;
+	    if (percentMouse < 0) {
+	      percentMouse += 1;
+	    }
+	    // =====================
+	    if (this.orientation === 'vertical') {
+	      percentMouse = 1 - percentMouse;
+	    }
+
+	    valueTotal = this._valueMax() - this._valueMin();
+	    valueMouse = this._valueMin() + percentMouse * valueTotal;
+
+	    return this._trimAlignValue(valueMouse);
+	  }
+	});
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9499,11 +9582,10 @@
 
 
 /***/ },
-/* 2 */,
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(1);
+	var jQuery = __webpack_require__(2);
 	__webpack_require__(4);
 	__webpack_require__(5);
 	__webpack_require__(6);
@@ -10190,7 +10272,7 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(1);
+	var jQuery = __webpack_require__(2);
 
 	/*!
 	 * jQuery UI Core 1.10.4
@@ -10518,7 +10600,7 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(1);
+	var jQuery = __webpack_require__(2);
 	__webpack_require__(6);
 
 	/*!
@@ -10696,7 +10778,7 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(1);
+	var jQuery = __webpack_require__(2);
 
 	/*!
 	 * jQuery UI Widget 1.10.4
@@ -11225,327 +11307,6 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(8);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./jquery-ui-theme.css", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./jquery-ui-theme.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(9)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".ui-slider-handle {\n  font-size: 20px;\n  border-radius: 50px;\n  background: #fff !important;\n  box-shadow: 0 0 6px #666;\n}\n\n.ui-slider-with-tick-labels {\n  margin-bottom: 20px;\n}\n\n.ui-slider-tick-label {\n  font-size: 15px;\n  margin-top: 2px;\n}\n\n\n\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0;
-
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-
-	function createStyleElement() {
-		var styleElement = document.createElement("style");
-		var head = getHeadElement();
-		styleElement.type = "text/css";
-		head.appendChild(styleElement);
-		return styleElement;
-	}
-
-	function createLinkElement() {
-		var linkElement = document.createElement("link");
-		var head = getHeadElement();
-		linkElement.rel = "stylesheet";
-		head.appendChild(linkElement);
-		return linkElement;
-	}
-
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement());
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement();
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				styleElement.parentNode.removeChild(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement();
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				styleElement.parentNode.removeChild(styleElement);
-			};
-		}
-
-		update(obj);
-
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-
-	var replaceText = (function () {
-		var textStore = [];
-
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		var blob = new Blob([css], { type: "text/css" });
-
-		var oldSrc = linkElement.href;
-
-		linkElement.href = URL.createObjectURL(blob);
-
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -11558,15 +11319,15 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _earthViewJs = __webpack_require__(12);
+	var _earthViewJs = __webpack_require__(8);
 
 	var _earthViewJs2 = _interopRequireDefault(_earthViewJs);
 
-	var _orbitViewJs = __webpack_require__(20);
+	var _orbitViewJs = __webpack_require__(16);
 
 	var _orbitViewJs2 = _interopRequireDefault(_orbitViewJs);
 
-	var _raysViewJs = __webpack_require__(21);
+	var _raysViewJs = __webpack_require__(17);
 
 	var _raysViewJs2 = _interopRequireDefault(_raysViewJs);
 
@@ -11672,7 +11433,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 12 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11683,37 +11444,45 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _jquery = __webpack_require__(1);
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _jquery = __webpack_require__(2);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _eventemitter2 = __webpack_require__(13);
+	var _eventemitter2 = __webpack_require__(9);
 
 	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
 
-	var _modelsModelsJs = __webpack_require__(14);
+	var _baseViewJs = __webpack_require__(25);
 
-	var _modelsModelsJs2 = _interopRequireDefault(_modelsModelsJs);
+	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
 
-	var _modelsLatitudeLineJs = __webpack_require__(17);
+	var _modelsCommonModelsJs = __webpack_require__(26);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _modelsLatitudeLineJs = __webpack_require__(13);
 
 	var _modelsLatitudeLineJs2 = _interopRequireDefault(_modelsLatitudeLineJs);
 
-	var _modelsLatLongMarkerJs = __webpack_require__(18);
+	var _modelsLatLongMarkerJs = __webpack_require__(14);
 
 	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
 
-	var _solarSystemDataJs = __webpack_require__(15);
+	var _solarSystemDataJs = __webpack_require__(11);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
-	var _utilsJs = __webpack_require__(19);
+	var _utilsJs = __webpack_require__(15);
 
 	var DEG_2_RAD = Math.PI / 180;
 	var RAD_2_DEG = 180 / Math.PI;
@@ -11726,7 +11495,7 @@
 	  long: 0
 	};
 
-	var _default = (function () {
+	var _default = (function (_BaseView) {
 	  var _class = function _default(canvasEl) {
 	    var _this = this;
 
@@ -11734,67 +11503,26 @@
 
 	    _classCallCheck(this, _class);
 
-	    var width = canvasEl.clientWidth;
-	    var height = canvasEl.clientHeight;
-	    this.scene = new THREE.Scene();
-	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 10);
-	    this.renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true });
-	    this.renderer.setSize(width, height);
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, canvasEl, props, 'earth-view');
 
-	    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
-	    this.controls.noPan = true;
-	    this.controls.noZoom = true;
-	    this.controls.rotateSpeed = 0.5;
+	    // Rotate earth a bit so USA is visible.
+	    this.rotateEarth(2);
 
+	    // Support mouse interaction.
 	    this.raycaster = new THREE.Raycaster();
 	    this.mouse = new THREE.Vector2(-1, -1);
 	    this._enableMousePicking();
 
+	    // Emit events when camera is changed.
 	    this.dispatch = new _eventemitter22['default']();
-
 	    this.controls.addEventListener('change', function () {
 	      _this.dispatch.emit('camera.change');
 	    });
-
-	    this._initScene();
-	    this._setInitialCamPos();
-	    // Rotate earth a bit so USA is visible.
-	    this._rotateEarth(2);
-
-	    this.props = {};
-	    this.setProps(props);
-
-	    this.render();
 	  };
 
+	  _inherits(_class, _BaseView);
+
 	  _createClass(_class, [{
-	    key: 'getCameraEarthVec',
-
-	    // Normalized vector pointing from camera to earth.
-	    value: function getCameraEarthVec() {
-	      return this.camera.position.clone().sub(this.earthPos.position).normalize();
-	    }
-	  }, {
-	    key: 'getEarthTilt',
-	    value: function getEarthTilt() {
-	      return this.earthTiltPivot.rotation.z;
-	    }
-	  }, {
-	    key: 'getEarthRotation',
-	    value: function getEarthRotation() {
-	      return this.earth.rotation.y;
-	    }
-	  }, {
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = _jquery2['default'].extend(this.props);
-	      this.props = _jquery2['default'].extend(this.props, newProps);
-
-	      if (this.props.day !== oldProps.day) this._updateDay();
-	      if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
-	      if (this.props.lat !== oldProps.lat || this.props.long !== oldProps.long) this._updateLatLong();
-	    }
-	  }, {
 	    key: 'on',
 
 	    // Delegate #on to EventEmitter object.
@@ -11802,96 +11530,62 @@
 	      this.dispatch.on.apply(this.dispatch, arguments);
 	    }
 	  }, {
+	    key: 'getCameraEarthVec',
+
+	    // Normalized vector pointing from camera to earth.
+	    value: function getCameraEarthVec() {
+	      return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render(timestamp) {
 	      this._animate(timestamp);
 	      this._interactivityHandler();
-	      this.renderer.render(this.scene, this.camera);
 	      this.controls.update();
+	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
 	    }
 	  }, {
 	    key: '_updateDay',
 	    value: function _updateDay() {
-	      var day = this.props.day;
-	      var pos = data.earthEllipseLocationByDay(day);
+	      var oldPos = this.getEarthPosition().clone();
+	      _get(Object.getPrototypeOf(_class.prototype), '_updateDay', this).call(this);
+	      var newPos = this.getEarthPosition().clone();
 
-	      var angleDiff = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
+	      var angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
 	      // Make sure that earth maintains its current rotation.
-	      this._rotateEarth(angleDiff);
+	      this.rotateEarth(angleDiff);
+
 	      // Update camera position, rotate it and adjust its orbit length.
-	      this._rotateCam(angleDiff);
-	      var oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
-	      var newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
-	      this.camera.position.x *= newOrbitLength / oldOrbitLength;
-	      this.camera.position.z *= newOrbitLength / oldOrbitLength;
-
-	      // Finally update earth position.
-	      this.earthPos.position.copy(pos);
+	      this.rotateCam(angleDiff);
+	      var lenRatio = newPos.length() / oldPos.length();
+	      this.camera.position.x *= lenRatio;
+	      this.camera.position.z *= lenRatio;
 	      // Set orbit controls target to new position too.
-	      this.controls.target.copy(pos);
-
+	      this.controls.target.copy(newPos);
 	      // Make sure that this call is at the very end, as otherwise 'camera.change' event can be fired before
 	      // earth position is updated. This causes problems when client code tries to call .getCameraEarthVec()
 	      // in handler (as earth position is still outdated).
 	      this.controls.update();
 	    }
 	  }, {
-	    key: '_updateEarthTilt',
-	    value: function _updateEarthTilt() {
-	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
-	    }
-	  }, {
-	    key: '_updateLatLong',
-	    value: function _updateLatLong() {
+	    key: '_updateLat',
+	    value: function _updateLat() {
 	      this.latLine.setLat(this.props.lat);
 	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
 	    }
 	  }, {
-	    key: '_rotateEarth',
-
-	    // Rotates earth around its own axis.
-	    value: function _rotateEarth(angleDiff) {
-	      this.earth.rotation.y += angleDiff;
-	    }
-	  }, {
-	    key: '_rotateCam',
-
-	    // Rotates camera around the sun.
-	    value: function _rotateCam(angle) {
-	      var p = this.camera.position;
-	      var newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
-	      var newX = p.z * Math.sin(angle) + p.x * Math.cos(angle);
-	      this.camera.position.x = newX;
-	      this.camera.position.z = newZ;
+	    key: '_updateLong',
+	    value: function _updateLong() {
+	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
 	    }
 	  }, {
 	    key: '_initScene',
 	    value: function _initScene() {
-	      this.scene.add(_modelsModelsJs2['default'].stars());
-	      this.scene.add(_modelsModelsJs2['default'].ambientLight());
-	      this.scene.add(_modelsModelsJs2['default'].sunLight());
-	      this.scene.add(_modelsModelsJs2['default'].sunOnlyLight());
-	      this.scene.add(_modelsModelsJs2['default'].orbit());
-	      this.scene.add(_modelsModelsJs2['default'].sun());
-	      this.scene.add(_modelsModelsJs2['default'].grid({ steps: 60 }));
-
-	      this.earth = _modelsModelsJs2['default'].earth();
-	      this.earthAxis = _modelsModelsJs2['default'].earthAxis();
+	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
 	      this.latLine = new _modelsLatitudeLineJs2['default']();
 	      this.latLongMarker = new _modelsLatLongMarkerJs2['default']();
-	      this.earth.add(this.earthAxis);
 	      this.earth.add(this.latLine.rootObject);
 	      this.earth.add(this.latLongMarker.rootObject);
-
-	      this.earthTiltPivot = new THREE.Object3D();
-	      this.earthTiltPivot.add(this.earth);
-	      this.earthPos = new THREE.Object3D();
-	      // Make sure that earth is at day 0 position.
-	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
-	      var pos = data.earthEllipseLocationByDay(0);
-	      this.earthPos.position.copy(pos);
-	      this.earthPos.add(this.earthTiltPivot);
-	      this.scene.add(this.earthPos);
 	    }
 	  }, {
 	    key: '_setInitialCamPos',
@@ -11911,7 +11605,7 @@
 	      }
 	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
 	      var angleDiff = progress * 0.0001 * Math.PI;
-	      this.earth.rotation.y += angleDiff;
+	      this.rotateEarth(angleDiff);
 	      this._prevFrame = timestamp;
 	    }
 	  }, {
@@ -12030,7 +11724,7 @@
 	      }
 	      // Calculate vector pointing from Earth center to intersection point.
 	      var intVec = intersects[0].point;
-	      intVec.sub(this.earthPos.position);
+	      intVec.sub(this.getEarthPosition());
 	      // Take into account earth tilt and rotation.
 	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
 	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
@@ -12049,13 +11743,13 @@
 	  }]);
 
 	  return _class;
-	})();
+	})(_baseViewJs2['default']);
 
 	exports['default'] = _default;
 	module.exports = exports['default'];
 
 /***/ },
-/* 13 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -12634,169 +12328,8 @@
 
 
 /***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _solarSystemDataJs = __webpack_require__(15);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var _constantsJs = __webpack_require__(16);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	exports['default'] = {
-	  stars: function stars() {
-	    var SIZE = 4000000 * c.SF;
-	    var MIN_RADIUS = 500000000 * c.SF;
-	    var MAX_RADIUS = 3 * MIN_RADIUS;
-	    var geometry = new THREE.Geometry();
-
-	    for (var i = 0; i < 2000; i++) {
-	      var vertex = new THREE.Vector3();
-	      var theta = 2 * Math.PI * Math.random();
-	      var u = Math.random() * 2 - 1;
-	      vertex.x = Math.sqrt(1 - u * u) * Math.cos(theta);
-	      vertex.y = Math.sqrt(1 - u * u) * Math.sin(theta);
-	      vertex.z = u;
-	      vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
-	      geometry.vertices.push(vertex);
-	    }
-	    var material = new THREE.PointCloudMaterial({ size: SIZE, color: 0xffffee });
-	    var particles = new THREE.PointCloud(geometry, material);
-	    return particles;
-	  },
-
-	  ambientLight: function ambientLight() {
-	    return new THREE.AmbientLight(0x111111);
-	  },
-
-	  sunLight: function sunLight() {
-	    return new THREE.PointLight(0xffffff, 1.2, 0);
-	  },
-
-	  // Light that affects only sun object (due to radius settings).
-	  sunOnlyLight: function sunOnlyLight() {
-	    var light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
-	    light.position.y = c.SUN_RADIUS * 4;
-	    return light;
-	  },
-
-	  sun: function sun() {
-	    var geometry = new THREE.SphereGeometry(15000000 * c.SF, 32, 32);
-	    var material = new THREE.MeshPhongMaterial({ emissive: 0xFF8935 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    return mesh;
-	  },
-
-	  earth: function earth(params) {
-	    var simple = params && params.simple;
-	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x023757 } : { specular: 0x252525 };
-	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
-	    var material = new THREE.MeshPhongMaterial(COLORS);
-	    if (!simple) {
-	      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
-	      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
-	      material.bumpScale = 100000 * c.SF;
-	      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
-	    }
-	    return new THREE.Mesh(geometry, material);
-	  },
-
-	  orbit: function orbit() {
-	    var curve = new THREE.EllipseCurve(data.SUN_FOCUS * 2, 0, // ax, aY
-	    data.EARTH_SEMI_MAJOR_AXIS * data.EARTH_ORBITAL_RADIUS, data.EARTH_ORBITAL_RADIUS, // xRadius, yRadius
-	    0, 2 * Math.PI, // aStartAngle, aEndAngle
-	    false // aClockwise
-	    );
-	    var path = new THREE.Path(curve.getPoints(150));
-	    var geometry = path.createPointsGeometry(150);
-	    var material = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
-	    var mesh = new THREE.Line(geometry, material);
-	    mesh.rotateX(Math.PI / 2);
-
-	    return mesh;
-	  },
-
-	  label: function label(txt) {
-	    var geometry = new THREE.TextGeometry(txt, {
-	      size: 50000000 * c.SF,
-	      height: 1000000 * c.SF
-	    });
-	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.rotation.x = -Math.PI * 0.5;
-	    return mesh;
-	  },
-
-	  grid: function grid(params) {
-	    var steps = params && params.steps || 5;
-	    var size = params && params.size || data.EARTH_ORBITAL_RADIUS;
-	    var step = size / steps;
-
-	    var geometry = new THREE.Geometry();
-	    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 });
-
-	    for (var i = -size; i <= size; i += step) {
-	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
-	      geometry.vertices.push(new THREE.Vector3(size, 0, i));
-
-	      geometry.vertices.push(new THREE.Vector3(i, 0, -size));
-	      geometry.vertices.push(new THREE.Vector3(i, 0, size));
-	    }
-	    return new THREE.Line(geometry, material, THREE.LinePieces);
-	  },
-
-	  earthAxis: function earthAxis(params) {
-	    var simple = params && params.simple;
-	    var HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
-	    var RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
-	    var HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
-	    var HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
-	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
-	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
-	    var mesh = new THREE.Mesh(geometry, material);
-
-	    var arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
-	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-	    arrowHeadMesh.position.y = HEIGHT * 0.5;
-	    mesh.add(arrowHeadMesh);
-
-	    return mesh;
-	  },
-
-	  viewAxis: function viewAxis() {
-	    var HEIGHT = 70000000 * c.SF;
-	    var RADIUS = 2000000 * c.SF;
-	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS * 1.4;
-
-	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.3, 32);
-	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-	    arrowHeadMesh.position.y = -HEIGHT * 0.5;
-	    mesh.add(arrowHeadMesh);
-
-	    var pivot = new THREE.Object3D();
-	    pivot.add(mesh);
-	    return pivot;
-	  }
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 15 */
+/* 10 */,
+/* 11 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12849,7 +12382,7 @@
 	}
 
 /***/ },
-/* 16 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12860,11 +12393,14 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-	var _solarSystemDataJs = __webpack_require__(15);
+	var _solarSystemDataJs = __webpack_require__(11);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
+	// This constants define values used by 3D object, they don't have any physical meaning.
+
 	var SF = 1 / data.SCALE_FACTOR;
+
 	exports.SF = SF;
 	var EARTH_RADIUS = 7000000 * SF;
 	exports.EARTH_RADIUS = EARTH_RADIUS;
@@ -12874,7 +12410,7 @@
 	exports.SUN_RADIUS = SUN_RADIUS;
 
 /***/ },
-/* 17 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12889,7 +12425,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _constantsJs = __webpack_require__(16);
+	var _constantsJs = __webpack_require__(12);
 
 	var c = _interopRequireWildcard(_constantsJs);
 
@@ -12937,7 +12473,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 18 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12952,11 +12488,11 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _constantsJs = __webpack_require__(16);
+	var _constantsJs = __webpack_require__(12);
 
 	var c = _interopRequireWildcard(_constantsJs);
 
-	var _utilsJs = __webpack_require__(19);
+	var _utilsJs = __webpack_require__(15);
 
 	var DEG_2_RAD = Math.PI / 180;
 	var DEF_COLOR = 0xffffff;
@@ -13007,7 +12543,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 19 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13020,7 +12556,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _jquery = __webpack_require__(1);
+	var _jquery = __webpack_require__(2);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -13046,7 +12582,7 @@
 	}
 
 /***/ },
-/* 20 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13057,21 +12593,29 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _jquery = __webpack_require__(1);
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _jquery = __webpack_require__(2);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _modelsModelsJs = __webpack_require__(14);
+	var _baseViewJs = __webpack_require__(25);
 
-	var _modelsModelsJs2 = _interopRequireDefault(_modelsModelsJs);
+	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
 
-	var _solarSystemDataJs = __webpack_require__(15);
+	var _modelsCommonModelsJs = __webpack_require__(26);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _solarSystemDataJs = __webpack_require__(11);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
@@ -13080,85 +12624,22 @@
 	  earthTilt: true
 	};
 
-	var _default = (function () {
+	var _default = (function (_BaseView) {
 	  var _class = function _default(canvasEl) {
 	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
 
 	    _classCallCheck(this, _class);
 
-	    var width = canvasEl.clientWidth;
-	    var height = canvasEl.clientHeight;
-	    this.scene = new THREE.Scene();
-	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-	    this.renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true });
-	    this.renderer.setSize(width, height);
-
-	    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
-	    this.controls.noPan = true;
-	    this.controls.noZoom = true;
-	    this.controls.rotateSpeed = 0.5;
-
-	    this._initScene();
-	    this._setInitialCamPos();
-
-	    this.props = {};
-	    this.setProps(props);
-
-	    this.render();
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, canvasEl, props, 'orbit-view');
 	  };
 
-	  _createClass(_class, [{
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = _jquery2['default'].extend(this.props);
-	      this.props = _jquery2['default'].extend(this.props, newProps);
+	  _inherits(_class, _BaseView);
 
-	      if (this.props.day !== oldProps.day) this._updateDay();
-	      if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
-	    }
-	  }, {
+	  _createClass(_class, [{
 	    key: 'setViewAxis',
 	    value: function setViewAxis(vec3) {
 	      this.viewAxis.lookAt(vec3);
 	      this.viewAxis.rotateX(Math.PI * 0.5);
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      this.renderer.render(this.scene, this.camera);
-	    }
-	  }, {
-	    key: '_updateDay',
-	    value: function _updateDay() {
-	      var day = this.props.day;
-	      var pos = data.earthEllipseLocationByDay(day);
-	      this.earthPos.position.copy(pos);
-	    }
-	  }, {
-	    key: '_updateEarthTilt',
-	    value: function _updateEarthTilt() {
-	      this.earth.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      this.scene.add(_modelsModelsJs2['default'].stars());
-	      this.scene.add(_modelsModelsJs2['default'].ambientLight());
-	      this.scene.add(_modelsModelsJs2['default'].sunLight());
-	      this.scene.add(_modelsModelsJs2['default'].sunOnlyLight());
-	      this.scene.add(_modelsModelsJs2['default'].grid());
-	      this.scene.add(_modelsModelsJs2['default'].orbit());
-	      this._addLabels();
-	      this.scene.add(_modelsModelsJs2['default'].sun());
-
-	      this.earth = _modelsModelsJs2['default'].earth({ simple: true });
-	      this.earthPos = new THREE.Object3D();
-	      this.earthAxis = _modelsModelsJs2['default'].earthAxis({ simple: true });
-	      this.viewAxis = _modelsModelsJs2['default'].viewAxis();
-	      this.earth.add(this.earthAxis);
-	      this.earthPos.add(this.earth);
-	      this.earthPos.add(this.viewAxis);
-	      this.scene.add(this.earthPos);
 	    }
 	  }, {
 	    key: '_setInitialCamPos',
@@ -13166,23 +12647,30 @@
 	      this.camera.position.x = 0;
 	      this.camera.position.y = 245232773 / data.SCALE_FACTOR;
 	      this.camera.position.z = 228174616 / data.SCALE_FACTOR;
-	      this.controls.update();
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
+	      this.viewAxis = _modelsCommonModelsJs2['default'].viewAxis();
+	      this.earthPos.add(this.viewAxis);
+	      this._addLabels();
 	    }
 	  }, {
 	    key: '_addLabels',
 	    value: function _addLabels() {
-	      var juneLbl = _modelsModelsJs2['default'].label('Jun');
+	      var juneLbl = _modelsCommonModelsJs2['default'].label('Jun');
 	      juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
 	      juneLbl.rotateZ(-Math.PI * 0.5);
 
-	      var decLbl = _modelsModelsJs2['default'].label('Dec');
+	      var decLbl = _modelsCommonModelsJs2['default'].label('Dec');
 	      decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
 	      decLbl.rotateZ(Math.PI * 0.5);
 
-	      var sepLbl = _modelsModelsJs2['default'].label('Sep');
+	      var sepLbl = _modelsCommonModelsJs2['default'].label('Sep');
 	      sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
 
-	      var marLbl = _modelsModelsJs2['default'].label('Mar');
+	      var marLbl = _modelsCommonModelsJs2['default'].label('Mar');
 	      marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
 	      marLbl.rotateZ(Math.PI);
 
@@ -13194,13 +12682,13 @@
 	  }]);
 
 	  return _class;
-	})();
+	})(_baseViewJs2['default']);
 
 	exports['default'] = _default;
 	module.exports = exports['default'];
 
 /***/ },
-/* 21 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13215,11 +12703,11 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _jquery = __webpack_require__(1);
+	var _jquery = __webpack_require__(2);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _solarSystemDataJs = __webpack_require__(15);
+	var _solarSystemDataJs = __webpack_require__(11);
 
 	window.$ = _jquery2['default'];
 
@@ -13380,7 +12868,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 22 */
+/* 18 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13414,101 +12902,16 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _jquery = __webpack_require__(1);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	__webpack_require__(3);
-
-	var TICK_WIDTH = 1;
-
-	// Patched jQueryUI slider that can wrap. When user drags slider handle over max (or min) value,
-	// it will jump back to min (or max).
-	// It also supports 'ticks' option.
-	_jquery2['default'].widget('ui.graspSlider', _jquery2['default'].ui.slider, {
-	  _setOption: function _setOption(key, value) {
-	    this._superApply(arguments);
-	    if (key === 'ticks') {
-	      var valueTotal = this._valueMax() - this._valueMin();
-	      value.forEach((function (t) {
-	        var percentValue = t.value / valueTotal * 100;
-	        var tick = (0, _jquery2['default'])('<div></div>').addClass('ui-slider-tick').css({
-	          position: 'absolute',
-	          left: percentValue + '%'
-	        });
-	        var mark = (0, _jquery2['default'])('<div></div>').addClass('ui-slider-tick-mark').css({
-	          height: this.element.height(),
-	          width: TICK_WIDTH + 'px',
-	          'margin-left': -0.5 * TICK_WIDTH + 'px',
-	          background: '#aaaaaa'
-	        });
-	        var label = (0, _jquery2['default'])('<div></div>').addClass('ui-slider-tick-label').text(t.name);
-	        mark.appendTo(tick);
-	        label.appendTo(tick);
-	        tick.appendTo(this.element);
-	        // We can do it at the very end, when the element is rendered and its width can be calculated.
-	        label.css('margin-left', -0.5 * label.width() + 'px');
-	      }).bind(this));
-	      this.element.addClass('ui-slider-with-tick-labels');
-	    }
-	  },
-
-	  _normValueFromMouse: function _normValueFromMouse(position) {
-	    var pixelTotal, pixelMouse, percentMouse, valueTotal, valueMouse;
-
-	    if (this.orientation === 'horizontal') {
-	      pixelTotal = this.elementSize.width;
-	      pixelMouse = position.x - this.elementOffset.left - (this._clickOffset ? this._clickOffset.left : 0);
-	    } else {
-	      pixelTotal = this.elementSize.height;
-	      pixelMouse = position.y - this.elementOffset.top - (this._clickOffset ? this._clickOffset.top : 0);
-	    }
-
-	    percentMouse = pixelMouse / pixelTotal;
-	    // Original jQuery UI code:
-	    // if ( percentMouse > 1 ) {
-	    //   percentMouse = 1;
-	    // }
-	    // if ( percentMouse < 0 ) {
-	    //   percentMouse = 0;
-	    // }
-	    // === Customization ===
-	    percentMouse = percentMouse % 1;
-	    if (percentMouse < 0) {
-	      percentMouse += 1;
-	    }
-	    // =====================
-	    if (this.orientation === 'vertical') {
-	      percentMouse = 1 - percentMouse;
-	    }
-
-	    valueTotal = this._valueMax() - this._valueMin();
-	    valueMouse = this._valueMin() + percentMouse * valueTotal;
-
-	    return this._trimAlignValue(valueMouse);
-	  }
-	});
-
-/***/ },
-/* 24 */,
-/* 25 */,
-/* 26 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(27);
+	var content = __webpack_require__(20);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(10)(content, {});
+	var update = __webpack_require__(22)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -13525,10 +12928,10 @@
 	}
 
 /***/ },
-/* 27 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(9)();
+	exports = module.exports = __webpack_require__(21)();
 	// imports
 
 
@@ -13537,6 +12940,682 @@
 
 	// exports
 
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0;
+
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function createStyleElement() {
+		var styleElement = document.createElement("style");
+		var head = getHeadElement();
+		styleElement.type = "text/css";
+		head.appendChild(styleElement);
+		return styleElement;
+	}
+
+	function createLinkElement() {
+		var linkElement = document.createElement("link");
+		var head = getHeadElement();
+		linkElement.rel = "stylesheet";
+		head.appendChild(linkElement);
+		return linkElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement());
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement();
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				styleElement.parentNode.removeChild(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement();
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				styleElement.parentNode.removeChild(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		var blob = new Blob([css], { type: "text/css" });
+
+		var oldSrc = linkElement.href;
+
+		linkElement.href = URL.createObjectURL(blob);
+
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(24);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(22)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./jquery-ui-theme.css", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./jquery-ui-theme.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(21)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".ui-slider-handle {\n  font-size: 20px;\n  border-radius: 50px;\n  background: #fff !important;\n  box-shadow: 0 0 6px #666;\n}\n\n.ui-slider-with-tick-labels {\n  margin-bottom: 20px;\n}\n\n.ui-slider-tick-label {\n  font-size: 15px;\n  margin-top: 2px;\n}\n\n\n\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _jquery = __webpack_require__(2);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _modelsCommonModelsJs = __webpack_require__(26);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _solarSystemDataJs = __webpack_require__(11);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true
+	};
+
+	var _default = (function () {
+	  var _class = function _default(canvasEl, props, modelType) {
+	    if (props === undefined) props = DEF_PROPERTIES;
+
+	    _classCallCheck(this, _class);
+
+	    var width = canvasEl.clientWidth;
+	    var height = canvasEl.clientHeight;
+	    this.scene = new THREE.Scene();
+	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
+	    this.renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true });
+	    this.renderer.setSize(width, height);
+
+	    // Type is passed to 3D models.
+	    this.type = modelType;
+	    this._initScene();
+	    this._setInitialCamPos();
+
+	    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
+	    this.controls.noPan = true;
+	    this.controls.noZoom = true;
+	    this.controls.rotateSpeed = 0.5;
+
+	    this.props = {};
+	    this.setProps(props);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = _jquery2['default'].extend(this.props);
+	      this.props = _jquery2['default'].extend(this.props, newProps);
+
+	      // Iterate over all the properties and call update handles for ones that have been changed.
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = Object.keys(this.props)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var key = _step.value;
+
+	          if (this.props[key] !== oldProps[key]) {
+	            // Transform property name to name of the function that handles its update. For example:
+	            // earthTilt -> _updateEarthTilt.
+	            var funcName = '_update' + key[0].toUpperCase() + key.substr(1);
+	            if (typeof this[funcName] === 'function') {
+	              this[funcName]();
+	            }
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator['return']) {
+	            _iterator['return']();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'getEarthPosition',
+	    value: function getEarthPosition() {
+	      return this.earthPos.position;
+	    }
+	  }, {
+	    key: 'getEarthTilt',
+	    value: function getEarthTilt() {
+	      return this.earthTiltPivot.rotation.z;
+	    }
+	  }, {
+	    key: 'getEarthRotation',
+	    value: function getEarthRotation() {
+	      return this.earth.rotation.y;
+	    }
+	  }, {
+	    key: 'rotateEarth',
+
+	    // Rotates earth around its own axis.
+	    value: function rotateEarth(angleDiff) {
+	      this.earth.rotation.y += angleDiff;
+	    }
+	  }, {
+	    key: 'rotateCam',
+
+	    // Rotates camera around the sun.
+	    value: function rotateCam(angle) {
+	      this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+	      this.controls.update();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(timestamp) {
+	      this.renderer.render(this.scene, this.camera);
+	    }
+	  }, {
+	    key: '_updateDay',
+
+	    // Called automatically when 'day' property is updated.
+	    value: function _updateDay() {
+	      var day = this.props.day;
+	      var pos = data.earthEllipseLocationByDay(day);
+	      this.earthPos.position.copy(pos);
+	    }
+	  }, {
+	    key: '_updateEarthTilt',
+
+	    // Called automatically when 'earthTilt' property is updated.
+	    value: function _updateEarthTilt() {
+	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      var basicProps = { type: this.type };
+
+	      this.scene.add(_modelsCommonModelsJs2['default'].stars(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].ambientLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunOnlyLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].grid(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
+
+	      this.earth = _modelsCommonModelsJs2['default'].earth(basicProps);
+	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
+	      this.earth.add(this.earthAxis);
+	      this.earthTiltPivot = new THREE.Object3D();
+	      this.earthTiltPivot.add(this.earth);
+	      this.earthPos = new THREE.Object3D();
+	      // Make sure that earth is at day 0 position.
+	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
+	      var pos = data.earthEllipseLocationByDay(0);
+	      this.earthPos.position.copy(pos);
+	      this.earthPos.add(this.earthTiltPivot);
+	      this.scene.add(this.earthPos);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = 0;
+	      this.camera.position.y = 0;
+	      this.camera.position.z = 0;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _solarSystemDataJs = __webpack_require__(11);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var _constantsJs = __webpack_require__(12);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	exports['default'] = {
+	  stars: function stars() {
+	    var SIZE = 4000000 * c.SF;
+	    var MIN_RADIUS = 500000000 * c.SF;
+	    var MAX_RADIUS = 3 * MIN_RADIUS;
+	    var geometry = new THREE.Geometry();
+
+	    for (var i = 0; i < 2000; i++) {
+	      var vertex = new THREE.Vector3();
+	      var theta = 2 * Math.PI * Math.random();
+	      var u = Math.random() * 2 - 1;
+	      vertex.x = Math.sqrt(1 - u * u) * Math.cos(theta);
+	      vertex.y = Math.sqrt(1 - u * u) * Math.sin(theta);
+	      vertex.z = u;
+	      vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
+	      geometry.vertices.push(vertex);
+	    }
+	    var material = new THREE.PointCloudMaterial({ size: SIZE, color: 0xffffee });
+	    var particles = new THREE.PointCloud(geometry, material);
+	    return particles;
+	  },
+
+	  ambientLight: function ambientLight() {
+	    return new THREE.AmbientLight(0x111111);
+	  },
+
+	  sunLight: function sunLight() {
+	    return new THREE.PointLight(0xffffff, 1.2, 0);
+	  },
+
+	  // Light that affects only sun object (due to radius settings).
+	  sunOnlyLight: function sunOnlyLight() {
+	    var light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
+	    light.position.y = c.SUN_RADIUS * 4;
+	    return light;
+	  },
+
+	  sun: function sun() {
+	    var geometry = new THREE.SphereGeometry(15000000 * c.SF, 32, 32);
+	    var material = new THREE.MeshPhongMaterial({ emissive: 0xFF8935 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    return mesh;
+	  },
+
+	  earth: function earth(params) {
+	    var simple = params.type === 'orbit-view';
+	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x023757 } : { specular: 0x252525 };
+	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
+	    var material = new THREE.MeshPhongMaterial(COLORS);
+	    if (!simple) {
+	      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
+	      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
+	      material.bumpScale = 100000 * c.SF;
+	      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
+	    }
+	    return new THREE.Mesh(geometry, material);
+	  },
+
+	  orbit: function orbit() {
+	    var curve = new THREE.EllipseCurve(data.SUN_FOCUS * 2, 0, // ax, aY
+	    data.EARTH_SEMI_MAJOR_AXIS * data.EARTH_ORBITAL_RADIUS, data.EARTH_ORBITAL_RADIUS, // xRadius, yRadius
+	    0, 2 * Math.PI, // aStartAngle, aEndAngle
+	    false // aClockwise
+	    );
+	    var path = new THREE.Path(curve.getPoints(150));
+	    var geometry = path.createPointsGeometry(150);
+	    var material = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
+	    var mesh = new THREE.Line(geometry, material);
+	    mesh.rotateX(Math.PI / 2);
+
+	    return mesh;
+	  },
+
+	  label: function label(txt) {
+	    var geometry = new THREE.TextGeometry(txt, {
+	      size: 50000000 * c.SF,
+	      height: 1000000 * c.SF
+	    });
+	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.rotation.x = -Math.PI * 0.5;
+	    return mesh;
+	  },
+
+	  grid: function grid(params) {
+	    var steps = params.type === 'orbit-view' ? 5 : 60;
+	    var size = data.EARTH_ORBITAL_RADIUS;
+	    var step = size / steps;
+
+	    var geometry = new THREE.Geometry();
+	    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 });
+
+	    for (var i = -size; i <= size; i += step) {
+	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
+	      geometry.vertices.push(new THREE.Vector3(size, 0, i));
+
+	      geometry.vertices.push(new THREE.Vector3(i, 0, -size));
+	      geometry.vertices.push(new THREE.Vector3(i, 0, size));
+	    }
+	    return new THREE.Line(geometry, material, THREE.LinePieces);
+	  },
+
+	  earthAxis: function earthAxis(params) {
+	    var simple = params.type === 'orbit-view';
+	    var HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
+	    var RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
+	    var HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
+	    var HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
+	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
+	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
+	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
+	    var mesh = new THREE.Mesh(geometry, material);
+
+	    var arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
+	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
+	    arrowHeadMesh.position.y = HEIGHT * 0.5;
+	    mesh.add(arrowHeadMesh);
+
+	    return mesh;
+	  },
+
+	  viewAxis: function viewAxis() {
+	    var HEIGHT = 70000000 * c.SF;
+	    var RADIUS = 2000000 * c.SF;
+	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
+	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS * 1.4;
+
+	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEIGHT * 0.3, 32);
+	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
+	    arrowHeadMesh.position.y = -HEIGHT * 0.5;
+	    mesh.add(arrowHeadMesh);
+
+	    var pivot = new THREE.Object3D();
+	    pivot.add(mesh);
+	    return pivot;
+	  }
+	};
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

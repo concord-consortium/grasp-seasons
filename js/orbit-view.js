@@ -1,5 +1,6 @@
 import $ from 'jquery';
-import models from './models/models.js';
+import BaseView from './base-view.js';
+import models from './models/common-models.js';
 import * as data from './solar-system-data.js';
 
 const DEF_PROPERTIES = {
@@ -7,35 +8,9 @@ const DEF_PROPERTIES = {
   earthTilt: true
 };
 
-export default class {
+export default class extends BaseView {
   constructor(canvasEl, props = DEF_PROPERTIES) {
-    let width = canvasEl.clientWidth;
-    let height = canvasEl.clientHeight;
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-    this.renderer = new THREE.WebGLRenderer({canvas: canvasEl, antialias: true});
-    this.renderer.setSize(width, height);
-
-    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
-    this.controls.noPan = true;
-    this.controls.noZoom = true;
-    this.controls.rotateSpeed = 0.5;
-
-    this._initScene();
-    this._setInitialCamPos();
-
-    this.props = {};
-    this.setProps(props);
-
-    this.render();
-  }
-
-  setProps(newProps) {
-    let oldProps = $.extend(this.props);
-    this.props = $.extend(this.props, newProps);
-
-    if (this.props.day !== oldProps.day) this._updateDay();
-    if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
+    super(canvasEl, props, 'orbit-view');
   }
 
   setViewAxis(vec3) {
@@ -43,45 +18,17 @@ export default class {
     this.viewAxis.rotateX(Math.PI * 0.5);
   }
 
-  render() {
-    this.renderer.render(this.scene, this.camera);
-  }
-
-  _updateDay() {
-    let day = this.props.day;
-    let pos = data.earthEllipseLocationByDay(day);
-    this.earthPos.position.copy(pos);
-  }
-
-  _updateEarthTilt() {
-    this.earth.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
-  }
-
-  _initScene() {
-    this.scene.add(models.stars());
-    this.scene.add(models.ambientLight());
-    this.scene.add(models.sunLight());
-    this.scene.add(models.sunOnlyLight());
-    this.scene.add(models.grid());
-    this.scene.add(models.orbit());
-    this._addLabels();
-    this.scene.add(models.sun());
-
-    this.earth = models.earth({simple: true});
-    this.earthPos = new THREE.Object3D();
-    this.earthAxis = models.earthAxis({simple: true});
-    this.viewAxis = models.viewAxis();
-    this.earth.add(this.earthAxis);
-    this.earthPos.add(this.earth);
-    this.earthPos.add(this.viewAxis);
-    this.scene.add(this.earthPos);
-  }
-
   _setInitialCamPos() {
     this.camera.position.x = 0;
     this.camera.position.y = 245232773 / data.SCALE_FACTOR;
     this.camera.position.z = 228174616 / data.SCALE_FACTOR;
-    this.controls.update();
+  }
+
+  _initScene() {
+    super._initScene();
+    this.viewAxis = models.viewAxis();
+    this.earthPos.add(this.viewAxis);
+    this._addLabels();
   }
 
   _addLabels() {

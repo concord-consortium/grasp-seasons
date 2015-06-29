@@ -46,7 +46,7 @@ export default {
   },
 
   earth: function (params) {
-    let simple = params && params.simple;
+    let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
     let COLORS = simple ? {color: 0x1286CD, emissive: 0x023757} : {specular: 0x252525};
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
@@ -88,8 +88,8 @@ export default {
   },
 
   grid: function (params) {
-    let steps = params && params.steps || 5;
-    let size = params && params.size || data.EARTH_ORBITAL_RADIUS;
+    let steps = params.type === 'orbit-view' ? 5 : 60;
+    let size = data.EARTH_ORBITAL_RADIUS;
     let step = size / steps;
 
     let geometry = new THREE.Geometry();
@@ -107,7 +107,7 @@ export default {
   },
 
   earthAxis: function (params) {
-    let simple = params && params.simple;
+    let simple = params.type === 'orbit-view';
     let HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
     let RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
     let HEAD_RADIUS = RADIUS * (simple ? 3 : 2);

@@ -1,7 +1,8 @@
 import $ from 'jquery';
 import EventEmitter from 'eventemitter2';
 
-import models from './models/models.js';
+import BaseView from './base-view.js';
+import models from './models/common-models.js';
 import LatitudeLine from './models/latitude-line.js';
 import LatLongMarker from './models/lat-long-marker.js';
 import * as data from './solar-system-data.js';
@@ -18,61 +19,23 @@ const DEF_PROPERTIES = {
   long: 0
 };
 
-export default class {
+export default class extends BaseView {
   constructor(canvasEl, props = DEF_PROPERTIES) {
-    let width = canvasEl.clientWidth;
-    let height = canvasEl.clientHeight;
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 10);
-    this.renderer = new THREE.WebGLRenderer({canvas: canvasEl, antialias: true});
-    this.renderer.setSize(width, height);
+    super(canvasEl, props, 'earth-view');
 
-    this.controls = new THREE.OrbitControls(this.camera, canvasEl);
-    this.controls.noPan = true;
-    this.controls.noZoom = true;
-    this.controls.rotateSpeed = 0.5;
+    // Rotate earth a bit so USA is visible.
+    this.rotateEarth(2);
 
+    // Support mouse interaction.
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2(-1, -1);
     this._enableMousePicking();
 
+    // Emit events when camera is changed.
     this.dispatch = new EventEmitter();
-
     this.controls.addEventListener('change', () => {
       this.dispatch.emit('camera.change');
     });
-
-    this._initScene();
-    this._setInitialCamPos();
-    // Rotate earth a bit so USA is visible.
-    this._rotateEarth(2);
-
-    this.props = {};
-    this.setProps(props);
-
-    this.render();
-  }
-
-  // Normalized vector pointing from camera to earth.
-  getCameraEarthVec() {
-    return this.camera.position.clone().sub(this.earthPos.position).normalize();
-  }
-
-  getEarthTilt() {
-    return this.earthTiltPivot.rotation.z;
-  }
-
-  getEarthRotation() {
-    return this.earth.rotation.y;
-  }
-
-  setProps(newProps) {
-    let oldProps = $.extend(this.props);
-    this.props = $.extend(this.props, newProps);
-
-    if (this.props.day !== oldProps.day) this._updateDay();
-    if (this.props.earthTilt !== oldProps.earthTilt) this._updateEarthTilt();
-    if (this.props.lat !== oldProps.lat || this.props.long !== oldProps.long) this._updateLatLong();
   }
 
   // Delegate #on to EventEmitter object.
@@ -80,87 +43,55 @@ export default class {
     this.dispatch.on.apply(this.dispatch, arguments);
   }
 
+  // Normalized vector pointing from camera to earth.
+  getCameraEarthVec() {
+    return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
+  }
+
   render(timestamp) {
     this._animate(timestamp);
     this._interactivityHandler();
-    this.renderer.render(this.scene, this.camera);
     this.controls.update();
+    super.render(timestamp);
   }
 
   _updateDay() {
-    let day = this.props.day;
-    let pos = data.earthEllipseLocationByDay(day);
+    let oldPos = this.getEarthPosition().clone();
+    super._updateDay();
+    let newPos = this.getEarthPosition().clone();
 
-    let angleDiff = Math.atan2(this.earthPos.position.z, this.earthPos.position.x) - Math.atan2(pos.z, pos.x);
+    let angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
     // Make sure that earth maintains its current rotation.
-    this._rotateEarth(angleDiff);
+    this.rotateEarth(angleDiff);
+
     // Update camera position, rotate it and adjust its orbit length.
-    this._rotateCam(angleDiff);
-    let oldOrbitLength = new THREE.Vector2(this.earthPos.position.x, this.earthPos.position.z).length();
-    let newOrbitLength = new THREE.Vector2(pos.x, pos.z).length();
-    this.camera.position.x *= newOrbitLength / oldOrbitLength;
-    this.camera.position.z *= newOrbitLength / oldOrbitLength;
-
-    // Finally update earth position.
-    this.earthPos.position.copy(pos);
+    this.rotateCam(angleDiff);
+    let lenRatio = newPos.length() / oldPos.length();
+    this.camera.position.x *= lenRatio;
+    this.camera.position.z *= lenRatio;
     // Set orbit controls target to new position too.
-    this.controls.target.copy(pos);
-
+    this.controls.target.copy(newPos);
     // Make sure that this call is at the very end, as otherwise 'camera.change' event can be fired before
     // earth position is updated. This causes problems when client code tries to call .getCameraEarthVec()
     // in handler (as earth position is still outdated).
     this.controls.update();
   }
 
-  _updateEarthTilt() {
-    this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
-  }
-
-  _updateLatLong() {
+  _updateLat() {
     this.latLine.setLat(this.props.lat);
     this.latLongMarker.setLatLong(this.props.lat, this.props.long)
   }
 
-  // Rotates earth around its own axis.
-  _rotateEarth(angleDiff) {
-    this.earth.rotation.y += angleDiff;
-  }
-
-  // Rotates camera around the sun.
-  _rotateCam(angle) {
-    let p = this.camera.position;
-    let newZ = p.z * Math.cos(angle) - p.x * Math.sin(angle);
-    let newX = p.z * Math.sin(angle) + p.x * Math.cos(angle);
-    this.camera.position.x = newX;
-    this.camera.position.z = newZ;
+  _updateLong() {
+    this.latLongMarker.setLatLong(this.props.lat, this.props.long)
   }
 
   _initScene() {
-    this.scene.add(models.stars());
-    this.scene.add(models.ambientLight());
-    this.scene.add(models.sunLight());
-    this.scene.add(models.sunOnlyLight());
-    this.scene.add(models.orbit());
-    this.scene.add(models.sun());
-    this.scene.add(models.grid({steps: 60}));
-
-    this.earth = models.earth();
-    this.earthAxis = models.earthAxis();
+    super._initScene();
     this.latLine = new LatitudeLine();
     this.latLongMarker = new LatLongMarker();
-    this.earth.add(this.earthAxis);
     this.earth.add(this.latLine.rootObject);
     this.earth.add(this.latLongMarker.rootObject);
-
-    this.earthTiltPivot = new THREE.Object3D();
-    this.earthTiltPivot.add(this.earth);
-    this.earthPos = new THREE.Object3D();
-    // Make sure that earth is at day 0 position.
-    // This is necessary so angle diff is calculated correctly in _updateDay() method.
-    let pos = data.earthEllipseLocationByDay(0);
-    this.earthPos.position.copy(pos);
-    this.earthPos.add(this.earthTiltPivot);
-    this.scene.add(this.earthPos);
   }
 
   // Sets camera next to earth at day 0 position.
@@ -177,7 +108,7 @@ export default class {
     }
     let progress = this._prevFrame ? timestamp - this._prevFrame : 0;
     let angleDiff = progress * 0.0001 * Math.PI;
-    this.earth.rotation.y += angleDiff;
+    this.rotateEarth(angleDiff);
     this._prevFrame = timestamp;
   }
 
@@ -283,7 +214,7 @@ export default class {
     }
     // Calculate vector pointing from Earth center to intersection point.
     let intVec = intersects[0].point;
-    intVec.sub(this.earthPos.position);
+    intVec.sub(this.getEarthPosition());
     // Take into account earth tilt and rotation.
     intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
     intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
