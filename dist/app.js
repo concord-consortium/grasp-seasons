@@ -77,6 +77,7 @@
 	  day: 171,
 	  earthTilt: true,
 	  earthRotation: false,
+	  sunEarthLine: true,
 	  lat: 0,
 	  long: 0
 	};
@@ -161,6 +162,7 @@
 	        $dayValue: (0, _jquery2['default'])('#day-value'),
 	        $earthRotation: (0, _jquery2['default'])('#earth-rotation'),
 	        $earthTilt: (0, _jquery2['default'])('#earth-tilt'),
+	        $sunEarthLine: (0, _jquery2['default'])('#sun-earth-line'),
 	        $citySelect: (0, _jquery2['default'])('#city-pulldown'),
 	        $latSlider: (0, _jquery2['default'])('#latitude-slider'),
 	        $latValue: (0, _jquery2['default'])('#lat-value'),
@@ -170,6 +172,7 @@
 	      this._initDaySlider();
 	      this._initRotationCheckbox();
 	      this._initEarthTiltCheckbox();
+	      this._initSunEarthLineCheckbox();
 	      this._initCitySelect();
 	      this._initLatLongSliders();
 	    }
@@ -219,31 +222,40 @@
 	      });
 	    }
 	  }, {
+	    key: '_initSunEarthLineCheckbox',
+	    value: function _initSunEarthLineCheckbox() {
+	      var _this5 = this;
+
+	      this.ui.$sunEarthLine.on('change', function (e) {
+	        _this5.setState({ sunEarthLine: e.target.checked });
+	      });
+	    }
+	  }, {
 	    key: '_initCitySelect',
 	    value: function _initCitySelect() {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      for (var i = 0; i < _cityDataJs2['default'].length; i++) {
 	        this.ui.$citySelect.append('<option value=' + i + '>' + _cityDataJs2['default'][i].name + '</option>');
 	      }
 	      this.ui.$citySelect.on('change', function () {
-	        var city = _this5.getSelectedCity();
+	        var city = _this6.getSelectedCity();
 	        if (city) {
-	          _this5.setState({ lat: city.lat, long: city.long });
+	          _this6.setState({ lat: city.lat, long: city.long });
 	        }
 	      });
 	    }
 	  }, {
 	    key: '_initLatLongSliders',
 	    value: function _initLatLongSliders() {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      this.ui.$latSlider.slider({
 	        min: -90,
 	        max: 90,
 	        step: 1,
 	        slide: function slide(e, ui) {
-	          _this6.setState({ lat: ui.value });
+	          _this7.setState({ lat: ui.value });
 	        }
 	      });
 
@@ -252,7 +264,7 @@
 	        max: 180,
 	        step: 1,
 	        slide: function slide(e, ui) {
-	          _this6.setState({ long: ui.value });
+	          _this7.setState({ long: ui.value });
 	        }
 	      });
 	    }
@@ -263,6 +275,7 @@
 	      this.ui.$dayValue.html(this.getFormattedDay());
 	      this.ui.$earthRotation.prop('checked', this.state.earthRotation);
 	      this.ui.$earthTilt.prop('checked', this.state.earthTilt);
+	      this.ui.$sunEarthLine.prop('checked', this.state.sunEarthLine);
 	      this.ui.$latSlider.slider('value', this.state.lat);
 	      this.ui.$latValue.html(this.getFormattedLat());
 	      this.ui.$longSlider.slider('value', this.state.long);
@@ -13300,7 +13313,8 @@
 
 	var DEF_PROPERTIES = {
 	  day: 0,
-	  earthTilt: true
+	  earthTilt: true,
+	  sunEarthLine: true
 	};
 
 	var _default = (function () {
@@ -13420,6 +13434,16 @@
 	    // Called automatically when 'earthTilt' property is updated.
 	    value: function _updateEarthTilt() {
 	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
+	    }
+	  }, {
+	    key: '_updateSunEarthLine',
+	    value: function _updateSunEarthLine() {
+	      var mesh = this.sunEarthLine.rootObject;
+	      if (this.props.sunEarthLine && !mesh.parent) {
+	        this.scene.add(mesh);
+	      } else if (!this.props.sunEarthLine && mesh.parent) {
+	        this.scene.remove(mesh);
+	      }
 	    }
 	  }, {
 	    key: '_initScene',

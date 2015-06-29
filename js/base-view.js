@@ -5,7 +5,8 @@ import * as data from './solar-system-data.js';
 
 const DEF_PROPERTIES = {
   day: 0,
-  earthTilt: true
+  earthTilt: true,
+  sunEarthLine: true
 };
 
 export default class {
@@ -86,6 +87,15 @@ export default class {
   // Called automatically when 'earthTilt' property is updated.
   _updateEarthTilt() {
     this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
+  }
+
+  _updateSunEarthLine() {
+    let mesh = this.sunEarthLine.rootObject;
+    if (this.props.sunEarthLine && !mesh.parent) {
+      this.scene.add(mesh);
+    } else if (!this.props.sunEarthLine && mesh.parent) {
+      this.scene.remove(mesh);
+    }
   }
 
   _initScene() {

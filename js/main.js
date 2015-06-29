@@ -15,6 +15,7 @@ const DEF_STATE = {
   day: 171,
   earthTilt: true,
   earthRotation: false,
+  sunEarthLine: true,
   lat: 0,
   long: 0
 };
@@ -85,6 +86,7 @@ class SeasonsApp {
       $dayValue: $('#day-value'),
       $earthRotation: $('#earth-rotation'),
       $earthTilt: $('#earth-tilt'),
+      $sunEarthLine: $('#sun-earth-line'),
       $citySelect: $('#city-pulldown'),
       $latSlider: $('#latitude-slider'),
       $latValue: $('#lat-value'),
@@ -94,6 +96,7 @@ class SeasonsApp {
     this._initDaySlider();
     this._initRotationCheckbox();
     this._initEarthTiltCheckbox();
+    this._initSunEarthLineCheckbox();
     this._initCitySelect();
     this._initLatLongSliders();
   }
@@ -134,6 +137,12 @@ class SeasonsApp {
     });
   }
 
+  _initSunEarthLineCheckbox() {
+    this.ui.$sunEarthLine.on('change', (e) => {
+      this.setState({sunEarthLine: e.target.checked});
+    });
+  }
+
   _initCitySelect() {
     for (let i = 0; i < CITY_DATA.length; i++) {
       this.ui.$citySelect.append(`<option value=${i}>${CITY_DATA[i].name}</option>`);
@@ -171,6 +180,7 @@ class SeasonsApp {
     this.ui.$dayValue.html(this.getFormattedDay());
     this.ui.$earthRotation.prop('checked', this.state.earthRotation);
     this.ui.$earthTilt.prop('checked', this.state.earthTilt);
+    this.ui.$sunEarthLine.prop('checked', this.state.sunEarthLine);
     this.ui.$latSlider.slider('value', this.state.lat);
     this.ui.$latValue.html(this.getFormattedLat());
     this.ui.$longSlider.slider('value', this.state.long);
