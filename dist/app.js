@@ -20507,6 +20507,7 @@
 	    this.locationChange = this.locationChange.bind(this);
 	    this.latSliderChange = this.latSliderChange.bind(this);
 	    this.longSliderChange = this.longSliderChange.bind(this);
+	    this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
 	  }
 
 	  _inherits(Seasons, _React$Component);
@@ -20608,12 +20609,17 @@
 	      this.setSimState(loc);
 	    }
 	  }, {
+	    key: 'lookAtSubsolarPoint',
+	    value: function lookAtSubsolarPoint() {
+	      this.refs.view.lookAtSubsolarPoint();
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _reactAddons2['default'].createElement(
 	        'div',
 	        null,
-	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { mainView: this.state.mainView, simulation: this.state.sim, onLocationChange: this.locationChange }),
+	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { ref: 'view', mainView: this.state.mainView, simulation: this.state.sim, onLocationChange: this.locationChange }),
 	        _reactAddons2['default'].createElement(
 	          'div',
 	          { className: 'controls' },
@@ -20643,6 +20649,11 @@
 	                { value: 'rays' },
 	                'Rays'
 	              )
+	            ),
+	            _reactAddons2['default'].createElement(
+	              'button',
+	              { className: 'btn btn-default', onClick: this.lookAtSubsolarPoint },
+	              'Look at subsolar point'
 	            ),
 	            _reactAddons2['default'].createElement(
 	              'div',
@@ -22952,10 +22963,16 @@
 	        var camVec = _this.refs.earth.getCameraEarthVec();
 	        _this.refs.orbit.setViewAxis(camVec);
 	      };
+	      window.earth = this.refs.earth;
 	      // Initial sync.
 	      sync();
 	      // When earth view camera is changed, we need to update view axis in the orbit view.
 	      this.refs.earth.onCameraChange(sync);
+	    }
+	  }, {
+	    key: 'lookAtSubsolarPoint',
+	    value: function lookAtSubsolarPoint() {
+	      this.refs.earth.lookAtSubsolarPoint();
 	    }
 	  }, {
 	    key: 'getLayout',
@@ -23080,6 +23097,11 @@
 	    key: 'getCameraEarthVec',
 	    value: function getCameraEarthVec() {
 	      return this.externalView.getCameraEarthVec();
+	    }
+	  }, {
+	    key: 'lookAtSubsolarPoint',
+	    value: function lookAtSubsolarPoint() {
+	      this.externalView.lookAtSubsolarPoint();
 	    }
 	  }]);
 
@@ -23269,6 +23291,16 @@
 	    // Normalized vector pointing from camera to earth.
 	    value: function getCameraEarthVec() {
 	      return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
+	    }
+	  }, {
+	    key: 'lookAtSubsolarPoint',
+	    value: function lookAtSubsolarPoint() {
+	      var earthPos = this.getEarthPosition();
+	      var camEarthDist = this.camera.position.distanceTo(earthPos);
+	      var earthSunDist = earthPos.length();
+	      this.camera.position.copy(earthPos);
+	      this.camera.position.multiplyScalar((earthSunDist - camEarthDist) / earthSunDist);
+	      this.controls.update();
 	    }
 	  }, {
 	    key: 'render',

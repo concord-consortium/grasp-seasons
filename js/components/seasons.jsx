@@ -32,6 +32,7 @@ export default class Seasons extends React.Component {
     this.locationChange = this.locationChange.bind(this);
     this.latSliderChange = this.latSliderChange.bind(this);
     this.longSliderChange = this.longSliderChange.bind(this);
+    this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
   }
 
   getFormattedDay() {
@@ -99,10 +100,14 @@ export default class Seasons extends React.Component {
     this.setSimState(loc);
   }
 
+  lookAtSubsolarPoint() {
+    this.refs.view.lookAtSubsolarPoint();
+  }
+
   render() {
     return (
       <div>
-        <ViewManager mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange}/>
+        <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange}/>
         <div className='controls' >
           <div className='form-group'>
             <label>Main view:</label>
@@ -111,6 +116,7 @@ export default class Seasons extends React.Component {
               <option value='orbit'>Orbit</option>
               <option value='rays'>Rays</option>
             </select>
+            <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>Look at subsolar point</button>
             <div className='pull-right'>
               <span> </span>
               <label><input type='checkbox' name='earthRotation' checked={this.state.sim.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>

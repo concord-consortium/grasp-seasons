@@ -25,4 +25,8 @@ export default class EarthViewComp extends CanvasView {
   getCameraEarthVec() {
     return this.externalView.getCameraEarthVec();
   }
+
+  lookAtSubsolarPoint() {
+    this.externalView.lookAtSubsolarPoint();
+  }
 }

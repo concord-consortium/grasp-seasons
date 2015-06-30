@@ -49,6 +49,15 @@ export default class extends BaseView {
     return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
   }
 
+  lookAtSubsolarPoint() {
+    let earthPos = this.getEarthPosition();
+    let camEarthDist = this.camera.position.distanceTo(earthPos);
+    let earthSunDist = earthPos.length();
+    this.camera.position.copy(earthPos);
+    this.camera.position.multiplyScalar((earthSunDist - camEarthDist) / earthSunDist);
+    this.controls.update();
+  }
+
   render(timestamp) {
     this._animate(timestamp);
     this._interactivityHandler();
