@@ -208,6 +208,6 @@ class SeasonsApp {
   }
 }
 
-window.seasons = new SeasonsApp();
+// window.seasons = new SeasonsApp();
 // Select the first city.
-window.seasons.selectCity(0);
+// window.seasons.selectCity(0);

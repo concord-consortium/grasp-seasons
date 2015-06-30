@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang=en>
+<head>
+  <meta charset=utf-8>
+  <title>Earth Orbit</title>
+  <link href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" media="all">
+</head>
+<body>
+
+<div id="app"></div>
+
+<!--THREE.js doesn't work well with NPM modules, so import it manually.-->
+<!--vendor/threejs-r71 is a simple copy of git repository, but only necessary files are left.-->
+<script src="vendor/threejs-r71/build/three.min.js"></script>
+<script src="vendor/threejs-r71/examples/js/controls/OrbitControls.js"></script>
+<script src="vendor/threejs-r71/examples/fonts/helvetiker_regular.typeface.js"></script>
+<script src="dist/app.js"></script>
+</body>
+</html>
