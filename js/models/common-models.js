@@ -24,11 +24,11 @@ export default {
   },
 
   ambientLight: function () {
-    return new THREE.AmbientLight(0x111111);
+    return new THREE.AmbientLight(0x444444);
   },
 
   sunLight: function () {
-    return new THREE.PointLight(0xffffff, 1.2, 0);
+    return new THREE.PointLight(0xffffff, 1, 0);
   },
 
   // Light that affects only sun object (due to radius settings).
@@ -49,7 +49,7 @@ export default {
   earth: function (params) {
     let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    let COLORS = simple ? {color: 0x1286CD, emissive: 0x023757} : {specular: 0x252525};
+    let COLORS = simple ? {color: 0x1286CD, emissive: 0x002135} : {specular: 0x252525};
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     let material = new THREE.MeshPhongMaterial(COLORS);
     if (!simple) {
@@ -113,9 +113,9 @@ export default {
     let RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
     let HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
     let HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
-    let EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
+    let EMISSIVE_COL = simple ? 0x770000 : 0x330000;
     let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-    let material = new THREE.MeshPhongMaterial({color: 0xff0000, emissive: EMMSIVE_COL});
+    let material = new THREE.MeshPhongMaterial({color: 0xff0000, emissive: EMISSIVE_COL});
     let mesh = new THREE.Mesh(geometry, material);
 
     let arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
@@ -131,7 +131,7 @@ export default {
     let HEAD_HEIGHT = HEIGHT * 0.2;
     let RADIUS = 2000000 * c.SF;
     let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-    let material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x009900});
+    let material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x007700});
     let mesh = new THREE.Mesh(geometry, material);
     mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS + HEAD_HEIGHT;
 

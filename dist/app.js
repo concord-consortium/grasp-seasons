@@ -20618,12 +20618,16 @@
 	          'div',
 	          { className: 'controls' },
 	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
-	            'Main view:',
+	            'div',
+	            { className: 'form-group' },
+	            _reactAddons2['default'].createElement(
+	              'label',
+	              null,
+	              'Main view:'
+	            ),
 	            _reactAddons2['default'].createElement(
 	              'select',
-	              { value: this.state.mainView, onChange: this.mainViewChange },
+	              { className: 'form-control', value: this.state.mainView, onChange: this.mainViewChange },
 	              _reactAddons2['default'].createElement(
 	                'option',
 	                { value: 'earth' },
@@ -20639,52 +20643,95 @@
 	                { value: 'rays' },
 	                'Rays'
 	              )
+	            ),
+	            _reactAddons2['default'].createElement(
+	              'div',
+	              { className: 'pull-right' },
+	              _reactAddons2['default'].createElement(
+	                'span',
+	                null,
+	                ' '
+	              ),
+	              _reactAddons2['default'].createElement(
+	                'label',
+	                null,
+	                _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthRotation', checked: this.state.sim.earthRotation, onChange: this.simCheckboxChange }),
+	                ' Rotating'
+	              ),
+	              _reactAddons2['default'].createElement(
+	                'span',
+	                null,
+	                ' '
+	              ),
+	              _reactAddons2['default'].createElement(
+	                'label',
+	                null,
+	                _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthTilt', checked: this.state.sim.earthTilt, onChange: this.simCheckboxChange }),
+	                ' Tilted'
+	              ),
+	              _reactAddons2['default'].createElement(
+	                'span',
+	                null,
+	                ' '
+	              ),
+	              _reactAddons2['default'].createElement(
+	                'label',
+	                null,
+	                _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'sunEarthLine', checked: this.state.sim.sunEarthLine, onChange: this.simCheckboxChange }),
+	                ' Sun-earth line'
+	              )
 	            )
 	          ),
 	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
+	            'div',
+	            { className: 'form-group' },
+	            _reactAddons2['default'].createElement(
+	              'div',
+	              null,
+	              _reactAddons2['default'].createElement(
+	                'label',
+	                null,
+	                'Day: ',
+	                this.getFormattedDay()
+	              )
+	            ),
 	            _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayAnimStep }),
-	            ' Day: ',
-	            this.getFormattedDay(),
-	            _reactAddons2['default'].createElement(_daySliderJsx2['default'], { value: this.state.sim.day, slide: this.daySliderChange })
+	            _reactAddons2['default'].createElement(
+	              'div',
+	              { className: 'day-slider' },
+	              _reactAddons2['default'].createElement(_daySliderJsx2['default'], { value: this.state.sim.day, slide: this.daySliderChange })
+	            )
 	          ),
 	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
-	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthRotation', checked: this.state.sim.earthRotation, onChange: this.simCheckboxChange }),
-	            ' Rotating'
-	          ),
-	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
-	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthTilt', checked: this.state.sim.earthTilt, onChange: this.simCheckboxChange }),
-	            ' Tilted'
-	          ),
-	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
-	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'sunEarthLine', checked: this.state.sim.sunEarthLine, onChange: this.simCheckboxChange }),
-	            ' Sun-earth line'
-	          ),
-	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
-	            'Select city: ',
+	            'div',
+	            { className: 'form-group' },
+	            _reactAddons2['default'].createElement(
+	              'label',
+	              null,
+	              'Select city:'
+	            ),
 	            _reactAddons2['default'].createElement(_citySelectJsx2['default'], { lat: this.state.sim.lat, long: this.state.sim.long, onLocationChange: this.locationChange })
 	          ),
 	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
-	            'Latitude: ',
-	            this.getFormattedLat(),
+	            'div',
+	            { className: 'form-group' },
+	            _reactAddons2['default'].createElement(
+	              'label',
+	              null,
+	              'Latitude: ',
+	              this.getFormattedLat()
+	            ),
 	            _reactAddons2['default'].createElement(_sliderJsx2['default'], { value: this.state.sim.lat, min: -90, max: 90, step: 1, slide: this.latSliderChange })
 	          ),
 	          _reactAddons2['default'].createElement(
-	            'label',
-	            null,
-	            'Longitude: ',
-	            this.getFormattedLong(),
+	            'div',
+	            { className: 'form-group' },
+	            _reactAddons2['default'].createElement(
+	              'label',
+	              null,
+	              'Longitude: ',
+	              this.getFormattedLong()
+	            ),
 	            _reactAddons2['default'].createElement(_sliderJsx2['default'], { value: this.state.sim.long, min: -180, max: 180, step: 1, slide: this.longSliderChange })
 	          )
 	        )
@@ -22932,16 +22979,31 @@
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'view ' + layout.earth },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'view-label' },
+	            'Earth'
+	          ),
 	          _react2['default'].createElement(_earthViewCompJsx2['default'], { ref: 'earth', simulation: this.props.simulation, onLocationChange: this.props.onLocationChange })
 	        ),
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'view ' + layout.orbit },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'view-label' },
+	            'Orbit'
+	          ),
 	          _react2['default'].createElement(_orbitViewCompJsx2['default'], { ref: 'orbit', simulation: this.props.simulation })
 	        ),
 	        _react2['default'].createElement(
 	          'div',
 	          { className: 'view ' + layout.rays },
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'view-label' },
+	            'Rays'
+	          ),
 	          _react2['default'].createElement(_raysViewCompJsx2['default'], { ref: 'rays', simulation: this.props.simulation })
 	        )
 	      );
@@ -23512,7 +23574,7 @@
 	exports.SUN_RADIUS = SUN_RADIUS;
 	var SIMPLE_SUN_RADIUS = 15000000 * SF;
 	exports.SIMPLE_SUN_RADIUS = SIMPLE_SUN_RADIUS;
-	var SUN_COLOR = 0xFF8935;
+	var SUN_COLOR = 0xCB671F;
 	exports.SUN_COLOR = SUN_COLOR;
 
 /***/ },
@@ -33631,11 +33693,11 @@
 	  },
 
 	  ambientLight: function ambientLight() {
-	    return new THREE.AmbientLight(0x111111);
+	    return new THREE.AmbientLight(0x444444);
 	  },
 
 	  sunLight: function sunLight() {
-	    return new THREE.PointLight(0xffffff, 1.2, 0);
+	    return new THREE.PointLight(0xffffff, 1, 0);
 	  },
 
 	  // Light that affects only sun object (due to radius settings).
@@ -33656,7 +33718,7 @@
 	  earth: function earth(params) {
 	    var simple = params.type === 'orbit-view';
 	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x023757 } : { specular: 0x252525 };
+	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x002135 } : { specular: 0x252525 };
 	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
 	    var material = new THREE.MeshPhongMaterial(COLORS);
 	    if (!simple) {
@@ -33718,9 +33780,9 @@
 	    var RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
 	    var HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
 	    var HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
-	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
+	    var EMISSIVE_COL = simple ? 0x770000 : 0x330000;
 	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
+	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMISSIVE_COL });
 	    var mesh = new THREE.Mesh(geometry, material);
 
 	    var arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
@@ -33736,7 +33798,7 @@
 	    var HEAD_HEIGHT = HEIGHT * 0.2;
 	    var RADIUS = 2000000 * c.SF;
 	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
+	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x007700 });
 	    var mesh = new THREE.Mesh(geometry, material);
 	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS + HEAD_HEIGHT;
 
@@ -34397,7 +34459,7 @@
 
 
 	// module
-	exports.push([module.id, ".view-manager {\n  width: 1200px;\n  height: 800px;\n  margin: 0 auto;\n  position: relative;\n}\n\n.view {\n  position: absolute;\n}\n\n.view.main {\n  width: 800px;\n  height: 800px;\n  left: 0;\n}\n\n.view.small-top {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  top: 0;\n}\n\n.view.small-bottom {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  bottom: 0;\n}\n", ""]);
+	exports.push([module.id, ".view-manager {\n  width: 1200px;\n  height: 800px;\n  margin: 0 auto;\n  position: relative;\n}\n\n.view {\n  position: absolute;\n}\n\n.view.main {\n  width: 800px;\n  height: 800px;\n  left: 0;\n}\n\n.view.small-top {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  top: 0;\n}\n\n.view.small-bottom {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  bottom: 0;\n}\n\n.view-label {\n  position: absolute;\n  top: 2px;\n  left: 5px;\n  font-size: 16px;\n  color: white;\n  opacity: 0.8;\n}", ""]);
 
 	// exports
 
@@ -36517,7 +36579,7 @@
 
 
 	// module
-	exports.push([module.id, ".ui-slider-handle {\n  font-size: 20px;\n  border-radius: 50px;\n  background: #fff !important;\n  box-shadow: 0 0 6px #666;\n}\n\n.ui-slider-with-tick-labels {\n  margin-bottom: 20px;\n}\n\n.ui-slider-tick-label {\n  font-size: 15px;\n  margin-top: 2px;\n}\n", ""]);
+	exports.push([module.id, ".ui-widget {\n  font-family: inherit;\n  font-size: inherit;\n}\n\n.ui-slider-handle {\n  border-radius: 50px;\n  background: #fff !important;\n  box-shadow: 0 0 6px #666;\n}\n\n.ui-slider-with-tick-labels {\n  margin-bottom: 25px;\n}\n\n.ui-slider-tick-label {\n  margin-top: 2px;\n}\n", ""]);
 
 	// exports
 
@@ -36757,7 +36819,7 @@
 	    value: function render() {
 	      return _react2['default'].createElement(
 	        'select',
-	        { value: this.getSelectedCity(), onChange: this.selectChange.bind(this) },
+	        { className: 'form-control', value: this.getSelectedCity(), onChange: this.selectChange.bind(this) },
 	        this.getOptions()
 	      );
 	    }
@@ -36884,7 +36946,7 @@
 	      var label = this.state.animationStarted ? 'Stop' : 'Play';
 	      return _react2['default'].createElement(
 	        'button',
-	        { onClick: this.toggleState },
+	        { className: 'btn btn-default animation-btn', onClick: this.toggleState },
 	        label
 	      );
 	    }
@@ -36931,7 +36993,7 @@
 
 
 	// module
-	exports.push([module.id, ".controls {\n  width: 800px;\n  margin: 20px auto;\n}\n\n.controls label {\n  display: block;\n  margin: 5px 0;\n}\n", ""]);
+	exports.push([module.id, ".controls {\n  width: 800px;\n  margin: 20px auto;\n}\n\n.controls select {\n  display: inline-block;\n  width: 250px;\n  margin-left: 5px;\n}\n\n.controls button {\n  margin: 2px;\n}\n\n.controls .form-group {\n  margin-bottom: 5px;\n}\n\n.day-slider {\n  display: inline-block;\n  width: 710px;\n  padding-top: 10px;\n  vertical-align: middle;\n  margin-left: 10px;\n}\n\n.animation-btn {\n  width: 70px;\n}", ""]);
 
 	// exports
 
@@ -36971,7 +37033,7 @@
 
 
 	// module
-	exports.push([module.id, "html, body, div {\n  line-height: 1;\n  margin: 0;\n  padding: 0;\n}\n\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 18px;\n}\n\nbutton {\n  margin-bottom: 2px;\n  vertical-align: middle;\n}\n", ""]);
+	exports.push([module.id, "/*html, body, div {*/\n  /*line-height: 1;*/\n  /*margin: 0;*/\n  /*padding: 0;*/\n/*}*/\n\n/*body {*/\n  /*font-family: Helvetica, Arial, sans-serif;*/\n  /*font-size: 18px;*/\n/*}*/\n\n/*button {*/\n  /*margin-bottom: 2px;*/\n  /*vertical-align: middle;*/\n/*}*/\n", ""]);
 
 	// exports
 
