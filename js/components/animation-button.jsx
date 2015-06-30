@@ -45,7 +45,7 @@ export default class AnimationButton extends React.Component {
   render() {
     let label = this.state.animationStarted ? 'Stop' : 'Play';
     return (
-      <button onClick={this.toggleState}>{label}</button>
+      <button className='btn btn-default animation-btn' onClick={this.toggleState}>{label}</button>
     )
   }
 }

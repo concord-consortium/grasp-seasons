@@ -62,12 +62,15 @@ export default class ViewManager extends React.Component {
     return (
       <div className='view-manager'>
         <div className={`view ${layout.earth}`}>
+          <div className='view-label'>Earth</div>
           <EarthViewComp ref='earth' simulation={this.props.simulation} onLocationChange={this.props.onLocationChange}/>
         </div>
         <div className={`view ${layout.orbit}`}>
+          <div className='view-label'>Orbit</div>
           <OrbitViewComp ref='orbit' simulation={this.props.simulation}/>
         </div>
         <div className={`view ${layout.rays}`}>
+          <div className='view-label'>Rays</div>
           <RaysViewComp ref='rays' simulation={this.props.simulation}/>
         </div>
       </div>

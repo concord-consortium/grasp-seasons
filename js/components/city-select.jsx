@@ -29,7 +29,7 @@ export default class CitySelect extends React.Component {
 
   render() {
     return (
-      <select value={this.getSelectedCity()} onChange={this.selectChange.bind(this)}>
+      <select className='form-control' value={this.getSelectedCity()} onChange={this.selectChange.bind(this)}>
         {this.getOptions()}
       </select>
     );

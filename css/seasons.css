@@ -3,7 +3,28 @@
   margin: 20px auto;
 }
 
-.controls label {
-  display: block;
-  margin: 5px 0;
+.controls select {
+  display: inline-block;
+  width: 250px;
+  margin-left: 5px;
+}
+
+.controls button {
+  margin: 2px;
+}
+
+.controls .form-group {
+  margin-bottom: 5px;
+}
+
+.day-slider {
+  display: inline-block;
+  width: 710px;
+  padding-top: 10px;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+.animation-btn {
+  width: 70px;
 }

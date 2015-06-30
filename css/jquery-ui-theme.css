@@ -1,15 +1,18 @@
+.ui-widget {
+  font-family: inherit;
+  font-size: inherit;
+}
+
 .ui-slider-handle {
-  font-size: 20px;
   border-radius: 50px;
   background: #fff !important;
   box-shadow: 0 0 6px #666;
 }
 
 .ui-slider-with-tick-labels {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .ui-slider-tick-label {
-  font-size: 15px;
   margin-top: 2px;
 }

@@ -103,28 +103,42 @@ export default class Seasons extends React.Component {
     return (
       <div>
         <ViewManager mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange}/>
-        <div className='controls'>
-          <label>Main view:
-            <select value={this.state.mainView} onChange={this.mainViewChange}>
+        <div className='controls' >
+          <div className='form-group'>
+            <label>Main view:</label>
+            <select className='form-control' value={this.state.mainView} onChange={this.mainViewChange}>
               <option value='earth'>Earth</option>
               <option value='orbit'>Orbit</option>
               <option value='rays'>Rays</option>
             </select>
-          </label>
-          <label>
-            <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimStep}/> Day: {this.getFormattedDay()}
-            <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
-          </label>
-          <label><input type='checkbox' name='earthRotation' checked={this.state.sim.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>
-          <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
-          <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
-          <label>Select city: <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.locationChange}/></label>
-          <label>Latitude: {this.getFormattedLat()}
+            <div className='pull-right'>
+              <span> </span>
+              <label><input type='checkbox' name='earthRotation' checked={this.state.sim.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>
+              <span> </span>
+              <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
+              <span> </span>
+              <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
+            </div>
+          </div>
+          <div className='form-group'>
+            <div><label>Day: {this.getFormattedDay()}</label></div>
+            <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimStep}/>
+            <div className='day-slider'>
+              <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
+            </div>
+          </div>
+          <div className='form-group'>
+            <label>Select city:</label>
+            <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.locationChange}/>
+          </div>
+          <div className='form-group'>
+            <label>Latitude: {this.getFormattedLat()}</label>
             <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange}/>
-          </label>
-          <label>Longitude: {this.getFormattedLong()}
+          </div>
+          <div className='form-group'>
+            <label>Longitude: {this.getFormattedLong()}</label>
             <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange}/>
-          </label>
+          </div>
         </div>
       </div>
     );
