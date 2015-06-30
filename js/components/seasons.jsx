@@ -3,6 +3,7 @@ import ViewManager from './view-manager.jsx';
 import Slider from './slider.jsx';
 import DaySlider from './day-slider.jsx';
 import CitySelect from './city-select.jsx';
+import AnimationButton from './animation-button.jsx';
 
 import '../../css/seasons.css';
 
@@ -14,7 +15,7 @@ export default class Seasons extends React.Component {
     super(props);
     this.state = {
       mainView: 'earth',
-      simulation: {
+      sim: {
         day: 171,
         earthTilt: true,
         earthRotation: false,
@@ -25,7 +26,8 @@ export default class Seasons extends React.Component {
     };
 
     this.mainViewChange = this.mainViewChange.bind(this);
-    this.dayChange = this.dayChange.bind(this);
+    this.daySliderChange = this.daySliderChange.bind(this);
+    this.dayAnimStep = this.dayAnimStep.bind(this);
     this.simCheckboxChange = this.simCheckboxChange.bind(this);
     this.locationChange = this.locationChange.bind(this);
     this.latSliderChange = this.latSliderChange.bind(this);
@@ -36,23 +38,23 @@ export default class Seasons extends React.Component {
     // Initialize a date in `2015-01-01` (it's not a leap year).
     let date = new Date(2015, 0);
     // Add the number of days.
-    date.setDate(this.state.simulation.day + 1);
+    date.setDate(this.state.sim.day + 1);
     return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
   }
 
   getFormattedLat() {
     let dir = '';
-    if (this.state.simulation.lat > 0) dir = 'N';
-    else if (this.state.simulation.lat < 0) dir = 'S';
-    let lat = Math.abs(this.state.simulation.lat).toFixed(2);
+    if (this.state.sim.lat > 0) dir = 'N';
+    else if (this.state.sim.lat < 0) dir = 'S';
+    let lat = Math.abs(this.state.sim.lat).toFixed(2);
     return `${lat}°${dir}`;
   }
 
   getFormattedLong() {
     let dir = '';
-    if (this.state.simulation.long > 0) dir = 'E';
-    else if (this.state.simulation.long < 0) dir = 'W';
-    let long = Math.abs(this.state.simulation.long).toFixed(2);
+    if (this.state.sim.long > 0) dir = 'E';
+    else if (this.state.sim.long < 0) dir = 'W';
+    let long = Math.abs(this.state.sim.long).toFixed(2);
     return `${long}°${dir}`;
   }
 
@@ -62,7 +64,7 @@ export default class Seasons extends React.Component {
       updateStruct[key] = {$set: newSimState[key]};
     }
     let newState = React.addons.update(this.state, {
-      simulation: updateStruct
+      sim: updateStruct
     });
     this.setState(newState);
   }
@@ -71,8 +73,12 @@ export default class Seasons extends React.Component {
     this.setState({mainView: event.target.value});
   }
 
-  dayChange(event, ui) {
+  daySliderChange(event, ui) {
     this.setSimState({day: ui.value});
+  }
+
+  dayAnimStep(newDay) {
+    this.setSimState({day: newDay});
   }
 
   simCheckboxChange(event) {
@@ -96,7 +102,7 @@ export default class Seasons extends React.Component {
   render() {
     return (
       <div>
-        <ViewManager mainView={this.state.mainView} simulation={this.state.simulation} onLocationChange={this.locationChange}/>
+        <ViewManager mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange}/>
         <div className='controls'>
           <label>Main view:
             <select value={this.state.mainView} onChange={this.mainViewChange}>
@@ -106,18 +112,18 @@ export default class Seasons extends React.Component {
             </select>
           </label>
           <label>
-            Day: {this.getFormattedDay()}
-            <DaySlider value={this.state.simulation.day} slide={this.dayChange}/>
+            <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimStep}/> Day: {this.getFormattedDay()}
+            <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
           </label>
-          <label><input type='checkbox' name='earthRotation' checked={this.state.simulation.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>
-          <label><input type='checkbox' name='earthTilt' checked={this.state.simulation.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
-          <label><input type='checkbox' name='sunEarthLine' checked={this.state.simulation.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
-          <label>Select city: <CitySelect lat={this.state.simulation.lat} long={this.state.simulation.long} onLocationChange={this.locationChange}/></label>
+          <label><input type='checkbox' name='earthRotation' checked={this.state.sim.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>
+          <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
+          <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
+          <label>Select city: <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.locationChange}/></label>
           <label>Latitude: {this.getFormattedLat()}
-            <Slider value={this.state.simulation.lat} min={-90} max={90} step={1} slide={this.latSliderChange}/>
+            <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange}/>
           </label>
           <label>Longitude: {this.getFormattedLong()}
-            <Slider value={this.state.simulation.long} min={-180} max={180} step={1} slide={this.longSliderChange}/>
+            <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange}/>
           </label>
         </div>
       </div>

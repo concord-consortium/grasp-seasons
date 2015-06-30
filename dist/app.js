@@ -56,7 +56,7 @@
 
 	var _componentsSeasonsJsx2 = _interopRequireDefault(_componentsSeasonsJsx);
 
-	__webpack_require__(211);
+	__webpack_require__(212);
 
 	_react2['default'].render(_react2['default'].createElement(_componentsSeasonsJsx2['default'], null), document.getElementById('app'));
 
@@ -20455,19 +20455,19 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
-	var _reactAddons = __webpack_require__(170);
+	var _reactAddons = __webpack_require__(158);
 
 	var _reactAddons2 = _interopRequireDefault(_reactAddons);
 
-	var _viewManagerJsx = __webpack_require__(188);
+	var _viewManagerJsx = __webpack_require__(176);
 
 	var _viewManagerJsx2 = _interopRequireDefault(_viewManagerJsx);
 
-	var _sliderJsx = __webpack_require__(160);
+	var _sliderJsx = __webpack_require__(198);
 
 	var _sliderJsx2 = _interopRequireDefault(_sliderJsx);
 
-	var _daySliderJsx = __webpack_require__(158);
+	var _daySliderJsx = __webpack_require__(205);
 
 	var _daySliderJsx2 = _interopRequireDefault(_daySliderJsx);
 
@@ -20475,7 +20475,11 @@
 
 	var _citySelectJsx2 = _interopRequireDefault(_citySelectJsx);
 
-	__webpack_require__(209);
+	var _animationButtonJsx = __webpack_require__(209);
+
+	var _animationButtonJsx2 = _interopRequireDefault(_animationButtonJsx);
+
+	__webpack_require__(210);
 
 	var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -20486,7 +20490,7 @@
 	    _get(Object.getPrototypeOf(Seasons.prototype), 'constructor', this).call(this, props);
 	    this.state = {
 	      mainView: 'earth',
-	      simulation: {
+	      sim: {
 	        day: 171,
 	        earthTilt: true,
 	        earthRotation: false,
@@ -20497,7 +20501,8 @@
 	    };
 
 	    this.mainViewChange = this.mainViewChange.bind(this);
-	    this.dayChange = this.dayChange.bind(this);
+	    this.daySliderChange = this.daySliderChange.bind(this);
+	    this.dayAnimStep = this.dayAnimStep.bind(this);
 	    this.simCheckboxChange = this.simCheckboxChange.bind(this);
 	    this.locationChange = this.locationChange.bind(this);
 	    this.latSliderChange = this.latSliderChange.bind(this);
@@ -20512,23 +20517,23 @@
 	      // Initialize a date in `2015-01-01` (it's not a leap year).
 	      var date = new Date(2015, 0);
 	      // Add the number of days.
-	      date.setDate(this.state.simulation.day + 1);
+	      date.setDate(this.state.sim.day + 1);
 	      return MONTH_NAMES[date.getMonth()] + ' ' + date.getDate();
 	    }
 	  }, {
 	    key: 'getFormattedLat',
 	    value: function getFormattedLat() {
 	      var dir = '';
-	      if (this.state.simulation.lat > 0) dir = 'N';else if (this.state.simulation.lat < 0) dir = 'S';
-	      var lat = Math.abs(this.state.simulation.lat).toFixed(2);
+	      if (this.state.sim.lat > 0) dir = 'N';else if (this.state.sim.lat < 0) dir = 'S';
+	      var lat = Math.abs(this.state.sim.lat).toFixed(2);
 	      return lat + '°' + dir;
 	    }
 	  }, {
 	    key: 'getFormattedLong',
 	    value: function getFormattedLong() {
 	      var dir = '';
-	      if (this.state.simulation.long > 0) dir = 'E';else if (this.state.simulation.long < 0) dir = 'W';
-	      var long = Math.abs(this.state.simulation.long).toFixed(2);
+	      if (this.state.sim.long > 0) dir = 'E';else if (this.state.sim.long < 0) dir = 'W';
+	      var long = Math.abs(this.state.sim.long).toFixed(2);
 	      return long + '°' + dir;
 	    }
 	  }, {
@@ -20561,7 +20566,7 @@
 	      }
 
 	      var newState = _reactAddons2['default'].addons.update(this.state, {
-	        simulation: updateStruct
+	        sim: updateStruct
 	      });
 	      this.setState(newState);
 	    }
@@ -20571,9 +20576,14 @@
 	      this.setState({ mainView: event.target.value });
 	    }
 	  }, {
-	    key: 'dayChange',
-	    value: function dayChange(event, ui) {
+	    key: 'daySliderChange',
+	    value: function daySliderChange(event, ui) {
 	      this.setSimState({ day: ui.value });
+	    }
+	  }, {
+	    key: 'dayAnimStep',
+	    value: function dayAnimStep(newDay) {
+	      this.setSimState({ day: newDay });
 	    }
 	  }, {
 	    key: 'simCheckboxChange',
@@ -20603,7 +20613,7 @@
 	      return _reactAddons2['default'].createElement(
 	        'div',
 	        null,
-	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { mainView: this.state.mainView, simulation: this.state.simulation, onLocationChange: this.locationChange }),
+	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { mainView: this.state.mainView, simulation: this.state.sim, onLocationChange: this.locationChange }),
 	        _reactAddons2['default'].createElement(
 	          'div',
 	          { className: 'controls' },
@@ -20634,47 +20644,48 @@
 	          _reactAddons2['default'].createElement(
 	            'label',
 	            null,
-	            'Day: ',
+	            _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayAnimStep }),
+	            ' Day: ',
 	            this.getFormattedDay(),
-	            _reactAddons2['default'].createElement(_daySliderJsx2['default'], { value: this.state.simulation.day, slide: this.dayChange })
+	            _reactAddons2['default'].createElement(_daySliderJsx2['default'], { value: this.state.sim.day, slide: this.daySliderChange })
 	          ),
 	          _reactAddons2['default'].createElement(
 	            'label',
 	            null,
-	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthRotation', checked: this.state.simulation.earthRotation, onChange: this.simCheckboxChange }),
+	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthRotation', checked: this.state.sim.earthRotation, onChange: this.simCheckboxChange }),
 	            ' Rotating'
 	          ),
 	          _reactAddons2['default'].createElement(
 	            'label',
 	            null,
-	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthTilt', checked: this.state.simulation.earthTilt, onChange: this.simCheckboxChange }),
+	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthTilt', checked: this.state.sim.earthTilt, onChange: this.simCheckboxChange }),
 	            ' Tilted'
 	          ),
 	          _reactAddons2['default'].createElement(
 	            'label',
 	            null,
-	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'sunEarthLine', checked: this.state.simulation.sunEarthLine, onChange: this.simCheckboxChange }),
+	            _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'sunEarthLine', checked: this.state.sim.sunEarthLine, onChange: this.simCheckboxChange }),
 	            ' Sun-earth line'
 	          ),
 	          _reactAddons2['default'].createElement(
 	            'label',
 	            null,
 	            'Select city: ',
-	            _reactAddons2['default'].createElement(_citySelectJsx2['default'], { lat: this.state.simulation.lat, long: this.state.simulation.long, onLocationChange: this.locationChange })
+	            _reactAddons2['default'].createElement(_citySelectJsx2['default'], { lat: this.state.sim.lat, long: this.state.sim.long, onLocationChange: this.locationChange })
 	          ),
 	          _reactAddons2['default'].createElement(
 	            'label',
 	            null,
 	            'Latitude: ',
 	            this.getFormattedLat(),
-	            _reactAddons2['default'].createElement(_sliderJsx2['default'], { value: this.state.simulation.lat, min: -90, max: 90, step: 1, slide: this.latSliderChange })
+	            _reactAddons2['default'].createElement(_sliderJsx2['default'], { value: this.state.sim.lat, min: -90, max: 90, step: 1, slide: this.latSliderChange })
 	          ),
 	          _reactAddons2['default'].createElement(
 	            'label',
 	            null,
 	            'Longitude: ',
 	            this.getFormattedLong(),
-	            _reactAddons2['default'].createElement(_sliderJsx2['default'], { value: this.state.simulation.long, min: -180, max: 180, step: 1, slide: this.longSliderChange })
+	            _reactAddons2['default'].createElement(_sliderJsx2['default'], { value: this.state.sim.long, min: -180, max: 180, step: 1, slide: this.longSliderChange })
 	          )
 	        )
 	      );
@@ -20689,6 +20700,2127 @@
 
 /***/ },
 /* 158 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(159);
+
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactWithAddons
+	 */
+
+	/**
+	 * This module exists purely in the open source project, and is meant as a way
+	 * to create a separate standalone build of React. This build has "addons", or
+	 * functionality we've built and think might be useful but doesn't have a good
+	 * place to live inside React core.
+	 */
+
+	'use strict';
+
+	var LinkedStateMixin = __webpack_require__(160);
+	var React = __webpack_require__(2);
+	var ReactComponentWithPureRenderMixin =
+	  __webpack_require__(163);
+	var ReactCSSTransitionGroup = __webpack_require__(164);
+	var ReactFragment = __webpack_require__(10);
+	var ReactTransitionGroup = __webpack_require__(165);
+	var ReactUpdates = __webpack_require__(24);
+
+	var cx = __webpack_require__(173);
+	var cloneWithProps = __webpack_require__(167);
+	var update = __webpack_require__(174);
+
+	React.addons = {
+	  CSSTransitionGroup: ReactCSSTransitionGroup,
+	  LinkedStateMixin: LinkedStateMixin,
+	  PureRenderMixin: ReactComponentWithPureRenderMixin,
+	  TransitionGroup: ReactTransitionGroup,
+
+	  batchedUpdates: ReactUpdates.batchedUpdates,
+	  classSet: cx,
+	  cloneWithProps: cloneWithProps,
+	  createFragment: ReactFragment.create,
+	  update: update
+	};
+
+	if ("production" !== process.env.NODE_ENV) {
+	  React.addons.Perf = __webpack_require__(150);
+	  React.addons.TestUtils = __webpack_require__(175);
+	}
+
+	module.exports = React;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule LinkedStateMixin
+	 * @typechecks static-only
+	 */
+
+	'use strict';
+
+	var ReactLink = __webpack_require__(161);
+	var ReactStateSetters = __webpack_require__(162);
+
+	/**
+	 * A simple mixin around ReactLink.forState().
+	 */
+	var LinkedStateMixin = {
+	  /**
+	   * Create a ReactLink that's linked to part of this component's state. The
+	   * ReactLink will have the current value of this.state[key] and will call
+	   * setState() when a change is requested.
+	   *
+	   * @param {string} key state key to update. Note: you may want to use keyOf()
+	   * if you're using Google Closure Compiler advanced mode.
+	   * @return {ReactLink} ReactLink instance linking to the state.
+	   */
+	  linkState: function(key) {
+	    return new ReactLink(
+	      this.state[key],
+	      ReactStateSetters.createStateKeySetter(this, key)
+	    );
+	  }
+	};
+
+	module.exports = LinkedStateMixin;
+
+
+/***/ },
+/* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactLink
+	 * @typechecks static-only
+	 */
+
+	'use strict';
+
+	/**
+	 * ReactLink encapsulates a common pattern in which a component wants to modify
+	 * a prop received from its parent. ReactLink allows the parent to pass down a
+	 * value coupled with a callback that, when invoked, expresses an intent to
+	 * modify that value. For example:
+	 *
+	 * React.createClass({
+	 *   getInitialState: function() {
+	 *     return {value: ''};
+	 *   },
+	 *   render: function() {
+	 *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
+	 *     return <input valueLink={valueLink} />;
+	 *   },
+	 *   this._handleValueChange: function(newValue) {
+	 *     this.setState({value: newValue});
+	 *   }
+	 * });
+	 *
+	 * We have provided some sugary mixins to make the creation and
+	 * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
+	 */
+
+	var React = __webpack_require__(2);
+
+	/**
+	 * @param {*} value current value of the link
+	 * @param {function} requestChange callback to request a change
+	 */
+	function ReactLink(value, requestChange) {
+	  this.value = value;
+	  this.requestChange = requestChange;
+	}
+
+	/**
+	 * Creates a PropType that enforces the ReactLink API and optionally checks the
+	 * type of the value being passed inside the link. Example:
+	 *
+	 * MyComponent.propTypes = {
+	 *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
+	 * }
+	 */
+	function createLinkTypeChecker(linkType) {
+	  var shapes = {
+	    value: typeof linkType === 'undefined' ?
+	      React.PropTypes.any.isRequired :
+	      linkType.isRequired,
+	    requestChange: React.PropTypes.func.isRequired
+	  };
+	  return React.PropTypes.shape(shapes);
+	}
+
+	ReactLink.PropTypes = {
+	  link: createLinkTypeChecker
+	};
+
+	module.exports = ReactLink;
+
+
+/***/ },
+/* 162 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactStateSetters
+	 */
+
+	'use strict';
+
+	var ReactStateSetters = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function(component, funcReturningState) {
+	    return function(a, b, c, d, e, f) {
+	      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
+	      if (partialState) {
+	        component.setState(partialState);
+	      }
+	    };
+	  },
+
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function(component, key) {
+	    // Memoize the setters.
+	    var cache = component.__keySetters || (component.__keySetters = {});
+	    return cache[key] || (cache[key] = createStateKeySetter(component, key));
+	  }
+	};
+
+	function createStateKeySetter(component, key) {
+	  // Partial state is allocated outside of the function closure so it can be
+	  // reused with every call, avoiding memory allocation when this function
+	  // is called.
+	  var partialState = {};
+	  return function stateKeySetter(value) {
+	    partialState[key] = value;
+	    component.setState(partialState);
+	  };
+	}
+
+	ReactStateSetters.Mixin = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateSetter(function(xValue) {
+	   *     return {x: xValue};
+	   *   })(1);
+	   *
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function(funcReturningState) {
+	    return ReactStateSetters.createStateSetter(this, funcReturningState);
+	  },
+
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateKeySetter('x')(1);
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function(key) {
+	    return ReactStateSetters.createStateKeySetter(this, key);
+	  }
+	};
+
+	module.exports = ReactStateSetters;
+
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	* @providesModule ReactComponentWithPureRenderMixin
+	*/
+
+	'use strict';
+
+	var shallowEqual = __webpack_require__(137);
+
+	/**
+	 * If your React component's render function is "pure", e.g. it will render the
+	 * same result given the same props and state, provide this Mixin for a
+	 * considerable performance boost.
+	 *
+	 * Most React components have pure render functions.
+	 *
+	 * Example:
+	 *
+	 *   var ReactComponentWithPureRenderMixin =
+	 *     require('ReactComponentWithPureRenderMixin');
+	 *   React.createClass({
+	 *     mixins: [ReactComponentWithPureRenderMixin],
+	 *
+	 *     render: function() {
+	 *       return <div className={this.props.className}>foo</div>;
+	 *     }
+	 *   });
+	 *
+	 * Note: This only checks shallow equality for props and state. If these contain
+	 * complex data structures this mixin may have false-negatives for deeper
+	 * differences. Only mixin to components which have simple props and state, or
+	 * use `forceUpdate()` when you know deep data structures have changed.
+	 */
+	var ReactComponentWithPureRenderMixin = {
+	  shouldComponentUpdate: function(nextProps, nextState) {
+	    return !shallowEqual(this.props, nextProps) ||
+	           !shallowEqual(this.state, nextState);
+	  }
+	};
+
+	module.exports = ReactComponentWithPureRenderMixin;
+
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @typechecks
+	 * @providesModule ReactCSSTransitionGroup
+	 */
+
+	'use strict';
+
+	var React = __webpack_require__(2);
+
+	var assign = __webpack_require__(13);
+
+	var ReactTransitionGroup = React.createFactory(
+	  __webpack_require__(165)
+	);
+	var ReactCSSTransitionGroupChild = React.createFactory(
+	  __webpack_require__(170)
+	);
+
+	var ReactCSSTransitionGroup = React.createClass({
+	  displayName: 'ReactCSSTransitionGroup',
+
+	  propTypes: {
+	    transitionName: React.PropTypes.string.isRequired,
+	    transitionAppear: React.PropTypes.bool,
+	    transitionEnter: React.PropTypes.bool,
+	    transitionLeave: React.PropTypes.bool
+	  },
+
+	  getDefaultProps: function() {
+	    return {
+	      transitionAppear: false,
+	      transitionEnter: true,
+	      transitionLeave: true
+	    };
+	  },
+
+	  _wrapChild: function(child) {
+	    // We need to provide this childFactory so that
+	    // ReactCSSTransitionGroupChild can receive updates to name, enter, and
+	    // leave while it is leaving.
+	    return ReactCSSTransitionGroupChild(
+	      {
+	        name: this.props.transitionName,
+	        appear: this.props.transitionAppear,
+	        enter: this.props.transitionEnter,
+	        leave: this.props.transitionLeave
+	      },
+	      child
+	    );
+	  },
+
+	  render: function() {
+	    return (
+	      ReactTransitionGroup(
+	        assign({}, this.props, {childFactory: this._wrapChild})
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ReactCSSTransitionGroup;
+
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactTransitionGroup
+	 */
+
+	'use strict';
+
+	var React = __webpack_require__(2);
+	var ReactTransitionChildMapping = __webpack_require__(166);
+
+	var assign = __webpack_require__(13);
+	var cloneWithProps = __webpack_require__(167);
+	var emptyFunction = __webpack_require__(16);
+
+	var ReactTransitionGroup = React.createClass({
+	  displayName: 'ReactTransitionGroup',
+
+	  propTypes: {
+	    component: React.PropTypes.any,
+	    childFactory: React.PropTypes.func
+	  },
+
+	  getDefaultProps: function() {
+	    return {
+	      component: 'span',
+	      childFactory: emptyFunction.thatReturnsArgument
+	    };
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      children: ReactTransitionChildMapping.getChildMapping(this.props.children)
+	    };
+	  },
+
+	  componentWillMount: function() {
+	    this.currentlyTransitioningKeys = {};
+	    this.keysToEnter = [];
+	    this.keysToLeave = [];
+	  },
+
+	  componentDidMount: function() {
+	    var initialChildMapping = this.state.children;
+	    for (var key in initialChildMapping) {
+	      if (initialChildMapping[key]) {
+	        this.performAppear(key);
+	      }
+	    }
+	  },
+
+	  componentWillReceiveProps: function(nextProps) {
+	    var nextChildMapping = ReactTransitionChildMapping.getChildMapping(
+	      nextProps.children
+	    );
+	    var prevChildMapping = this.state.children;
+
+	    this.setState({
+	      children: ReactTransitionChildMapping.mergeChildMappings(
+	        prevChildMapping,
+	        nextChildMapping
+	      )
+	    });
+
+	    var key;
+
+	    for (key in nextChildMapping) {
+	      var hasPrev = prevChildMapping && prevChildMapping.hasOwnProperty(key);
+	      if (nextChildMapping[key] && !hasPrev &&
+	          !this.currentlyTransitioningKeys[key]) {
+	        this.keysToEnter.push(key);
+	      }
+	    }
+
+	    for (key in prevChildMapping) {
+	      var hasNext = nextChildMapping && nextChildMapping.hasOwnProperty(key);
+	      if (prevChildMapping[key] && !hasNext &&
+	          !this.currentlyTransitioningKeys[key]) {
+	        this.keysToLeave.push(key);
+	      }
+	    }
+
+	    // If we want to someday check for reordering, we could do it here.
+	  },
+
+	  componentDidUpdate: function() {
+	    var keysToEnter = this.keysToEnter;
+	    this.keysToEnter = [];
+	    keysToEnter.forEach(this.performEnter);
+
+	    var keysToLeave = this.keysToLeave;
+	    this.keysToLeave = [];
+	    keysToLeave.forEach(this.performLeave);
+	  },
+
+	  performAppear: function(key) {
+	    this.currentlyTransitioningKeys[key] = true;
+
+	    var component = this.refs[key];
+
+	    if (component.componentWillAppear) {
+	      component.componentWillAppear(
+	        this._handleDoneAppearing.bind(this, key)
+	      );
+	    } else {
+	      this._handleDoneAppearing(key);
+	    }
+	  },
+
+	  _handleDoneAppearing: function(key) {
+	    var component = this.refs[key];
+	    if (component.componentDidAppear) {
+	      component.componentDidAppear();
+	    }
+
+	    delete this.currentlyTransitioningKeys[key];
+
+	    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
+	      this.props.children
+	    );
+
+	    if (!currentChildMapping || !currentChildMapping.hasOwnProperty(key)) {
+	      // This was removed before it had fully appeared. Remove it.
+	      this.performLeave(key);
+	    }
+	  },
+
+	  performEnter: function(key) {
+	    this.currentlyTransitioningKeys[key] = true;
+
+	    var component = this.refs[key];
+
+	    if (component.componentWillEnter) {
+	      component.componentWillEnter(
+	        this._handleDoneEntering.bind(this, key)
+	      );
+	    } else {
+	      this._handleDoneEntering(key);
+	    }
+	  },
+
+	  _handleDoneEntering: function(key) {
+	    var component = this.refs[key];
+	    if (component.componentDidEnter) {
+	      component.componentDidEnter();
+	    }
+
+	    delete this.currentlyTransitioningKeys[key];
+
+	    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
+	      this.props.children
+	    );
+
+	    if (!currentChildMapping || !currentChildMapping.hasOwnProperty(key)) {
+	      // This was removed before it had fully entered. Remove it.
+	      this.performLeave(key);
+	    }
+	  },
+
+	  performLeave: function(key) {
+	    this.currentlyTransitioningKeys[key] = true;
+
+	    var component = this.refs[key];
+	    if (component.componentWillLeave) {
+	      component.componentWillLeave(this._handleDoneLeaving.bind(this, key));
+	    } else {
+	      // Note that this is somewhat dangerous b/c it calls setState()
+	      // again, effectively mutating the component before all the work
+	      // is done.
+	      this._handleDoneLeaving(key);
+	    }
+	  },
+
+	  _handleDoneLeaving: function(key) {
+	    var component = this.refs[key];
+
+	    if (component.componentDidLeave) {
+	      component.componentDidLeave();
+	    }
+
+	    delete this.currentlyTransitioningKeys[key];
+
+	    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
+	      this.props.children
+	    );
+
+	    if (currentChildMapping && currentChildMapping.hasOwnProperty(key)) {
+	      // This entered again before it fully left. Add it again.
+	      this.performEnter(key);
+	    } else {
+	      var newChildren = assign({}, this.state.children);
+	      delete newChildren[key];
+	      this.setState({children: newChildren});
+	    }
+	  },
+
+	  render: function() {
+	    // TODO: we could get rid of the need for the wrapper node
+	    // by cloning a single child
+	    var childrenToRender = [];
+	    for (var key in this.state.children) {
+	      var child = this.state.children[key];
+	      if (child) {
+	        // You may need to apply reactive updates to a child as it is leaving.
+	        // The normal React way to do it won't work since the child will have
+	        // already been removed. In case you need this behavior you can provide
+	        // a childFactory function to wrap every child, even the ones that are
+	        // leaving.
+	        childrenToRender.push(cloneWithProps(
+	          this.props.childFactory(child),
+	          {ref: key, key: key}
+	        ));
+	      }
+	    }
+	    return React.createElement(
+	      this.props.component,
+	      this.props,
+	      childrenToRender
+	    );
+	  }
+	});
+
+	module.exports = ReactTransitionGroup;
+
+
+/***/ },
+/* 166 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @typechecks static-only
+	 * @providesModule ReactTransitionChildMapping
+	 */
+
+	'use strict';
+
+	var ReactChildren = __webpack_require__(8);
+	var ReactFragment = __webpack_require__(10);
+
+	var ReactTransitionChildMapping = {
+	  /**
+	   * Given `this.props.children`, return an object mapping key to child. Just
+	   * simple syntactic sugar around ReactChildren.map().
+	   *
+	   * @param {*} children `this.props.children`
+	   * @return {object} Mapping of key to child
+	   */
+	  getChildMapping: function(children) {
+	    if (!children) {
+	      return children;
+	    }
+	    return ReactFragment.extract(ReactChildren.map(children, function(child) {
+	      return child;
+	    }));
+	  },
+
+	  /**
+	   * When you're adding or removing children some may be added or removed in the
+	   * same render pass. We want to show *both* since we want to simultaneously
+	   * animate elements in and out. This function takes a previous set of keys
+	   * and a new set of keys and merges them with its best guess of the correct
+	   * ordering. In the future we may expose some of the utilities in
+	   * ReactMultiChild to make this easy, but for now React itself does not
+	   * directly have this concept of the union of prevChildren and nextChildren
+	   * so we implement it here.
+	   *
+	   * @param {object} prev prev children as returned from
+	   * `ReactTransitionChildMapping.getChildMapping()`.
+	   * @param {object} next next children as returned from
+	   * `ReactTransitionChildMapping.getChildMapping()`.
+	   * @return {object} a key set that contains all keys in `prev` and all keys
+	   * in `next` in a reasonable order.
+	   */
+	  mergeChildMappings: function(prev, next) {
+	    prev = prev || {};
+	    next = next || {};
+
+	    function getValueForKey(key) {
+	      if (next.hasOwnProperty(key)) {
+	        return next[key];
+	      } else {
+	        return prev[key];
+	      }
+	    }
+
+	    // For each key of `next`, the list of keys to insert before that key in
+	    // the combined list
+	    var nextKeysPending = {};
+
+	    var pendingKeys = [];
+	    for (var prevKey in prev) {
+	      if (next.hasOwnProperty(prevKey)) {
+	        if (pendingKeys.length) {
+	          nextKeysPending[prevKey] = pendingKeys;
+	          pendingKeys = [];
+	        }
+	      } else {
+	        pendingKeys.push(prevKey);
+	      }
+	    }
+
+	    var i;
+	    var childMapping = {};
+	    for (var nextKey in next) {
+	      if (nextKeysPending.hasOwnProperty(nextKey)) {
+	        for (i = 0; i < nextKeysPending[nextKey].length; i++) {
+	          var pendingNextKey = nextKeysPending[nextKey][i];
+	          childMapping[nextKeysPending[nextKey][i]] = getValueForKey(
+	            pendingNextKey
+	          );
+	        }
+	      }
+	      childMapping[nextKey] = getValueForKey(nextKey);
+	    }
+
+	    // Finally, add the keys which didn't appear before any key in `next`
+	    for (i = 0; i < pendingKeys.length; i++) {
+	      childMapping[pendingKeys[i]] = getValueForKey(pendingKeys[i]);
+	    }
+
+	    return childMapping;
+	  }
+	};
+
+	module.exports = ReactTransitionChildMapping;
+
+
+/***/ },
+/* 167 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @typechecks static-only
+	 * @providesModule cloneWithProps
+	 */
+
+	'use strict';
+
+	var ReactElement = __webpack_require__(11);
+	var ReactPropTransferer = __webpack_require__(168);
+
+	var keyOf = __webpack_require__(39);
+	var warning = __webpack_require__(15);
+
+	var CHILDREN_PROP = keyOf({children: null});
+
+	/**
+	 * Sometimes you want to change the props of a child passed to you. Usually
+	 * this is to add a CSS class.
+	 *
+	 * @param {ReactElement} child child element you'd like to clone
+	 * @param {object} props props you'd like to modify. className and style will be
+	 * merged automatically.
+	 * @return {ReactElement} a clone of child with props merged in.
+	 */
+	function cloneWithProps(child, props) {
+	  if ("production" !== process.env.NODE_ENV) {
+	    ("production" !== process.env.NODE_ENV ? warning(
+	      !child.ref,
+	      'You are calling cloneWithProps() on a child with a ref. This is ' +
+	      'dangerous because you\'re creating a new child which will not be ' +
+	      'added as a ref to its parent.'
+	    ) : null);
+	  }
+
+	  var newProps = ReactPropTransferer.mergeProps(props, child.props);
+
+	  // Use `child.props.children` if it is provided.
+	  if (!newProps.hasOwnProperty(CHILDREN_PROP) &&
+	      child.props.hasOwnProperty(CHILDREN_PROP)) {
+	    newProps.children = child.props.children;
+	  }
+
+	  // The current API doesn't retain _owner and _context, which is why this
+	  // doesn't use ReactElement.cloneAndReplaceProps.
+	  return ReactElement.createElement(child.type, newProps);
+	}
+
+	module.exports = cloneWithProps;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactPropTransferer
+	 */
+
+	'use strict';
+
+	var assign = __webpack_require__(13);
+	var emptyFunction = __webpack_require__(16);
+	var joinClasses = __webpack_require__(169);
+
+	/**
+	 * Creates a transfer strategy that will merge prop values using the supplied
+	 * `mergeStrategy`. If a prop was previously unset, this just sets it.
+	 *
+	 * @param {function} mergeStrategy
+	 * @return {function}
+	 */
+	function createTransferStrategy(mergeStrategy) {
+	  return function(props, key, value) {
+	    if (!props.hasOwnProperty(key)) {
+	      props[key] = value;
+	    } else {
+	      props[key] = mergeStrategy(props[key], value);
+	    }
+	  };
+	}
+
+	var transferStrategyMerge = createTransferStrategy(function(a, b) {
+	  // `merge` overrides the first object's (`props[key]` above) keys using the
+	  // second object's (`value`) keys. An object's style's existing `propA` would
+	  // get overridden. Flip the order here.
+	  return assign({}, b, a);
+	});
+
+	/**
+	 * Transfer strategies dictate how props are transferred by `transferPropsTo`.
+	 * NOTE: if you add any more exceptions to this list you should be sure to
+	 * update `cloneWithProps()` accordingly.
+	 */
+	var TransferStrategies = {
+	  /**
+	   * Never transfer `children`.
+	   */
+	  children: emptyFunction,
+	  /**
+	   * Transfer the `className` prop by merging them.
+	   */
+	  className: createTransferStrategy(joinClasses),
+	  /**
+	   * Transfer the `style` prop (which is an object) by merging them.
+	   */
+	  style: transferStrategyMerge
+	};
+
+	/**
+	 * Mutates the first argument by transferring the properties from the second
+	 * argument.
+	 *
+	 * @param {object} props
+	 * @param {object} newProps
+	 * @return {object}
+	 */
+	function transferInto(props, newProps) {
+	  for (var thisKey in newProps) {
+	    if (!newProps.hasOwnProperty(thisKey)) {
+	      continue;
+	    }
+
+	    var transferStrategy = TransferStrategies[thisKey];
+
+	    if (transferStrategy && TransferStrategies.hasOwnProperty(thisKey)) {
+	      transferStrategy(props, thisKey, newProps[thisKey]);
+	    } else if (!props.hasOwnProperty(thisKey)) {
+	      props[thisKey] = newProps[thisKey];
+	    }
+	  }
+	  return props;
+	}
+
+	/**
+	 * ReactPropTransferer are capable of transferring props to another component
+	 * using a `transferPropsTo` method.
+	 *
+	 * @class ReactPropTransferer
+	 */
+	var ReactPropTransferer = {
+
+	  /**
+	   * Merge two props objects using TransferStrategies.
+	   *
+	   * @param {object} oldProps original props (they take precedence)
+	   * @param {object} newProps new props to merge in
+	   * @return {object} a new object containing both sets of props merged.
+	   */
+	  mergeProps: function(oldProps, newProps) {
+	    return transferInto(assign({}, oldProps), newProps);
+	  }
+
+	};
+
+	module.exports = ReactPropTransferer;
+
+
+/***/ },
+/* 169 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule joinClasses
+	 * @typechecks static-only
+	 */
+
+	'use strict';
+
+	/**
+	 * Combines multiple className strings into one.
+	 * http://jsperf.com/joinclasses-args-vs-array
+	 *
+	 * @param {...?string} classes
+	 * @return {string}
+	 */
+	function joinClasses(className/*, ... */) {
+	  if (!className) {
+	    className = '';
+	  }
+	  var nextClass;
+	  var argLength = arguments.length;
+	  if (argLength > 1) {
+	    for (var ii = 1; ii < argLength; ii++) {
+	      nextClass = arguments[ii];
+	      if (nextClass) {
+	        className = (className ? className + ' ' : '') + nextClass;
+	      }
+	    }
+	  }
+	  return className;
+	}
+
+	module.exports = joinClasses;
+
+
+/***/ },
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @typechecks
+	 * @providesModule ReactCSSTransitionGroupChild
+	 */
+
+	'use strict';
+
+	var React = __webpack_require__(2);
+
+	var CSSCore = __webpack_require__(171);
+	var ReactTransitionEvents = __webpack_require__(172);
+
+	var onlyChild = __webpack_require__(156);
+	var warning = __webpack_require__(15);
+
+	// We don't remove the element from the DOM until we receive an animationend or
+	// transitionend event. If the user screws up and forgets to add an animation
+	// their node will be stuck in the DOM forever, so we detect if an animation
+	// does not start and if it doesn't, we just call the end listener immediately.
+	var TICK = 17;
+	var NO_EVENT_TIMEOUT = 5000;
+
+	var noEventListener = null;
+
+
+	if ("production" !== process.env.NODE_ENV) {
+	  noEventListener = function() {
+	    ("production" !== process.env.NODE_ENV ? warning(
+	      false,
+	      'transition(): tried to perform an animation without ' +
+	      'an animationend or transitionend event after timeout (' +
+	      '%sms). You should either disable this ' +
+	      'transition in JS or add a CSS animation/transition.',
+	      NO_EVENT_TIMEOUT
+	    ) : null);
+	  };
+	}
+
+	var ReactCSSTransitionGroupChild = React.createClass({
+	  displayName: 'ReactCSSTransitionGroupChild',
+
+	  transition: function(animationType, finishCallback) {
+	    var node = this.getDOMNode();
+	    var className = this.props.name + '-' + animationType;
+	    var activeClassName = className + '-active';
+	    var noEventTimeout = null;
+
+	    var endListener = function(e) {
+	      if (e && e.target !== node) {
+	        return;
+	      }
+	      if ("production" !== process.env.NODE_ENV) {
+	        clearTimeout(noEventTimeout);
+	      }
+
+	      CSSCore.removeClass(node, className);
+	      CSSCore.removeClass(node, activeClassName);
+
+	      ReactTransitionEvents.removeEndEventListener(node, endListener);
+
+	      // Usually this optional callback is used for informing an owner of
+	      // a leave animation and telling it to remove the child.
+	      if (finishCallback) {
+	        finishCallback();
+	      }
+	    };
+
+	    ReactTransitionEvents.addEndEventListener(node, endListener);
+
+	    CSSCore.addClass(node, className);
+
+	    // Need to do this to actually trigger a transition.
+	    this.queueClass(activeClassName);
+
+	    if ("production" !== process.env.NODE_ENV) {
+	      noEventTimeout = setTimeout(noEventListener, NO_EVENT_TIMEOUT);
+	    }
+	  },
+
+	  queueClass: function(className) {
+	    this.classNameQueue.push(className);
+
+	    if (!this.timeout) {
+	      this.timeout = setTimeout(this.flushClassNameQueue, TICK);
+	    }
+	  },
+
+	  flushClassNameQueue: function() {
+	    if (this.isMounted()) {
+	      this.classNameQueue.forEach(
+	        CSSCore.addClass.bind(CSSCore, this.getDOMNode())
+	      );
+	    }
+	    this.classNameQueue.length = 0;
+	    this.timeout = null;
+	  },
+
+	  componentWillMount: function() {
+	    this.classNameQueue = [];
+	  },
+
+	  componentWillUnmount: function() {
+	    if (this.timeout) {
+	      clearTimeout(this.timeout);
+	    }
+	  },
+
+	  componentWillAppear: function(done) {
+	    if (this.props.appear) {
+	      this.transition('appear', done);
+	    } else {
+	      done();
+	    }
+	  },
+
+	  componentWillEnter: function(done) {
+	    if (this.props.enter) {
+	      this.transition('enter', done);
+	    } else {
+	      done();
+	    }
+	  },
+
+	  componentWillLeave: function(done) {
+	    if (this.props.leave) {
+	      this.transition('leave', done);
+	    } else {
+	      done();
+	    }
+	  },
+
+	  render: function() {
+	    return onlyChild(this.props.children);
+	  }
+	});
+
+	module.exports = ReactCSSTransitionGroupChild;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule CSSCore
+	 * @typechecks
+	 */
+
+	var invariant = __webpack_require__(7);
+
+	/**
+	 * The CSSCore module specifies the API (and implements most of the methods)
+	 * that should be used when dealing with the display of elements (via their
+	 * CSS classes and visibility on screen. It is an API focused on mutating the
+	 * display and not reading it as no logical state should be encoded in the
+	 * display of elements.
+	 */
+
+	var CSSCore = {
+
+	  /**
+	   * Adds the class passed in to the element if it doesn't already have it.
+	   *
+	   * @param {DOMElement} element the element to set the class on
+	   * @param {string} className the CSS className
+	   * @return {DOMElement} the element passed in
+	   */
+	  addClass: function(element, className) {
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      !/\s/.test(className),
+	      'CSSCore.addClass takes only a single class name. "%s" contains ' +
+	      'multiple classes.', className
+	    ) : invariant(!/\s/.test(className)));
+
+	    if (className) {
+	      if (element.classList) {
+	        element.classList.add(className);
+	      } else if (!CSSCore.hasClass(element, className)) {
+	        element.className = element.className + ' ' + className;
+	      }
+	    }
+	    return element;
+	  },
+
+	  /**
+	   * Removes the class passed in from the element
+	   *
+	   * @param {DOMElement} element the element to set the class on
+	   * @param {string} className the CSS className
+	   * @return {DOMElement} the element passed in
+	   */
+	  removeClass: function(element, className) {
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      !/\s/.test(className),
+	      'CSSCore.removeClass takes only a single class name. "%s" contains ' +
+	      'multiple classes.', className
+	    ) : invariant(!/\s/.test(className)));
+
+	    if (className) {
+	      if (element.classList) {
+	        element.classList.remove(className);
+	      } else if (CSSCore.hasClass(element, className)) {
+	        element.className = element.className
+	          .replace(new RegExp('(^|\\s)' + className + '(?:\\s|$)', 'g'), '$1')
+	          .replace(/\s+/g, ' ') // multiple spaces to one
+	          .replace(/^\s*|\s*$/g, ''); // trim the ends
+	      }
+	    }
+	    return element;
+	  },
+
+	  /**
+	   * Helper to add or remove a class from an element based on a condition.
+	   *
+	   * @param {DOMElement} element the element to set the class on
+	   * @param {string} className the CSS className
+	   * @param {*} bool condition to whether to add or remove the class
+	   * @return {DOMElement} the element passed in
+	   */
+	  conditionClass: function(element, className, bool) {
+	    return (bool ? CSSCore.addClass : CSSCore.removeClass)(element, className);
+	  },
+
+	  /**
+	   * Tests whether the element has the class specified.
+	   *
+	   * @param {DOMNode|DOMWindow} element the element to set the class on
+	   * @param {string} className the CSS className
+	   * @return {boolean} true if the element has the class, false if not
+	   */
+	  hasClass: function(element, className) {
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      !/\s/.test(className),
+	      'CSS.hasClass takes only a single class name.'
+	    ) : invariant(!/\s/.test(className)));
+	    if (element.classList) {
+	      return !!className && element.classList.contains(className);
+	    }
+	    return (' ' + element.className + ' ').indexOf(' ' + className + ' ') > -1;
+	  }
+
+	};
+
+	module.exports = CSSCore;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 172 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactTransitionEvents
+	 */
+
+	'use strict';
+
+	var ExecutionEnvironment = __webpack_require__(51);
+
+	/**
+	 * EVENT_NAME_MAP is used to determine which event fired when a
+	 * transition/animation ends, based on the style property used to
+	 * define that event.
+	 */
+	var EVENT_NAME_MAP = {
+	  transitionend: {
+	    'transition': 'transitionend',
+	    'WebkitTransition': 'webkitTransitionEnd',
+	    'MozTransition': 'mozTransitionEnd',
+	    'OTransition': 'oTransitionEnd',
+	    'msTransition': 'MSTransitionEnd'
+	  },
+
+	  animationend: {
+	    'animation': 'animationend',
+	    'WebkitAnimation': 'webkitAnimationEnd',
+	    'MozAnimation': 'mozAnimationEnd',
+	    'OAnimation': 'oAnimationEnd',
+	    'msAnimation': 'MSAnimationEnd'
+	  }
+	};
+
+	var endEvents = [];
+
+	function detectEvents() {
+	  var testEl = document.createElement('div');
+	  var style = testEl.style;
+
+	  // On some platforms, in particular some releases of Android 4.x,
+	  // the un-prefixed "animation" and "transition" properties are defined on the
+	  // style object but the events that fire will still be prefixed, so we need
+	  // to check if the un-prefixed events are useable, and if not remove them
+	  // from the map
+	  if (!('AnimationEvent' in window)) {
+	    delete EVENT_NAME_MAP.animationend.animation;
+	  }
+
+	  if (!('TransitionEvent' in window)) {
+	    delete EVENT_NAME_MAP.transitionend.transition;
+	  }
+
+	  for (var baseEventName in EVENT_NAME_MAP) {
+	    var baseEvents = EVENT_NAME_MAP[baseEventName];
+	    for (var styleName in baseEvents) {
+	      if (styleName in style) {
+	        endEvents.push(baseEvents[styleName]);
+	        break;
+	      }
+	    }
+	  }
+	}
+
+	if (ExecutionEnvironment.canUseDOM) {
+	  detectEvents();
+	}
+
+	// We use the raw {add|remove}EventListener() call because EventListener
+	// does not know how to remove event listeners and we really should
+	// clean up. Also, these events are not triggered in older browsers
+	// so we should be A-OK here.
+
+	function addEventListener(node, eventName, eventListener) {
+	  node.addEventListener(eventName, eventListener, false);
+	}
+
+	function removeEventListener(node, eventName, eventListener) {
+	  node.removeEventListener(eventName, eventListener, false);
+	}
+
+	var ReactTransitionEvents = {
+	  addEndEventListener: function(node, eventListener) {
+	    if (endEvents.length === 0) {
+	      // If CSS transitions are not supported, trigger an "end animation"
+	      // event immediately.
+	      window.setTimeout(eventListener, 0);
+	      return;
+	    }
+	    endEvents.forEach(function(endEvent) {
+	      addEventListener(node, endEvent, eventListener);
+	    });
+	  },
+
+	  removeEndEventListener: function(node, eventListener) {
+	    if (endEvents.length === 0) {
+	      return;
+	    }
+	    endEvents.forEach(function(endEvent) {
+	      removeEventListener(node, endEvent, eventListener);
+	    });
+	  }
+	};
+
+	module.exports = ReactTransitionEvents;
+
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule cx
+	 */
+
+	/**
+	 * This function is used to mark string literals representing CSS class names
+	 * so that they can be transformed statically. This allows for modularization
+	 * and minification of CSS class names.
+	 *
+	 * In static_upstream, this function is actually implemented, but it should
+	 * eventually be replaced with something more descriptive, and the transform
+	 * that is used in the main stack should be ported for use elsewhere.
+	 *
+	 * @param string|object className to modularize, or an object of key/values.
+	 *                      In the object case, the values are conditions that
+	 *                      determine if the className keys should be included.
+	 * @param [string ...]  Variable list of classNames in the string case.
+	 * @return string       Renderable space-separated CSS className.
+	 */
+
+	'use strict';
+	var warning = __webpack_require__(15);
+
+	var warned = false;
+
+	function cx(classNames) {
+	  if ("production" !== process.env.NODE_ENV) {
+	    ("production" !== process.env.NODE_ENV ? warning(
+	      warned,
+	      'React.addons.classSet will be deprecated in a future version. See ' +
+	      'http://fb.me/react-addons-classset'
+	    ) : null);
+	    warned = true;
+	  }
+
+	  if (typeof classNames == 'object') {
+	    return Object.keys(classNames).filter(function(className) {
+	      return classNames[className];
+	    }).join(' ');
+	  } else {
+	    return Array.prototype.join.call(arguments, ' ');
+	  }
+	}
+
+	module.exports = cx;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 174 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule update
+	 */
+
+	 /* global hasOwnProperty:true */
+
+	'use strict';
+
+	var assign = __webpack_require__(13);
+	var keyOf = __webpack_require__(39);
+	var invariant = __webpack_require__(7);
+	var hasOwnProperty = {}.hasOwnProperty;
+
+	function shallowCopy(x) {
+	  if (Array.isArray(x)) {
+	    return x.concat();
+	  } else if (x && typeof x === 'object') {
+	    return assign(new x.constructor(), x);
+	  } else {
+	    return x;
+	  }
+	}
+
+	var COMMAND_PUSH = keyOf({$push: null});
+	var COMMAND_UNSHIFT = keyOf({$unshift: null});
+	var COMMAND_SPLICE = keyOf({$splice: null});
+	var COMMAND_SET = keyOf({$set: null});
+	var COMMAND_MERGE = keyOf({$merge: null});
+	var COMMAND_APPLY = keyOf({$apply: null});
+
+	var ALL_COMMANDS_LIST = [
+	  COMMAND_PUSH,
+	  COMMAND_UNSHIFT,
+	  COMMAND_SPLICE,
+	  COMMAND_SET,
+	  COMMAND_MERGE,
+	  COMMAND_APPLY
+	];
+
+	var ALL_COMMANDS_SET = {};
+
+	ALL_COMMANDS_LIST.forEach(function(command) {
+	  ALL_COMMANDS_SET[command] = true;
+	});
+
+	function invariantArrayCase(value, spec, command) {
+	  ("production" !== process.env.NODE_ENV ? invariant(
+	    Array.isArray(value),
+	    'update(): expected target of %s to be an array; got %s.',
+	    command,
+	    value
+	  ) : invariant(Array.isArray(value)));
+	  var specValue = spec[command];
+	  ("production" !== process.env.NODE_ENV ? invariant(
+	    Array.isArray(specValue),
+	    'update(): expected spec of %s to be an array; got %s. ' +
+	    'Did you forget to wrap your parameter in an array?',
+	    command,
+	    specValue
+	  ) : invariant(Array.isArray(specValue)));
+	}
+
+	function update(value, spec) {
+	  ("production" !== process.env.NODE_ENV ? invariant(
+	    typeof spec === 'object',
+	    'update(): You provided a key path to update() that did not contain one ' +
+	    'of %s. Did you forget to include {%s: ...}?',
+	    ALL_COMMANDS_LIST.join(', '),
+	    COMMAND_SET
+	  ) : invariant(typeof spec === 'object'));
+
+	  if (hasOwnProperty.call(spec, COMMAND_SET)) {
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      Object.keys(spec).length === 1,
+	      'Cannot have more than one key in an object with %s',
+	      COMMAND_SET
+	    ) : invariant(Object.keys(spec).length === 1));
+
+	    return spec[COMMAND_SET];
+	  }
+
+	  var nextValue = shallowCopy(value);
+
+	  if (hasOwnProperty.call(spec, COMMAND_MERGE)) {
+	    var mergeObj = spec[COMMAND_MERGE];
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      mergeObj && typeof mergeObj === 'object',
+	      'update(): %s expects a spec of type \'object\'; got %s',
+	      COMMAND_MERGE,
+	      mergeObj
+	    ) : invariant(mergeObj && typeof mergeObj === 'object'));
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      nextValue && typeof nextValue === 'object',
+	      'update(): %s expects a target of type \'object\'; got %s',
+	      COMMAND_MERGE,
+	      nextValue
+	    ) : invariant(nextValue && typeof nextValue === 'object'));
+	    assign(nextValue, spec[COMMAND_MERGE]);
+	  }
+
+	  if (hasOwnProperty.call(spec, COMMAND_PUSH)) {
+	    invariantArrayCase(value, spec, COMMAND_PUSH);
+	    spec[COMMAND_PUSH].forEach(function(item) {
+	      nextValue.push(item);
+	    });
+	  }
+
+	  if (hasOwnProperty.call(spec, COMMAND_UNSHIFT)) {
+	    invariantArrayCase(value, spec, COMMAND_UNSHIFT);
+	    spec[COMMAND_UNSHIFT].forEach(function(item) {
+	      nextValue.unshift(item);
+	    });
+	  }
+
+	  if (hasOwnProperty.call(spec, COMMAND_SPLICE)) {
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      Array.isArray(value),
+	      'Expected %s target to be an array; got %s',
+	      COMMAND_SPLICE,
+	      value
+	    ) : invariant(Array.isArray(value)));
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      Array.isArray(spec[COMMAND_SPLICE]),
+	      'update(): expected spec of %s to be an array of arrays; got %s. ' +
+	      'Did you forget to wrap your parameters in an array?',
+	      COMMAND_SPLICE,
+	      spec[COMMAND_SPLICE]
+	    ) : invariant(Array.isArray(spec[COMMAND_SPLICE])));
+	    spec[COMMAND_SPLICE].forEach(function(args) {
+	      ("production" !== process.env.NODE_ENV ? invariant(
+	        Array.isArray(args),
+	        'update(): expected spec of %s to be an array of arrays; got %s. ' +
+	        'Did you forget to wrap your parameters in an array?',
+	        COMMAND_SPLICE,
+	        spec[COMMAND_SPLICE]
+	      ) : invariant(Array.isArray(args)));
+	      nextValue.splice.apply(nextValue, args);
+	    });
+	  }
+
+	  if (hasOwnProperty.call(spec, COMMAND_APPLY)) {
+	    ("production" !== process.env.NODE_ENV ? invariant(
+	      typeof spec[COMMAND_APPLY] === 'function',
+	      'update(): expected spec of %s to be a function; got %s.',
+	      COMMAND_APPLY,
+	      spec[COMMAND_APPLY]
+	    ) : invariant(typeof spec[COMMAND_APPLY] === 'function'));
+	    nextValue = spec[COMMAND_APPLY](nextValue);
+	  }
+
+	  for (var k in spec) {
+	    if (!(ALL_COMMANDS_SET.hasOwnProperty(k) && ALL_COMMANDS_SET[k])) {
+	      nextValue[k] = update(value[k], spec[k]);
+	    }
+	  }
+
+	  return nextValue;
+	}
+
+	module.exports = update;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 175 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactTestUtils
+	 */
+
+	'use strict';
+
+	var EventConstants = __webpack_require__(5);
+	var EventPluginHub = __webpack_require__(69);
+	var EventPropagators = __webpack_require__(93);
+	var React = __webpack_require__(2);
+	var ReactElement = __webpack_require__(11);
+	var ReactEmptyComponent = __webpack_require__(76);
+	var ReactBrowserEventEmitter = __webpack_require__(68);
+	var ReactCompositeComponent = __webpack_require__(84);
+	var ReactInstanceHandles = __webpack_require__(20);
+	var ReactInstanceMap = __webpack_require__(36);
+	var ReactMount = __webpack_require__(67);
+	var ReactUpdates = __webpack_require__(24);
+	var SyntheticEvent = __webpack_require__(97);
+
+	var assign = __webpack_require__(13);
+	var emptyObject = __webpack_require__(14);
+
+	var topLevelTypes = EventConstants.topLevelTypes;
+
+	function Event(suffix) {}
+
+	/**
+	 * @class ReactTestUtils
+	 */
+
+	/**
+	 * Todo: Support the entire DOM.scry query syntax. For now, these simple
+	 * utilities will suffice for testing purposes.
+	 * @lends ReactTestUtils
+	 */
+	var ReactTestUtils = {
+	  renderIntoDocument: function(instance) {
+	    var div = document.createElement('div');
+	    // None of our tests actually require attaching the container to the
+	    // DOM, and doing so creates a mess that we rely on test isolation to
+	    // clean up, so we're going to stop honoring the name of this method
+	    // (and probably rename it eventually) if no problems arise.
+	    // document.documentElement.appendChild(div);
+	    return React.render(instance, div);
+	  },
+
+	  isElement: function(element) {
+	    return ReactElement.isValidElement(element);
+	  },
+
+	  isElementOfType: function(inst, convenienceConstructor) {
+	    return (
+	      ReactElement.isValidElement(inst) &&
+	      inst.type === convenienceConstructor
+	    );
+	  },
+
+	  isDOMComponent: function(inst) {
+	    // TODO: Fix this heuristic. It's just here because composites can currently
+	    // pretend to be DOM components.
+	    return !!(inst && inst.tagName && inst.getDOMNode);
+	  },
+
+	  isDOMComponentElement: function(inst) {
+	    return !!(inst &&
+	              ReactElement.isValidElement(inst) &&
+	              !!inst.tagName);
+	  },
+
+	  isCompositeComponent: function(inst) {
+	    return typeof inst.render === 'function' &&
+	           typeof inst.setState === 'function';
+	  },
+
+	  isCompositeComponentWithType: function(inst, type) {
+	    return !!(ReactTestUtils.isCompositeComponent(inst) &&
+	             (inst.constructor === type));
+	  },
+
+	  isCompositeComponentElement: function(inst) {
+	    if (!ReactElement.isValidElement(inst)) {
+	      return false;
+	    }
+	    // We check the prototype of the type that will get mounted, not the
+	    // instance itself. This is a future proof way of duck typing.
+	    var prototype = inst.type.prototype;
+	    return (
+	      typeof prototype.render === 'function' &&
+	      typeof prototype.setState === 'function'
+	    );
+	  },
+
+	  isCompositeComponentElementWithType: function(inst, type) {
+	    return !!(ReactTestUtils.isCompositeComponentElement(inst) &&
+	             (inst.constructor === type));
+	  },
+
+	  getRenderedChildOfCompositeComponent: function(inst) {
+	    if (!ReactTestUtils.isCompositeComponent(inst)) {
+	      return null;
+	    }
+	    var internalInstance = ReactInstanceMap.get(inst);
+	    return internalInstance._renderedComponent.getPublicInstance();
+	  },
+
+	  findAllInRenderedTree: function(inst, test) {
+	    if (!inst) {
+	      return [];
+	    }
+	    var ret = test(inst) ? [inst] : [];
+	    if (ReactTestUtils.isDOMComponent(inst)) {
+	      var internalInstance = ReactInstanceMap.get(inst);
+	      var renderedChildren = internalInstance
+	        ._renderedComponent
+	        ._renderedChildren;
+	      var key;
+	      for (key in renderedChildren) {
+	        if (!renderedChildren.hasOwnProperty(key)) {
+	          continue;
+	        }
+	        if (!renderedChildren[key].getPublicInstance) {
+	          continue;
+	        }
+	        ret = ret.concat(
+	          ReactTestUtils.findAllInRenderedTree(
+	            renderedChildren[key].getPublicInstance(),
+	            test
+	          )
+	        );
+	      }
+	    } else if (ReactTestUtils.isCompositeComponent(inst)) {
+	      ret = ret.concat(
+	        ReactTestUtils.findAllInRenderedTree(
+	          ReactTestUtils.getRenderedChildOfCompositeComponent(inst),
+	          test
+	        )
+	      );
+	    }
+	    return ret;
+	  },
+
+	  /**
+	   * Finds all instance of components in the rendered tree that are DOM
+	   * components with the class name matching `className`.
+	   * @return an array of all the matches.
+	   */
+	  scryRenderedDOMComponentsWithClass: function(root, className) {
+	    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
+	      var instClassName = inst.props.className;
+	      return ReactTestUtils.isDOMComponent(inst) && (
+	        (instClassName && (' ' + instClassName + ' ').indexOf(' ' + className + ' ') !== -1)
+	      );
+	    });
+	  },
+
+	  /**
+	   * Like scryRenderedDOMComponentsWithClass but expects there to be one result,
+	   * and returns that one result, or throws exception if there is any other
+	   * number of matches besides one.
+	   * @return {!ReactDOMComponent} The one match.
+	   */
+	  findRenderedDOMComponentWithClass: function(root, className) {
+	    var all =
+	      ReactTestUtils.scryRenderedDOMComponentsWithClass(root, className);
+	    if (all.length !== 1) {
+	      throw new Error('Did not find exactly one match ' +
+	        '(found: ' + all.length + ') for class:' + className
+	      );
+	    }
+	    return all[0];
+	  },
+
+
+	  /**
+	   * Finds all instance of components in the rendered tree that are DOM
+	   * components with the tag name matching `tagName`.
+	   * @return an array of all the matches.
+	   */
+	  scryRenderedDOMComponentsWithTag: function(root, tagName) {
+	    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
+	      return ReactTestUtils.isDOMComponent(inst) &&
+	            inst.tagName === tagName.toUpperCase();
+	    });
+	  },
+
+	  /**
+	   * Like scryRenderedDOMComponentsWithTag but expects there to be one result,
+	   * and returns that one result, or throws exception if there is any other
+	   * number of matches besides one.
+	   * @return {!ReactDOMComponent} The one match.
+	   */
+	  findRenderedDOMComponentWithTag: function(root, tagName) {
+	    var all = ReactTestUtils.scryRenderedDOMComponentsWithTag(root, tagName);
+	    if (all.length !== 1) {
+	      throw new Error('Did not find exactly one match for tag:' + tagName);
+	    }
+	    return all[0];
+	  },
+
+
+	  /**
+	   * Finds all instances of components with type equal to `componentType`.
+	   * @return an array of all the matches.
+	   */
+	  scryRenderedComponentsWithType: function(root, componentType) {
+	    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
+	      return ReactTestUtils.isCompositeComponentWithType(
+	        inst,
+	        componentType
+	      );
+	    });
+	  },
+
+	  /**
+	   * Same as `scryRenderedComponentsWithType` but expects there to be one result
+	   * and returns that one result, or throws exception if there is any other
+	   * number of matches besides one.
+	   * @return {!ReactComponent} The one match.
+	   */
+	  findRenderedComponentWithType: function(root, componentType) {
+	    var all = ReactTestUtils.scryRenderedComponentsWithType(
+	      root,
+	      componentType
+	    );
+	    if (all.length !== 1) {
+	      throw new Error(
+	        'Did not find exactly one match for componentType:' + componentType
+	      );
+	    }
+	    return all[0];
+	  },
+
+	  /**
+	   * Pass a mocked component module to this method to augment it with
+	   * useful methods that allow it to be used as a dummy React component.
+	   * Instead of rendering as usual, the component will become a simple
+	   * <div> containing any provided children.
+	   *
+	   * @param {object} module the mock function object exported from a
+	   *                        module that defines the component to be mocked
+	   * @param {?string} mockTagName optional dummy root tag name to return
+	   *                              from render method (overrides
+	   *                              module.mockTagName if provided)
+	   * @return {object} the ReactTestUtils object (for chaining)
+	   */
+	  mockComponent: function(module, mockTagName) {
+	    mockTagName = mockTagName || module.mockTagName || "div";
+
+	    module.prototype.render.mockImplementation(function() {
+	      return React.createElement(
+	        mockTagName,
+	        null,
+	        this.props.children
+	      );
+	    });
+
+	    return this;
+	  },
+
+	  /**
+	   * Simulates a top level event being dispatched from a raw event that occured
+	   * on an `Element` node.
+	   * @param topLevelType {Object} A type from `EventConstants.topLevelTypes`
+	   * @param {!Element} node The dom to simulate an event occurring on.
+	   * @param {?Event} fakeNativeEvent Fake native event to use in SyntheticEvent.
+	   */
+	  simulateNativeEventOnNode: function(topLevelType, node, fakeNativeEvent) {
+	    fakeNativeEvent.target = node;
+	    ReactBrowserEventEmitter.ReactEventListener.dispatchEvent(
+	      topLevelType,
+	      fakeNativeEvent
+	    );
+	  },
+
+	  /**
+	   * Simulates a top level event being dispatched from a raw event that occured
+	   * on the `ReactDOMComponent` `comp`.
+	   * @param topLevelType {Object} A type from `EventConstants.topLevelTypes`.
+	   * @param comp {!ReactDOMComponent}
+	   * @param {?Event} fakeNativeEvent Fake native event to use in SyntheticEvent.
+	   */
+	  simulateNativeEventOnDOMComponent: function(
+	      topLevelType,
+	      comp,
+	      fakeNativeEvent) {
+	    ReactTestUtils.simulateNativeEventOnNode(
+	      topLevelType,
+	      comp.getDOMNode(),
+	      fakeNativeEvent
+	    );
+	  },
+
+	  nativeTouchData: function(x, y) {
+	    return {
+	      touches: [
+	        {pageX: x, pageY: y}
+	      ]
+	    };
+	  },
+
+	  createRenderer: function() {
+	    return new ReactShallowRenderer();
+	  },
+
+	  Simulate: null,
+	  SimulateNative: {}
+	};
+
+	/**
+	 * @class ReactShallowRenderer
+	 */
+	var ReactShallowRenderer = function() {
+	  this._instance = null;
+	};
+
+	ReactShallowRenderer.prototype.getRenderOutput = function() {
+	  return (
+	    (this._instance && this._instance._renderedComponent &&
+	     this._instance._renderedComponent._renderedOutput)
+	    || null
+	  );
+	};
+
+	var NoopInternalComponent = function(element) {
+	  this._renderedOutput = element;
+	  this._currentElement = element === null || element === false ?
+	    ReactEmptyComponent.emptyElement :
+	    element;
+	};
+
+	NoopInternalComponent.prototype = {
+
+	  mountComponent: function() {
+	  },
+
+	  receiveComponent: function(element) {
+	    this._renderedOutput = element;
+	    this._currentElement = element === null || element === false ?
+	      ReactEmptyComponent.emptyElement :
+	      element;
+	  },
+
+	  unmountComponent: function() {
+	  }
+
+	};
+
+	var ShallowComponentWrapper = function() { };
+	assign(
+	  ShallowComponentWrapper.prototype,
+	  ReactCompositeComponent.Mixin, {
+	    _instantiateReactComponent: function(element) {
+	      return new NoopInternalComponent(element);
+	    },
+	    _replaceNodeWithMarkupByID: function() {},
+	    _renderValidatedComponent:
+	      ReactCompositeComponent.Mixin.
+	        _renderValidatedComponentWithoutOwnerOrContext
+	  }
+	);
+
+	ReactShallowRenderer.prototype.render = function(element, context) {
+	  if (!context) {
+	    context = emptyObject;
+	  }
+	  var transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
+	  this._render(element, transaction, context);
+	  ReactUpdates.ReactReconcileTransaction.release(transaction);
+	};
+
+	ReactShallowRenderer.prototype.unmount = function() {
+	  if (this._instance) {
+	    this._instance.unmountComponent();
+	  }
+	};
+
+	ReactShallowRenderer.prototype._render = function(element, transaction, context) {
+	  if (!this._instance) {
+	    var rootID = ReactInstanceHandles.createReactRootID();
+	    var instance = new ShallowComponentWrapper(element.type);
+	    instance.construct(element);
+
+	    instance.mountComponent(rootID, transaction, context);
+
+	    this._instance = instance;
+	  } else {
+	    this._instance.receiveComponent(element, transaction, context);
+	  }
+	};
+
+	/**
+	 * Exports:
+	 *
+	 * - `ReactTestUtils.Simulate.click(Element/ReactDOMComponent)`
+	 * - `ReactTestUtils.Simulate.mouseMove(Element/ReactDOMComponent)`
+	 * - `ReactTestUtils.Simulate.change(Element/ReactDOMComponent)`
+	 * - ... (All keys from event plugin `eventTypes` objects)
+	 */
+	function makeSimulator(eventType) {
+	  return function(domComponentOrNode, eventData) {
+	    var node;
+	    if (ReactTestUtils.isDOMComponent(domComponentOrNode)) {
+	      node = domComponentOrNode.getDOMNode();
+	    } else if (domComponentOrNode.tagName) {
+	      node = domComponentOrNode;
+	    }
+
+	    var fakeNativeEvent = new Event();
+	    fakeNativeEvent.target = node;
+	    // We don't use SyntheticEvent.getPooled in order to not have to worry about
+	    // properly destroying any properties assigned from `eventData` upon release
+	    var event = new SyntheticEvent(
+	      ReactBrowserEventEmitter.eventNameDispatchConfigs[eventType],
+	      ReactMount.getID(node),
+	      fakeNativeEvent
+	    );
+	    assign(event, eventData);
+	    EventPropagators.accumulateTwoPhaseDispatches(event);
+
+	    ReactUpdates.batchedUpdates(function() {
+	      EventPluginHub.enqueueEvents(event);
+	      EventPluginHub.processEventQueue();
+	    });
+	  };
+	}
+
+	function buildSimulators() {
+	  ReactTestUtils.Simulate = {};
+
+	  var eventType;
+	  for (eventType in ReactBrowserEventEmitter.eventNameDispatchConfigs) {
+	    /**
+	     * @param {!Element || ReactDOMComponent} domComponentOrNode
+	     * @param {?object} eventData Fake event data to use in SyntheticEvent.
+	     */
+	    ReactTestUtils.Simulate[eventType] = makeSimulator(eventType);
+	  }
+	}
+
+	// Rebuild ReactTestUtils.Simulate whenever event plugins are injected
+	var oldInjectEventPluginOrder = EventPluginHub.injection.injectEventPluginOrder;
+	EventPluginHub.injection.injectEventPluginOrder = function() {
+	  oldInjectEventPluginOrder.apply(this, arguments);
+	  buildSimulators();
+	};
+	var oldInjectEventPlugins = EventPluginHub.injection.injectEventPluginsByName;
+	EventPluginHub.injection.injectEventPluginsByName = function() {
+	  oldInjectEventPlugins.apply(this, arguments);
+	  buildSimulators();
+	};
+
+	buildSimulators();
+
+	/**
+	 * Exports:
+	 *
+	 * - `ReactTestUtils.SimulateNative.click(Element/ReactDOMComponent)`
+	 * - `ReactTestUtils.SimulateNative.mouseMove(Element/ReactDOMComponent)`
+	 * - `ReactTestUtils.SimulateNative.mouseIn/ReactDOMComponent)`
+	 * - `ReactTestUtils.SimulateNative.mouseOut(Element/ReactDOMComponent)`
+	 * - ... (All keys from `EventConstants.topLevelTypes`)
+	 *
+	 * Note: Top level event types are a subset of the entire set of handler types
+	 * (which include a broader set of "synthetic" events). For example, onDragDone
+	 * is a synthetic event. Except when testing an event plugin or React's event
+	 * handling code specifically, you probably want to use ReactTestUtils.Simulate
+	 * to dispatch synthetic events.
+	 */
+
+	function makeNativeSimulator(eventType) {
+	  return function(domComponentOrNode, nativeEventData) {
+	    var fakeNativeEvent = new Event(eventType);
+	    assign(fakeNativeEvent, nativeEventData);
+	    if (ReactTestUtils.isDOMComponent(domComponentOrNode)) {
+	      ReactTestUtils.simulateNativeEventOnDOMComponent(
+	        eventType,
+	        domComponentOrNode,
+	        fakeNativeEvent
+	      );
+	    } else if (!!domComponentOrNode.tagName) {
+	      // Will allow on actual dom nodes.
+	      ReactTestUtils.simulateNativeEventOnNode(
+	        eventType,
+	        domComponentOrNode,
+	        fakeNativeEvent
+	      );
+	    }
+	  };
+	}
+
+	var eventType;
+	for (eventType in topLevelTypes) {
+	  // Event type is stored as 'topClick' - we transform that to 'click'
+	  var convenienceName = eventType.indexOf('top') === 0 ?
+	    eventType.charAt(3).toLowerCase() + eventType.substr(4) : eventType;
+	  /**
+	   * @param {!Element || ReactDOMComponent} domComponentOrNode
+	   * @param {?Event} nativeEventData Fake native event to use in SyntheticEvent.
+	   */
+	  ReactTestUtils.SimulateNative[convenienceName] =
+	    makeNativeSimulator(eventType);
+	}
+
+	module.exports = ReactTestUtils;
+
+
+/***/ },
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20707,66 +22839,737 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
-	var _jquery = __webpack_require__(159);
+	var _react = __webpack_require__(1);
 
-	var _jquery2 = _interopRequireDefault(_jquery);
+	var _react2 = _interopRequireDefault(_react);
 
-	var _sliderJsx = __webpack_require__(160);
+	var _earthViewCompJsx = __webpack_require__(177);
 
-	var _sliderJsx2 = _interopRequireDefault(_sliderJsx);
+	var _earthViewCompJsx2 = _interopRequireDefault(_earthViewCompJsx);
 
-	__webpack_require__(169);
+	var _orbitViewCompJsx = __webpack_require__(190);
 
-	var MONTH_NAMES_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	var _orbitViewCompJsx2 = _interopRequireDefault(_orbitViewCompJsx);
 
-	var DaySlider = (function (_Slider) {
-	  function DaySlider(props) {
-	    _classCallCheck(this, DaySlider);
+	var _raysViewCompJsx = __webpack_require__(192);
 
-	    _get(Object.getPrototypeOf(DaySlider.prototype), 'constructor', this).call(this, props);
-	    // Custom, tweaked jQuery UI slider (defined in ui/grasp-slider).
-	    this.sliderFuncName = 'graspSlider';
+	var _raysViewCompJsx2 = _interopRequireDefault(_raysViewCompJsx);
+
+	__webpack_require__(194);
+
+	var ViewManager = (function (_React$Component) {
+	  function ViewManager(props) {
+	    _classCallCheck(this, ViewManager);
+
+	    _get(Object.getPrototypeOf(ViewManager.prototype), 'constructor', this).call(this, props);
+	    this.rafCallback = this.rafCallback.bind(this);
 	  }
 
-	  _inherits(DaySlider, _Slider);
+	  _inherits(ViewManager, _React$Component);
 
-	  _createClass(DaySlider, [{
+	  _createClass(ViewManager, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      _get(Object.getPrototypeOf(DaySlider.prototype), 'componentDidMount', this).call(this);
-	      this.$slider.graspSlider({
-	        min: 0,
-	        max: 364,
-	        step: 1
-	      });
-	      this.generateMonthTicks();
+	      this._rafId = requestAnimationFrame(this.rafCallback);
+	      this.syncCameraAndViewAxis();
 	    }
 	  }, {
-	    key: 'generateMonthTicks',
-	    value: function generateMonthTicks() {
-	      var ticks = [];
-	      for (var m = 0; m < 12; m++) {
-	        ticks.push({ value: m * 30.4, name: MONTH_NAMES_SHORT[m] });
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      cancelAnimationFrame(this._rafId);
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate(prevProps) {
+	      if (prevProps.mainView !== this.props.mainView) {
+	        this.refs.earth.resize();
+	        this.refs.orbit.resize();
+	        this.refs.rays.resize();
 	      }
-	      this.$slider.graspSlider('option', 'ticks', ticks);
-	      // Shift tick labels so they are in the middle of the month section on the slider.
-	      var monthWidth = this.$slider.width() / 12;
-	      this.$slider.find('.ui-slider-tick-label').each(function () {
-	        var $label = (0, _jquery2['default'])(this);
-	        var labelWidth = $label.width();
-	        $label.css('margin-left', -labelWidth * 0.5 + monthWidth * 0.5);
-	      });
+	    }
+	  }, {
+	    key: 'rafCallback',
+	    value: function rafCallback(timestamp) {
+	      this.refs.earth.rafCallback(timestamp);
+	      this.refs.orbit.rafCallback(timestamp);
+	      this._rafId = requestAnimationFrame(this.rafCallback);
+	    }
+	  }, {
+	    key: 'syncCameraAndViewAxis',
+
+	    // When earth view camera is changed, we need to update view axis in the orbit view.
+	    value: function syncCameraAndViewAxis() {
+	      var _this = this;
+
+	      var sync = function sync() {
+	        var camVec = _this.refs.earth.getCameraEarthVec();
+	        _this.refs.orbit.setViewAxis(camVec);
+	      };
+	      // Initial sync.
+	      sync();
+	      // When earth view camera is changed, we need to update view axis in the orbit view.
+	      this.refs.earth.onCameraChange(sync);
+	    }
+	  }, {
+	    key: 'getLayout',
+	    value: function getLayout() {
+	      switch (this.props.mainView) {
+	        case 'earth':
+	          return { earth: 'main', orbit: 'small-top', rays: 'small-bottom' };
+	        case 'orbit':
+	          return { earth: 'small-top', orbit: 'main', rays: 'small-bottom' };
+	        case 'rays':
+	          return { earth: 'small-top', orbit: 'small-bottom', rays: 'main' };
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var layout = this.getLayout();
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'view-manager' },
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'view ' + layout.earth },
+	          _react2['default'].createElement(_earthViewCompJsx2['default'], { ref: 'earth', simulation: this.props.simulation, onLocationChange: this.props.onLocationChange })
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'view ' + layout.orbit },
+	          _react2['default'].createElement(_orbitViewCompJsx2['default'], { ref: 'orbit', simulation: this.props.simulation })
+	        ),
+	        _react2['default'].createElement(
+	          'div',
+	          { className: 'view ' + layout.rays },
+	          _react2['default'].createElement(_raysViewCompJsx2['default'], { ref: 'rays', simulation: this.props.simulation })
+	        )
+	      );
 	    }
 	  }]);
 
-	  return DaySlider;
-	})(_sliderJsx2['default']);
+	  return ViewManager;
+	})(_react2['default'].Component);
 
-	exports['default'] = DaySlider;
+	exports['default'] = ViewManager;
 	module.exports = exports['default'];
 
 /***/ },
-/* 159 */
+/* 177 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _canvasViewJsx = __webpack_require__(178);
+
+	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
+
+	var _viewsEarthViewJs = __webpack_require__(179);
+
+	var _viewsEarthViewJs2 = _interopRequireDefault(_viewsEarthViewJs);
+
+	var EarthViewComp = (function (_CanvasView) {
+	  function EarthViewComp(props) {
+	    _classCallCheck(this, EarthViewComp);
+
+	    _get(Object.getPrototypeOf(EarthViewComp.prototype), 'constructor', this).call(this, props);
+	    this.ExternalView = _viewsEarthViewJs2['default'];
+	  }
+
+	  _inherits(EarthViewComp, _CanvasView);
+
+	  _createClass(EarthViewComp, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this = this;
+
+	      _get(Object.getPrototypeOf(EarthViewComp.prototype), 'componentDidMount', this).call(this);
+	      this.externalView.on('latitude.change', function (newLat) {
+	        _this.props.onLocationChange({ lat: newLat });
+	      });
+	      this.externalView.on('longitude.change', function (newLong) {
+	        _this.props.onLocationChange({ long: newLong });
+	      });
+	    }
+	  }, {
+	    key: 'onCameraChange',
+	    value: function onCameraChange(callback) {
+	      this.externalView.on('camera.change', callback);
+	    }
+	  }, {
+	    key: 'getCameraEarthVec',
+	    value: function getCameraEarthVec() {
+	      return this.externalView.getCameraEarthVec();
+	    }
+	  }]);
+
+	  return EarthViewComp;
+	})(_canvasViewJsx2['default']);
+
+	exports['default'] = EarthViewComp;
+	module.exports = exports['default'];
+
+/***/ },
+/* 178 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var CanvasView = (function (_React$Component) {
+	  function CanvasView() {
+	    _classCallCheck(this, CanvasView);
+
+	    _get(Object.getPrototypeOf(CanvasView.prototype), 'constructor', this).apply(this, arguments);
+	  }
+
+	  _inherits(CanvasView, _React$Component);
+
+	  _createClass(CanvasView, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var node = _react2['default'].findDOMNode(this);
+	      this.externalView = new this.ExternalView(node, this.props.simulation);
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      this.externalView.setProps(nextProps.simulation);
+	    }
+	  }, {
+	    key: 'shouldComponentUpdate',
+	    value: function shouldComponentUpdate() {
+	      // Never update component as it's based on canvas.
+	      return false;
+	    }
+	  }, {
+	    key: 'rafCallback',
+
+	    // requestAnimationFrame callback.
+	    value: function rafCallback(timestamp) {
+	      if (this.externalView.render) this.externalView.render(timestamp);
+	    }
+	  }, {
+	    key: 'resize',
+	    value: function resize() {
+	      if (this.externalView.resize) this.externalView.resize();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement('div', { style: { width: '100%', height: '100%' } });
+	    }
+	  }]);
+
+	  return CanvasView;
+	})(_react2['default'].Component);
+
+	exports['default'] = CanvasView;
+	module.exports = exports['default'];
+	/* Canvas will be inserted here by the external view. */
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _jquery = __webpack_require__(183);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _eventemitter2 = __webpack_require__(184);
+
+	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
+
+	var _baseViewJs = __webpack_require__(185);
+
+	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
+
+	var _modelsCommonModelsJs = __webpack_require__(186);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _modelsLatitudeLineJs = __webpack_require__(180);
+
+	var _modelsLatitudeLineJs2 = _interopRequireDefault(_modelsLatitudeLineJs);
+
+	var _modelsLatLongMarkerJs = __webpack_require__(188);
+
+	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
+
+	var _solarSystemDataJs = __webpack_require__(182);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var _utilsJs = __webpack_require__(189);
+
+	var DEG_2_RAD = Math.PI / 180;
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  sunEarthLine: true,
+	  earthRotation: false,
+	  lat: 0,
+	  long: 0
+	};
+
+	var _default = (function (_BaseView) {
+	  var _class = function _default(parentEl) {
+	    var _this = this;
+
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'earth-view');
+
+	    // Rotate earth a bit so USA is visible.
+	    this.rotateEarth(2);
+
+	    // Support mouse interaction.
+	    this.raycaster = new THREE.Raycaster();
+	    this.mouse = new THREE.Vector2(-1, -1);
+	    this._enableMousePicking();
+
+	    // Emit events when camera is changed.
+	    this.dispatch = new _eventemitter22['default']();
+	    this.controls.addEventListener('change', function () {
+	      _this.dispatch.emit('camera.change');
+	    });
+	  };
+
+	  _inherits(_class, _BaseView);
+
+	  _createClass(_class, [{
+	    key: 'on',
+
+	    // Delegate #on to EventEmitter object.
+	    value: function on() {
+	      this.dispatch.on.apply(this.dispatch, arguments);
+	    }
+	  }, {
+	    key: 'getCameraEarthVec',
+
+	    // Normalized vector pointing from camera to earth.
+	    value: function getCameraEarthVec() {
+	      return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(timestamp) {
+	      this._animate(timestamp);
+	      this._interactivityHandler();
+	      this.controls.update();
+	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
+	    }
+	  }, {
+	    key: '_updateDay',
+	    value: function _updateDay() {
+	      var oldPos = this.getEarthPosition().clone();
+	      _get(Object.getPrototypeOf(_class.prototype), '_updateDay', this).call(this);
+	      var newPos = this.getEarthPosition().clone();
+
+	      var angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
+	      // Make sure that earth maintains its current rotation.
+	      this.rotateEarth(angleDiff);
+
+	      // Update camera position, rotate it and adjust its orbit length.
+	      this.rotateCam(angleDiff);
+	      var lenRatio = newPos.length() / oldPos.length();
+	      this.camera.position.x *= lenRatio;
+	      this.camera.position.z *= lenRatio;
+	      // Set orbit controls target to new position too.
+	      this.controls.target.copy(newPos);
+	      // Make sure that this call is at the very end, as otherwise 'camera.change' event can be fired before
+	      // earth position is updated. This causes problems when client code tries to call .getCameraEarthVec()
+	      // in handler (as earth position is still outdated).
+	      this.controls.update();
+	    }
+	  }, {
+	    key: '_updateLat',
+	    value: function _updateLat() {
+	      this.latLine.setLat(this.props.lat);
+	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+	    }
+	  }, {
+	    key: '_updateLong',
+	    value: function _updateLong() {
+	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
+	      this.latLine = new _modelsLatitudeLineJs2['default']();
+	      this.latLongMarker = new _modelsLatLongMarkerJs2['default']();
+	      this.earth.add(this.latLine.rootObject);
+	      this.earth.add(this.latLongMarker.rootObject);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+
+	    // Sets camera next to earth at day 0 position.
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = -129000000 / data.SCALE_FACTOR;
+	      this.camera.position.y = 5000000 / data.SCALE_FACTOR;
+	      this.camera.position.z = 25000000 / data.SCALE_FACTOR;
+	    }
+	  }, {
+	    key: '_animate',
+	    value: function _animate(timestamp) {
+	      if (!this.props.earthRotation) {
+	        this._prevFrame = null;
+	        return;
+	      }
+	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
+	      var angleDiff = progress * 0.0001 * Math.PI;
+	      this.rotateEarth(angleDiff);
+	      this._prevFrame = timestamp;
+	    }
+	  }, {
+	    key: '_enableMousePicking',
+	    value: function _enableMousePicking() {
+	      var _this2 = this;
+
+	      var onMouseMove = function onMouseMove(event) {
+	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.renderer.domElement);
+	        _this2.mouse.x = pos.x;
+	        _this2.mouse.y = pos.y;
+	      };
+	      (0, _jquery2['default'])(this.renderer.domElement).on('mousemove touchmove', onMouseMove);
+	    }
+	  }, {
+	    key: '_interactivityHandler',
+	    value: function _interactivityHandler() {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+	      if (this._isLatDragging) {
+	        var coords = this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          this.setProps({ lat: coords.lat });
+	          this.dispatch.emit('latitude.change', coords.lat);
+	        }
+	        return;
+	      } else if (this._isLatLongDragging) {
+	        var coords = this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          this.setProps({ lat: coords.lat, long: coords.long });
+	          this.dispatch.emit('latitude.change', coords.lat);
+	          this.dispatch.emit('longitude.change', coords.long);
+	        }
+	        return;
+	      }
+
+	      // Note that order of calls below is very important. First, we need to disable old interaction
+	      // and then enable new one (as they're both modifying camera controls).
+	      if (this._isUserPointing(this.latLongMarker.mesh)) {
+	        this._setLatDraggingEnabled(false);
+	        this._setLatLongDraggingEnabled(true);
+	      } else if (this._isUserPointing(this.latLine.mesh)) {
+	        this._setLatLongDraggingEnabled(false);
+	        this._setLatDraggingEnabled(true);
+	      } else {
+	        this._setLatLongDraggingEnabled(false);
+	        this._setLatDraggingEnabled(false);
+	      }
+	    }
+	  }, {
+	    key: '_isUserPointing',
+	    value: function _isUserPointing(mesh) {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+	      var intersects = this.raycaster.intersectObject(mesh);
+	      if (intersects.length > 0) {
+	        return intersects;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: '_setLatDraggingEnabled',
+	    value: function _setLatDraggingEnabled(v) {
+	      var _this3 = this;
+
+	      if (this._isLatDraggingEnabled === v) return; // exit, nothing has changed
+	      this._isLatDraggingEnabled = v;
+	      this.latLongMarker.setHighlighted(v);
+	      this.latLine.setHighlighted(v);
+	      this.controls.noRotate = v;
+	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
+	      if (v) {
+	        var _$elem = (0, _jquery2['default'])(this.renderer.domElement);
+	        _$elem.on('mousedown.latDragging touchstart.latDragging', function () {
+	          _this3._isLatDragging = true;
+	        });
+	        _$elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
+	          _this3._isLatDragging = false;
+	        });
+	      } else {
+	        $elem.off('.latDragging');
+	      }
+	    }
+	  }, {
+	    key: '_setLatLongDraggingEnabled',
+	    value: function _setLatLongDraggingEnabled(v) {
+	      var _this4 = this;
+
+	      if (this._isLatLongDraggingEnabled === v) return; // exit, nothing has changed
+	      this._isLatLongDraggingEnabled = v;
+	      this.latLongMarker.setHighlighted(v);
+	      this.controls.noRotate = v;
+	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
+	      if (v) {
+	        $elem.on('mousedown.latLongDragging touchstart.latLongDragging', function () {
+	          _this4._isLatLongDragging = true;
+	        });
+	        $elem.on('mouseup.latLongDragging touchend.latLongDragging touchcancel.latLongDragging', function () {
+	          _this4._isLatLongDragging = false;
+	        });
+	      } else {
+	        $elem.off('.latLongDragging');
+	      }
+	    }
+	  }, {
+	    key: '_getPointerLatLong',
+
+	    // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
+	    value: function _getPointerLatLong() {
+	      var intersects = this._isUserPointing(this.earth);
+	      if (!intersects) {
+	        // Pointer does not intersect with earth, return null.
+	        return null;
+	      }
+	      // Calculate vector pointing from Earth center to intersection point.
+	      var intVec = intersects[0].point;
+	      intVec.sub(this.getEarthPosition());
+	      // Take into account earth tilt and rotation.
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
+
+	      // Latitude calculations.
+	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
+	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
+	      // .angleTo returns always positive number.
+	      if (intVec.y < 0) lat *= -1;
+	      // Longitude calculations.
+	      var xVec = new THREE.Vector3(1, 0, 0);
+	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
+	      if (intVec.z > 0) long *= -1;
+	      return { lat: lat, long: long };
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseViewJs2['default']);
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _constantsJs = __webpack_require__(181);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var DEG_2_RAD = Math.PI / 180;
+	var DEF_COLOR = 0xffffff;
+	var DEF_EMISSIVE = 0x999999;
+	var HIGHLIGHT_COLOR = 0xff0000;
+	var HIGHLIGHT_EMISSIVE = 0xbb3333;
+
+	var LatitudeLine = (function () {
+	  function LatitudeLine() {
+	    _classCallCheck(this, LatitudeLine);
+
+	    var geometry = new THREE.TorusGeometry(c.EARTH_RADIUS, c.EARTH_RADIUS * 0.01, 16, 100);
+	    var material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.rotation.x = Math.PI * 0.5;
+
+	    this.rootObject = mesh;
+	    this.mesh = mesh;
+	    this.material = material;
+	  }
+
+	  _createClass(LatitudeLine, [{
+	    key: 'setLat',
+	    value: function setLat(lat) {
+	      if (lat != null) {
+	        this.rootObject.position.y = c.EARTH_RADIUS * Math.sin(lat * DEG_2_RAD);
+	        this.rootObject.scale.x = Math.cos(lat * DEG_2_RAD);
+	        this.rootObject.scale.y = Math.cos(lat * DEG_2_RAD);
+	      }
+	    }
+	  }, {
+	    key: 'setHighlighted',
+	    value: function setHighlighted(v) {
+	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
+	      this.material.emissive.setHex(v ? HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+	    }
+	  }]);
+
+	  return LatitudeLine;
+	})();
+
+	exports['default'] = LatitudeLine;
+	module.exports = exports['default'];
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _solarSystemDataJs = __webpack_require__(182);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	// This constants define values used by 3D object, they don't have any physical meaning.
+
+	var SF = 1 / data.SCALE_FACTOR;
+
+	exports.SF = SF;
+	var EARTH_RADIUS = 7000000 * SF;
+	exports.EARTH_RADIUS = EARTH_RADIUS;
+	var SIMPLE_EARTH_RADIUS = 10000000 * SF;
+	exports.SIMPLE_EARTH_RADIUS = SIMPLE_EARTH_RADIUS;
+	var SUN_RADIUS = 4000000 * SF;
+	exports.SUN_RADIUS = SUN_RADIUS;
+	var SIMPLE_SUN_RADIUS = 15000000 * SF;
+	exports.SIMPLE_SUN_RADIUS = SIMPLE_SUN_RADIUS;
+	var SUN_COLOR = 0xFF8935;
+	exports.SUN_COLOR = SUN_COLOR;
+
+/***/ },
+/* 182 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.earthEllipseLocationByDay = earthEllipseLocationByDay;
+	var AU = 149597870.691;
+	var AU_2_KM = 149597870.7;
+	var EARTH_ECCENTRICITY = 0.01671123;
+
+	var SCALE_FACTOR = 100000;
+	exports.SCALE_FACTOR = SCALE_FACTOR;
+	var EARTH_ORBITAL_RADIUS = AU / SCALE_FACTOR;
+	exports.EARTH_ORBITAL_RADIUS = EARTH_ORBITAL_RADIUS;
+	var EARTH_SEMI_MAJOR_AXIS = 1.00000261;
+	exports.EARTH_SEMI_MAJOR_AXIS = EARTH_SEMI_MAJOR_AXIS;
+	var SUN_FOCUS = EARTH_ECCENTRICITY / EARTH_SEMI_MAJOR_AXIS / 2 * AU_2_KM / SCALE_FACTOR;
+	exports.SUN_FOCUS = SUN_FOCUS;
+	var EARTH_TILT = 0.41;
+
+	exports.EARTH_TILT = EARTH_TILT;
+	var DAY_NUMBER_BY_MONTH = {
+	  JAN: 19,
+	  FEB: 50,
+	  MAR: 78, // mar 20 17:42
+	  APR: 109,
+	  MAY: 139,
+	  JUN: 171, // jun 21 17:16
+	  JUL: 200,
+	  AUG: 231,
+	  SEP: 265, // sep 23 09:04
+	  OCT: 292,
+	  NOV: 323,
+	  DEC: 355 // dec 22 05:30
+	};
+
+	exports.DAY_NUMBER_BY_MONTH = DAY_NUMBER_BY_MONTH;
+
+	function earthEllipseLocationByDay(day) {
+	  var index = (DAY_NUMBER_BY_MONTH.JUN - day) / 365;
+	  var z = 1 / EARTH_SEMI_MAJOR_AXIS * Math.sin(index * 2 * Math.PI);
+	  var x = EARTH_SEMI_MAJOR_AXIS * Math.cos(index * 2 * Math.PI);
+
+	  x = x * EARTH_ORBITAL_RADIUS + SUN_FOCUS * 2;
+	  z = z * EARTH_ORBITAL_RADIUS;
+
+	  return new THREE.Vector3(x, 0, z);
+	}
+
+/***/ },
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -29982,7 +32785,1174 @@
 
 
 /***/ },
-/* 160 */
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * EventEmitter2
+	 * https://github.com/hij1nx/EventEmitter2
+	 *
+	 * Copyright (c) 2013 hij1nx
+	 * Licensed under the MIT license.
+	 */
+	;!function(undefined) {
+
+	  var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
+	    return Object.prototype.toString.call(obj) === "[object Array]";
+	  };
+	  var defaultMaxListeners = 10;
+
+	  function init() {
+	    this._events = {};
+	    if (this._conf) {
+	      configure.call(this, this._conf);
+	    }
+	  }
+
+	  function configure(conf) {
+	    if (conf) {
+
+	      this._conf = conf;
+
+	      conf.delimiter && (this.delimiter = conf.delimiter);
+	      conf.maxListeners && (this._events.maxListeners = conf.maxListeners);
+	      conf.wildcard && (this.wildcard = conf.wildcard);
+	      conf.newListener && (this.newListener = conf.newListener);
+
+	      if (this.wildcard) {
+	        this.listenerTree = {};
+	      }
+	    }
+	  }
+
+	  function EventEmitter(conf) {
+	    this._events = {};
+	    this.newListener = false;
+	    configure.call(this, conf);
+	  }
+
+	  //
+	  // Attention, function return type now is array, always !
+	  // It has zero elements if no any matches found and one or more
+	  // elements (leafs) if there are matches
+	  //
+	  function searchListenerTree(handlers, type, tree, i) {
+	    if (!tree) {
+	      return [];
+	    }
+	    var listeners=[], leaf, len, branch, xTree, xxTree, isolatedBranch, endReached,
+	        typeLength = type.length, currentType = type[i], nextType = type[i+1];
+	    if (i === typeLength && tree._listeners) {
+	      //
+	      // If at the end of the event(s) list and the tree has listeners
+	      // invoke those listeners.
+	      //
+	      if (typeof tree._listeners === 'function') {
+	        handlers && handlers.push(tree._listeners);
+	        return [tree];
+	      } else {
+	        for (leaf = 0, len = tree._listeners.length; leaf < len; leaf++) {
+	          handlers && handlers.push(tree._listeners[leaf]);
+	        }
+	        return [tree];
+	      }
+	    }
+
+	    if ((currentType === '*' || currentType === '**') || tree[currentType]) {
+	      //
+	      // If the event emitted is '*' at this part
+	      // or there is a concrete match at this patch
+	      //
+	      if (currentType === '*') {
+	        for (branch in tree) {
+	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
+	            listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+1));
+	          }
+	        }
+	        return listeners;
+	      } else if(currentType === '**') {
+	        endReached = (i+1 === typeLength || (i+2 === typeLength && nextType === '*'));
+	        if(endReached && tree._listeners) {
+	          // The next element has a _listeners, add it to the handlers.
+	          listeners = listeners.concat(searchListenerTree(handlers, type, tree, typeLength));
+	        }
+
+	        for (branch in tree) {
+	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
+	            if(branch === '*' || branch === '**') {
+	              if(tree[branch]._listeners && !endReached) {
+	                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], typeLength));
+	              }
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
+	            } else if(branch === nextType) {
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+2));
+	            } else {
+	              // No match on this one, shift into the tree but not in the type array.
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
+	            }
+	          }
+	        }
+	        return listeners;
+	      }
+
+	      listeners = listeners.concat(searchListenerTree(handlers, type, tree[currentType], i+1));
+	    }
+
+	    xTree = tree['*'];
+	    if (xTree) {
+	      //
+	      // If the listener tree will allow any match for this part,
+	      // then recursively explore all branches of the tree
+	      //
+	      searchListenerTree(handlers, type, xTree, i+1);
+	    }
+
+	    xxTree = tree['**'];
+	    if(xxTree) {
+	      if(i < typeLength) {
+	        if(xxTree._listeners) {
+	          // If we have a listener on a '**', it will catch all, so add its handler.
+	          searchListenerTree(handlers, type, xxTree, typeLength);
+	        }
+
+	        // Build arrays of matching next branches and others.
+	        for(branch in xxTree) {
+	          if(branch !== '_listeners' && xxTree.hasOwnProperty(branch)) {
+	            if(branch === nextType) {
+	              // We know the next element will match, so jump twice.
+	              searchListenerTree(handlers, type, xxTree[branch], i+2);
+	            } else if(branch === currentType) {
+	              // Current node matches, move into the tree.
+	              searchListenerTree(handlers, type, xxTree[branch], i+1);
+	            } else {
+	              isolatedBranch = {};
+	              isolatedBranch[branch] = xxTree[branch];
+	              searchListenerTree(handlers, type, { '**': isolatedBranch }, i+1);
+	            }
+	          }
+	        }
+	      } else if(xxTree._listeners) {
+	        // We have reached the end and still on a '**'
+	        searchListenerTree(handlers, type, xxTree, typeLength);
+	      } else if(xxTree['*'] && xxTree['*']._listeners) {
+	        searchListenerTree(handlers, type, xxTree['*'], typeLength);
+	      }
+	    }
+
+	    return listeners;
+	  }
+
+	  function growListenerTree(type, listener) {
+
+	    type = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+
+	    //
+	    // Looks for two consecutive '**', if so, don't add the event at all.
+	    //
+	    for(var i = 0, len = type.length; i+1 < len; i++) {
+	      if(type[i] === '**' && type[i+1] === '**') {
+	        return;
+	      }
+	    }
+
+	    var tree = this.listenerTree;
+	    var name = type.shift();
+
+	    while (name) {
+
+	      if (!tree[name]) {
+	        tree[name] = {};
+	      }
+
+	      tree = tree[name];
+
+	      if (type.length === 0) {
+
+	        if (!tree._listeners) {
+	          tree._listeners = listener;
+	        }
+	        else if(typeof tree._listeners === 'function') {
+	          tree._listeners = [tree._listeners, listener];
+	        }
+	        else if (isArray(tree._listeners)) {
+
+	          tree._listeners.push(listener);
+
+	          if (!tree._listeners.warned) {
+
+	            var m = defaultMaxListeners;
+
+	            if (typeof this._events.maxListeners !== 'undefined') {
+	              m = this._events.maxListeners;
+	            }
+
+	            if (m > 0 && tree._listeners.length > m) {
+
+	              tree._listeners.warned = true;
+	              console.error('(node) warning: possible EventEmitter memory ' +
+	                            'leak detected. %d listeners added. ' +
+	                            'Use emitter.setMaxListeners() to increase limit.',
+	                            tree._listeners.length);
+	              console.trace();
+	            }
+	          }
+	        }
+	        return true;
+	      }
+	      name = type.shift();
+	    }
+	    return true;
+	  }
+
+	  // By default EventEmitters will print a warning if more than
+	  // 10 listeners are added to it. This is a useful default which
+	  // helps finding memory leaks.
+	  //
+	  // Obviously not all Emitters should be limited to 10. This function allows
+	  // that to be increased. Set to zero for unlimited.
+
+	  EventEmitter.prototype.delimiter = '.';
+
+	  EventEmitter.prototype.setMaxListeners = function(n) {
+	    this._events || init.call(this);
+	    this._events.maxListeners = n;
+	    if (!this._conf) this._conf = {};
+	    this._conf.maxListeners = n;
+	  };
+
+	  EventEmitter.prototype.event = '';
+
+	  EventEmitter.prototype.once = function(event, fn) {
+	    this.many(event, 1, fn);
+	    return this;
+	  };
+
+	  EventEmitter.prototype.many = function(event, ttl, fn) {
+	    var self = this;
+
+	    if (typeof fn !== 'function') {
+	      throw new Error('many only accepts instances of Function');
+	    }
+
+	    function listener() {
+	      if (--ttl === 0) {
+	        self.off(event, listener);
+	      }
+	      fn.apply(this, arguments);
+	    }
+
+	    listener._origin = fn;
+
+	    this.on(event, listener);
+
+	    return self;
+	  };
+
+	  EventEmitter.prototype.emit = function() {
+
+	    this._events || init.call(this);
+
+	    var type = arguments[0];
+
+	    if (type === 'newListener' && !this.newListener) {
+	      if (!this._events.newListener) { return false; }
+	    }
+
+	    // Loop through the *_all* functions and invoke them.
+	    if (this._all) {
+	      var l = arguments.length;
+	      var args = new Array(l - 1);
+	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+	      for (i = 0, l = this._all.length; i < l; i++) {
+	        this.event = type;
+	        this._all[i].apply(this, args);
+	      }
+	    }
+
+	    // If there is no 'error' event listener then throw.
+	    if (type === 'error') {
+
+	      if (!this._all &&
+	        !this._events.error &&
+	        !(this.wildcard && this.listenerTree.error)) {
+
+	        if (arguments[1] instanceof Error) {
+	          throw arguments[1]; // Unhandled 'error' event
+	        } else {
+	          throw new Error("Uncaught, unspecified 'error' event.");
+	        }
+	        return false;
+	      }
+	    }
+
+	    var handler;
+
+	    if(this.wildcard) {
+	      handler = [];
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
+	    }
+	    else {
+	      handler = this._events[type];
+	    }
+
+	    if (typeof handler === 'function') {
+	      this.event = type;
+	      if (arguments.length === 1) {
+	        handler.call(this);
+	      }
+	      else if (arguments.length > 1)
+	        switch (arguments.length) {
+	          case 2:
+	            handler.call(this, arguments[1]);
+	            break;
+	          case 3:
+	            handler.call(this, arguments[1], arguments[2]);
+	            break;
+	          // slower
+	          default:
+	            var l = arguments.length;
+	            var args = new Array(l - 1);
+	            for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+	            handler.apply(this, args);
+	        }
+	      return true;
+	    }
+	    else if (handler) {
+	      var l = arguments.length;
+	      var args = new Array(l - 1);
+	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+
+	      var listeners = handler.slice();
+	      for (var i = 0, l = listeners.length; i < l; i++) {
+	        this.event = type;
+	        listeners[i].apply(this, args);
+	      }
+	      return (listeners.length > 0) || !!this._all;
+	    }
+	    else {
+	      return !!this._all;
+	    }
+
+	  };
+
+	  EventEmitter.prototype.on = function(type, listener) {
+
+	    if (typeof type === 'function') {
+	      this.onAny(type);
+	      return this;
+	    }
+
+	    if (typeof listener !== 'function') {
+	      throw new Error('on only accepts instances of Function');
+	    }
+	    this._events || init.call(this);
+
+	    // To avoid recursion in the case that type == "newListeners"! Before
+	    // adding it to the listeners, first emit "newListeners".
+	    this.emit('newListener', type, listener);
+
+	    if(this.wildcard) {
+	      growListenerTree.call(this, type, listener);
+	      return this;
+	    }
+
+	    if (!this._events[type]) {
+	      // Optimize the case of one listener. Don't need the extra array object.
+	      this._events[type] = listener;
+	    }
+	    else if(typeof this._events[type] === 'function') {
+	      // Adding the second element, need to change to array.
+	      this._events[type] = [this._events[type], listener];
+	    }
+	    else if (isArray(this._events[type])) {
+	      // If we've already got an array, just append.
+	      this._events[type].push(listener);
+
+	      // Check for listener leak
+	      if (!this._events[type].warned) {
+
+	        var m = defaultMaxListeners;
+
+	        if (typeof this._events.maxListeners !== 'undefined') {
+	          m = this._events.maxListeners;
+	        }
+
+	        if (m > 0 && this._events[type].length > m) {
+
+	          this._events[type].warned = true;
+	          console.error('(node) warning: possible EventEmitter memory ' +
+	                        'leak detected. %d listeners added. ' +
+	                        'Use emitter.setMaxListeners() to increase limit.',
+	                        this._events[type].length);
+	          console.trace();
+	        }
+	      }
+	    }
+	    return this;
+	  };
+
+	  EventEmitter.prototype.onAny = function(fn) {
+
+	    if (typeof fn !== 'function') {
+	      throw new Error('onAny only accepts instances of Function');
+	    }
+
+	    if(!this._all) {
+	      this._all = [];
+	    }
+
+	    // Add the function to the event listener collection.
+	    this._all.push(fn);
+	    return this;
+	  };
+
+	  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+	  EventEmitter.prototype.off = function(type, listener) {
+	    if (typeof listener !== 'function') {
+	      throw new Error('removeListener only takes instances of Function');
+	    }
+
+	    var handlers,leafs=[];
+
+	    if(this.wildcard) {
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
+	    }
+	    else {
+	      // does not use listeners(), so no side effect of creating _events[type]
+	      if (!this._events[type]) return this;
+	      handlers = this._events[type];
+	      leafs.push({_listeners:handlers});
+	    }
+
+	    for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
+	      var leaf = leafs[iLeaf];
+	      handlers = leaf._listeners;
+	      if (isArray(handlers)) {
+
+	        var position = -1;
+
+	        for (var i = 0, length = handlers.length; i < length; i++) {
+	          if (handlers[i] === listener ||
+	            (handlers[i].listener && handlers[i].listener === listener) ||
+	            (handlers[i]._origin && handlers[i]._origin === listener)) {
+	            position = i;
+	            break;
+	          }
+	        }
+
+	        if (position < 0) {
+	          continue;
+	        }
+
+	        if(this.wildcard) {
+	          leaf._listeners.splice(position, 1);
+	        }
+	        else {
+	          this._events[type].splice(position, 1);
+	        }
+
+	        if (handlers.length === 0) {
+	          if(this.wildcard) {
+	            delete leaf._listeners;
+	          }
+	          else {
+	            delete this._events[type];
+	          }
+	        }
+	        return this;
+	      }
+	      else if (handlers === listener ||
+	        (handlers.listener && handlers.listener === listener) ||
+	        (handlers._origin && handlers._origin === listener)) {
+	        if(this.wildcard) {
+	          delete leaf._listeners;
+	        }
+	        else {
+	          delete this._events[type];
+	        }
+	      }
+	    }
+
+	    return this;
+	  };
+
+	  EventEmitter.prototype.offAny = function(fn) {
+	    var i = 0, l = 0, fns;
+	    if (fn && this._all && this._all.length > 0) {
+	      fns = this._all;
+	      for(i = 0, l = fns.length; i < l; i++) {
+	        if(fn === fns[i]) {
+	          fns.splice(i, 1);
+	          return this;
+	        }
+	      }
+	    } else {
+	      this._all = [];
+	    }
+	    return this;
+	  };
+
+	  EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
+
+	  EventEmitter.prototype.removeAllListeners = function(type) {
+	    if (arguments.length === 0) {
+	      !this._events || init.call(this);
+	      return this;
+	    }
+
+	    if(this.wildcard) {
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      var leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
+
+	      for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
+	        var leaf = leafs[iLeaf];
+	        leaf._listeners = null;
+	      }
+	    }
+	    else {
+	      if (!this._events[type]) return this;
+	      this._events[type] = null;
+	    }
+	    return this;
+	  };
+
+	  EventEmitter.prototype.listeners = function(type) {
+	    if(this.wildcard) {
+	      var handlers = [];
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
+	      return handlers;
+	    }
+
+	    this._events || init.call(this);
+
+	    if (!this._events[type]) this._events[type] = [];
+	    if (!isArray(this._events[type])) {
+	      this._events[type] = [this._events[type]];
+	    }
+	    return this._events[type];
+	  };
+
+	  EventEmitter.prototype.listenersAny = function() {
+
+	    if(this._all) {
+	      return this._all;
+	    }
+	    else {
+	      return [];
+	    }
+
+	  };
+
+	  if (true) {
+	     // AMD. Register as an anonymous module.
+	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	      return EventEmitter;
+	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports === 'object') {
+	    // CommonJS
+	    exports.EventEmitter2 = EventEmitter;
+	  }
+	  else {
+	    // Browser global.
+	    window.EventEmitter2 = EventEmitter;
+	  }
+	}();
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _jquery = __webpack_require__(183);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _modelsCommonModelsJs = __webpack_require__(186);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _modelsSunEarthLineJs = __webpack_require__(187);
+
+	var _modelsSunEarthLineJs2 = _interopRequireDefault(_modelsSunEarthLineJs);
+
+	var _solarSystemDataJs = __webpack_require__(182);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  sunEarthLine: true
+	};
+
+	var _default = (function () {
+	  var _class = function _default(parentEl, props, modelType) {
+	    if (props === undefined) props = DEF_PROPERTIES;
+
+	    _classCallCheck(this, _class);
+
+	    var width = parentEl.clientWidth;
+	    var height = parentEl.clientHeight;
+	    this.scene = new THREE.Scene();
+	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
+	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+	    this.renderer.setSize(width, height);
+	    parentEl.appendChild(this.renderer.domElement);
+
+	    // Type is passed to 3D models.
+	    this.type = modelType;
+	    this._initScene();
+	    this._setInitialCamPos();
+
+	    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+	    this.controls.noPan = true;
+	    this.controls.noZoom = true;
+	    this.controls.rotateSpeed = 0.5;
+
+	    this.props = {};
+	    this.setProps(props);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = _jquery2['default'].extend(this.props);
+	      this.props = _jquery2['default'].extend(this.props, newProps);
+
+	      // Iterate over all the properties and call update handles for ones that have been changed.
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = Object.keys(this.props)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var key = _step.value;
+
+	          if (this.props[key] !== oldProps[key]) {
+	            // Transform property name to name of the function that handles its update. For example:
+	            // earthTilt -> _updateEarthTilt.
+	            var funcName = '_update' + key[0].toUpperCase() + key.substr(1);
+	            if (typeof this[funcName] === 'function') {
+	              this[funcName]();
+	            }
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator['return']) {
+	            _iterator['return']();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'getEarthPosition',
+	    value: function getEarthPosition() {
+	      return this.earthPos.position;
+	    }
+	  }, {
+	    key: 'getEarthTilt',
+	    value: function getEarthTilt() {
+	      return this.earthTiltPivot.rotation.z;
+	    }
+	  }, {
+	    key: 'getEarthRotation',
+	    value: function getEarthRotation() {
+	      return this.earth.rotation.y;
+	    }
+	  }, {
+	    key: 'rotateEarth',
+
+	    // Rotates earth around its own axis.
+	    value: function rotateEarth(angleDiff) {
+	      this.earth.rotation.y += angleDiff;
+	    }
+	  }, {
+	    key: 'rotateCam',
+
+	    // Rotates camera around the sun.
+	    value: function rotateCam(angle) {
+	      this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+	      this.controls.update();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(timestamp) {
+	      this.renderer.render(this.scene, this.camera);
+	    }
+	  }, {
+	    key: 'resize',
+
+	    // Resizes canvas to fill its parent.
+	    value: function resize() {
+	      var $parent = (0, _jquery2['default'])(this.renderer.domElement).parent();
+	      var newWidth = $parent.width();
+	      var newHeight = $parent.height();
+	      this.camera.aspect = newWidth / newHeight;
+	      this.camera.updateProjectionMatrix();
+	      this.renderer.setSize(newWidth, newHeight);
+	    }
+	  }, {
+	    key: '_updateDay',
+
+	    // Called automatically when 'day' property is updated.
+	    value: function _updateDay() {
+	      var day = this.props.day;
+	      var pos = data.earthEllipseLocationByDay(day);
+	      this.earthPos.position.copy(pos);
+	      this.sunEarthLine.setEarthPos(pos);
+	    }
+	  }, {
+	    key: '_updateEarthTilt',
+
+	    // Called automatically when 'earthTilt' property is updated.
+	    value: function _updateEarthTilt() {
+	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
+	    }
+	  }, {
+	    key: '_updateSunEarthLine',
+	    value: function _updateSunEarthLine() {
+	      var mesh = this.sunEarthLine.rootObject;
+	      if (this.props.sunEarthLine && !mesh.parent) {
+	        this.scene.add(mesh);
+	      } else if (!this.props.sunEarthLine && mesh.parent) {
+	        this.scene.remove(mesh);
+	      }
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      var basicProps = { type: this.type };
+
+	      this.scene.add(_modelsCommonModelsJs2['default'].stars(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].ambientLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunOnlyLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].grid(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
+
+	      this.earth = _modelsCommonModelsJs2['default'].earth(basicProps);
+	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
+	      this.earth.add(this.earthAxis);
+	      this.earthTiltPivot = new THREE.Object3D();
+	      this.earthTiltPivot.add(this.earth);
+	      this.earthPos = new THREE.Object3D();
+	      // Make sure that earth is at day 0 position.
+	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
+	      var pos = data.earthEllipseLocationByDay(0);
+	      this.earthPos.position.copy(pos);
+	      this.earthPos.add(this.earthTiltPivot);
+	      this.scene.add(this.earthPos);
+
+	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
+	      this.scene.add(this.sunEarthLine.rootObject);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = 0;
+	      this.camera.position.y = 0;
+	      this.camera.position.z = 0;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	var _solarSystemDataJs = __webpack_require__(182);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var _constantsJs = __webpack_require__(181);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	exports['default'] = {
+	  stars: function stars() {
+	    var SIZE = 4000000 * c.SF;
+	    var MIN_RADIUS = 500000000 * c.SF;
+	    var MAX_RADIUS = 3 * MIN_RADIUS;
+	    var geometry = new THREE.Geometry();
+
+	    for (var i = 0; i < 2000; i++) {
+	      var vertex = new THREE.Vector3();
+	      var theta = 2 * Math.PI * Math.random();
+	      var u = Math.random() * 2 - 1;
+	      vertex.x = Math.sqrt(1 - u * u) * Math.cos(theta);
+	      vertex.y = Math.sqrt(1 - u * u) * Math.sin(theta);
+	      vertex.z = u;
+	      vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
+	      geometry.vertices.push(vertex);
+	    }
+	    var material = new THREE.PointCloudMaterial({ size: SIZE, color: 0xffffee });
+	    var particles = new THREE.PointCloud(geometry, material);
+	    return particles;
+	  },
+
+	  ambientLight: function ambientLight() {
+	    return new THREE.AmbientLight(0x111111);
+	  },
+
+	  sunLight: function sunLight() {
+	    return new THREE.PointLight(0xffffff, 1.2, 0);
+	  },
+
+	  // Light that affects only sun object (due to radius settings).
+	  sunOnlyLight: function sunOnlyLight() {
+	    var light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
+	    light.position.y = c.SUN_RADIUS * 4;
+	    return light;
+	  },
+
+	  sun: function sun(params) {
+	    var radius = params.type === 'orbit-view' ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
+	    var geometry = new THREE.SphereGeometry(radius, 32, 32);
+	    var material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    return mesh;
+	  },
+
+	  earth: function earth(params) {
+	    var simple = params.type === 'orbit-view';
+	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x023757 } : { specular: 0x252525 };
+	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
+	    var material = new THREE.MeshPhongMaterial(COLORS);
+	    if (!simple) {
+	      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
+	      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
+	      material.bumpScale = 100000 * c.SF;
+	      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
+	    }
+	    return new THREE.Mesh(geometry, material);
+	  },
+
+	  orbit: function orbit() {
+	    var curve = new THREE.EllipseCurve(data.SUN_FOCUS * 2, 0, // ax, aY
+	    data.EARTH_SEMI_MAJOR_AXIS * data.EARTH_ORBITAL_RADIUS, data.EARTH_ORBITAL_RADIUS, // xRadius, yRadius
+	    0, 2 * Math.PI, // aStartAngle, aEndAngle
+	    false // aClockwise
+	    );
+	    var path = new THREE.Path(curve.getPoints(150));
+	    var geometry = path.createPointsGeometry(150);
+	    var material = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
+	    var mesh = new THREE.Line(geometry, material);
+	    mesh.rotateX(Math.PI / 2);
+
+	    return mesh;
+	  },
+
+	  label: function label(txt) {
+	    var geometry = new THREE.TextGeometry(txt, {
+	      size: 50000000 * c.SF,
+	      height: 1000000 * c.SF
+	    });
+	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.rotation.x = -Math.PI * 0.5;
+	    return mesh;
+	  },
+
+	  grid: function grid(params) {
+	    var steps = params.type === 'orbit-view' ? 5 : 60;
+	    var size = data.EARTH_ORBITAL_RADIUS;
+	    var step = size / steps;
+
+	    var geometry = new THREE.Geometry();
+	    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 });
+
+	    for (var i = -size; i <= size; i += step) {
+	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
+	      geometry.vertices.push(new THREE.Vector3(size, 0, i));
+
+	      geometry.vertices.push(new THREE.Vector3(i, 0, -size));
+	      geometry.vertices.push(new THREE.Vector3(i, 0, size));
+	    }
+	    return new THREE.Line(geometry, material, THREE.LinePieces);
+	  },
+
+	  earthAxis: function earthAxis(params) {
+	    var simple = params.type === 'orbit-view';
+	    var HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
+	    var RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
+	    var HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
+	    var HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
+	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
+	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
+	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
+	    var mesh = new THREE.Mesh(geometry, material);
+
+	    var arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
+	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
+	    arrowHeadMesh.position.y = HEIGHT * 0.5;
+	    mesh.add(arrowHeadMesh);
+
+	    return mesh;
+	  },
+
+	  viewAxis: function viewAxis() {
+	    var HEIGHT = 70000000 * c.SF;
+	    var HEAD_HEIGHT = HEIGHT * 0.2;
+	    var RADIUS = 2000000 * c.SF;
+	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
+	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS + HEAD_HEIGHT;
+
+	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEAD_HEIGHT, 32);
+	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
+	    arrowHeadMesh.position.y = -HEIGHT * 0.5 - HEAD_HEIGHT * 0.5;
+	    mesh.add(arrowHeadMesh);
+
+	    var pivot = new THREE.Object3D();
+	    pivot.add(mesh);
+	    return pivot;
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _constantsJs = __webpack_require__(181);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var LINE_RADIUS = 30000 * c.SF;
+	var SIMPLE_LINE_RADIUS = 800000 * c.SF;
+	var POINTER_RADIUS = 100000 * c.SF;
+	var POINTER_TUBE = 45000 * c.SF;
+
+	var _default = (function () {
+	  var _class = function _default(props) {
+	    _classCallCheck(this, _class);
+
+	    var simple = props.type === 'orbit-view';
+
+	    // _refVector is used to calculate angle between it and the current earth position.
+	    this._refVector = new THREE.Vector3(-1, 0, 0);
+	    this._earthRadius = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+
+	    this._init3DObjects(simple);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setEarthPos',
+	    value: function setEarthPos(newPos) {
+	      var len = newPos.length() - this._earthRadius;
+	      var angleDiff = newPos.angleTo(this._refVector);
+	      if (newPos.z < 0) angleDiff *= -1;
+	      this.rootObject.rotation.y = angleDiff;
+	      this._lineMesh.scale.y = len;
+	      this._lineMesh.position.x = -len * 0.5;
+	      if (this._pointerMesh) {
+	        this._pointerMesh.position.x = -len;
+	      }
+	    }
+	  }, {
+	    key: '_init3DObjects',
+	    value: function _init3DObjects(simple) {
+	      var radius = simple ? SIMPLE_LINE_RADIUS : LINE_RADIUS;
+	      var segments = simple ? 4 : 8;
+	      var material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
+	      var geometry = new THREE.CylinderGeometry(radius, radius, 1, segments);
+	      this._lineMesh = new THREE.Mesh(geometry, material);
+	      this._lineMesh.rotation.z = Math.PI * 0.5;
+
+	      var container = new THREE.Object3D();
+	      container.add(this._lineMesh);
+	      var pivot = new THREE.Object3D();
+	      pivot.add(container);
+
+	      if (!simple) {
+	        this._pointerMesh = this._initPointer();
+	        container.add(this._pointerMesh);
+	      }
+
+	      this.rootObject = pivot;
+	    }
+	  }, {
+	    key: '_initPointer',
+	    value: function _initPointer() {
+	      var material = new THREE.MeshPhongMaterial({ color: c.SUN_COLOR });
+	      var geometry = new THREE.TorusGeometry(POINTER_RADIUS, POINTER_TUBE, 4, 16);
+	      var mesh = new THREE.Mesh(geometry, material);
+	      mesh.rotation.y = Math.PI * 0.5;
+	      return mesh;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _constantsJs = __webpack_require__(181);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var _utilsJs = __webpack_require__(189);
+
+	var DEG_2_RAD = Math.PI / 180;
+	var DEF_COLOR = 0xffffff;
+	var DEF_EMISSIVE = 0x999999;
+	var HIGHLIGHT_COLOR = 0xff0000;
+	var HIGHLIGHT_EMISSIVE = 0xbb3333;
+
+	var LatLongMarker = (function () {
+	  function LatLongMarker() {
+	    _classCallCheck(this, LatLongMarker);
+
+	    var geometry = new THREE.SphereGeometry(300000 * c.SF, 32, 32);
+	    var material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
+	    var mesh = new THREE.Mesh(geometry, material);
+	    mesh.position.x = c.EARTH_RADIUS;
+	    var pivot = new THREE.Object3D();
+	    pivot.add(mesh);
+
+	    this.rootObject = pivot;
+	    this.mesh = mesh;
+	    this.material = material;
+	  }
+
+	  _createClass(LatLongMarker, [{
+	    key: 'setLatLong',
+	    value: function setLatLong(lat, long) {
+	      if (lat != null) {
+	        lat = lat * DEG_2_RAD;
+	        this.rootObject.rotation.z = lat;
+	      }
+	      if (long != null) {
+	        long = long * DEG_2_RAD;
+	        this.rootObject.rotation.y = long;
+	      }
+	    }
+	  }, {
+	    key: 'setHighlighted',
+	    value: function setHighlighted(v) {
+	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
+	      this.material.emissive.setHex(v ? HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+	    }
+	  }]);
+
+	  return LatLongMarker;
+	})();
+
+	exports['default'] = LatLongMarker;
+	module.exports = exports['default'];
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.mousePos = mousePos;
+	exports.mousePosNormalized = mousePosNormalized;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _jquery = __webpack_require__(183);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	// Mouse position in pixels.
+
+	function mousePos(event, targetElement) {
+	  var $targetElement = (0, _jquery2['default'])(targetElement);
+	  var parentX = $targetElement.offset().left;
+	  var parentY = $targetElement.offset().top;
+	  return { x: event.pageX - parentX, y: event.pageY - parentY };
+	}
+
+	// Normalized mouse position [-1, 1].
+
+	function mousePosNormalized(event, targetElement) {
+	  var pos = mousePos(event, targetElement);
+	  var $targetElement = (0, _jquery2['default'])(targetElement);
+	  var parentWidth = $targetElement.width();
+	  var parentHeight = $targetElement.height();
+	  pos.x = pos.x / parentWidth * 2 - 1;
+	  pos.y = -(pos.y / parentHeight) * 2 + 1;
+	  return pos;
+	}
+
+/***/ },
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30005,13 +33975,733 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _jquery = __webpack_require__(159);
+	var _canvasViewJsx = __webpack_require__(178);
+
+	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
+
+	var _viewsOrbitViewJs = __webpack_require__(191);
+
+	var _viewsOrbitViewJs2 = _interopRequireDefault(_viewsOrbitViewJs);
+
+	var OrbitViewComp = (function (_CanvasView) {
+	  function OrbitViewComp(props) {
+	    _classCallCheck(this, OrbitViewComp);
+
+	    _get(Object.getPrototypeOf(OrbitViewComp.prototype), 'constructor', this).call(this, props);
+	    this.ExternalView = _viewsOrbitViewJs2['default'];
+	  }
+
+	  _inherits(OrbitViewComp, _CanvasView);
+
+	  _createClass(OrbitViewComp, [{
+	    key: 'setViewAxis',
+	    value: function setViewAxis(vec) {
+	      this.externalView.setViewAxis(vec);
+	    }
+	  }]);
+
+	  return OrbitViewComp;
+	})(_canvasViewJsx2['default']);
+
+	exports['default'] = OrbitViewComp;
+	module.exports = exports['default'];
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _jquery = __webpack_require__(183);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	__webpack_require__(161);
+	var _baseViewJs = __webpack_require__(185);
 
-	__webpack_require__(165);
+	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
+
+	var _modelsCommonModelsJs = __webpack_require__(186);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _solarSystemDataJs = __webpack_require__(182);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  sunEarthLine: true
+	};
+
+	var _default = (function (_BaseView) {
+	  var _class = function _default(parentEl) {
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'orbit-view');
+	  };
+
+	  _inherits(_class, _BaseView);
+
+	  _createClass(_class, [{
+	    key: 'setViewAxis',
+	    value: function setViewAxis(vec3) {
+	      this.viewAxis.lookAt(vec3);
+	      this.viewAxis.rotateX(Math.PI * 0.5);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = 0;
+	      this.camera.position.y = 245232773 / data.SCALE_FACTOR;
+	      this.camera.position.z = 228174616 / data.SCALE_FACTOR;
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
+	      this.viewAxis = _modelsCommonModelsJs2['default'].viewAxis();
+	      this.earthPos.add(this.viewAxis);
+	      this._addLabels();
+	    }
+	  }, {
+	    key: '_addLabels',
+	    value: function _addLabels() {
+	      var juneLbl = _modelsCommonModelsJs2['default'].label('Jun');
+	      juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
+	      juneLbl.rotateZ(-Math.PI * 0.5);
+
+	      var decLbl = _modelsCommonModelsJs2['default'].label('Dec');
+	      decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
+	      decLbl.rotateZ(Math.PI * 0.5);
+
+	      var sepLbl = _modelsCommonModelsJs2['default'].label('Sep');
+	      sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
+
+	      var marLbl = _modelsCommonModelsJs2['default'].label('Mar');
+	      marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
+	      marLbl.rotateZ(Math.PI);
+
+	      this.scene.add(juneLbl);
+	      this.scene.add(decLbl);
+	      this.scene.add(sepLbl);
+	      this.scene.add(marLbl);
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseViewJs2['default']);
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _canvasViewJsx = __webpack_require__(178);
+
+	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
+
+	var _viewsRaysViewJs = __webpack_require__(193);
+
+	var _viewsRaysViewJs2 = _interopRequireDefault(_viewsRaysViewJs);
+
+	var RaysViewComp = (function (_CanvasView) {
+	  function RaysViewComp(props) {
+	    _classCallCheck(this, RaysViewComp);
+
+	    _get(Object.getPrototypeOf(RaysViewComp.prototype), 'constructor', this).call(this, props);
+	    this.ExternalView = _viewsRaysViewJs2['default'];
+	  }
+
+	  _inherits(RaysViewComp, _CanvasView);
+
+	  return RaysViewComp;
+	})(_canvasViewJsx2['default']);
+
+	exports['default'] = RaysViewComp;
+	module.exports = exports['default'];
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _jquery = __webpack_require__(183);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _solarSystemDataJs = __webpack_require__(182);
+
+	var DARK_BLUE = '#6E9CEF';
+	var LIGHT_BLUE = '#99ADF1';
+	var LIGHT_GREEN = '#84A44A';
+	var DARK_GREEN = '#4C7F19';
+	var RAY_COLOR = '#D8D8AC';
+	var SKY_FRACTION = 0.8;
+
+	var DEFAULT_PROPS = {
+	  day: 0,
+	  lat: 0,
+	  earthTilt: true
+	};
+
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var _default = (function () {
+	  var _class = function _default(parentEl) {
+	    var props = arguments[1] === undefined ? DEFAULT_PROPS : arguments[1];
+
+	    _classCallCheck(this, _class);
+
+	    this.canvas = document.createElement('canvas');
+	    parentEl.appendChild(this.canvas);
+	    this.ctx = this.canvas.getContext('2d');
+
+	    this.props = {};
+	    this.setProps(props);
+
+	    this.resize();
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = _jquery2['default'].extend(this.props);
+	      this.props = _jquery2['default'].extend(this.props, newProps);
+
+	      if (this.props.day !== oldProps.day || this.props.earthTilt !== oldProps.earthTilt || this.props.lat !== oldProps.lat) {
+	        this._drawRaysView();
+	      }
+	    }
+	  }, {
+	    key: 'getNoonSolarAltitude',
+	    value: function getNoonSolarAltitude() {
+	      // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
+	      // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
+	      var tiltAxisZRadians = 2 * Math.PI * (this.props.day - _solarSystemDataJs.DAY_NUMBER_BY_MONTH.JUN) / 365;
+	      // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
+	      // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
+	      var orbitalTiltDegrees = this.props.earthTilt ? _solarSystemDataJs.EARTH_TILT * RAD_2_DEG : 0;
+	      var effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
+	      return 90 - (this.props.lat + effectiveTiltDegrees);
+	    }
+	  }, {
+	    key: 'resize',
+
+	    // Resizes canvas to fill its parent.
+	    value: function resize() {
+	      var $parent = (0, _jquery2['default'])(this.canvas).parent();
+	      this.width = $parent.width();
+	      this.height = $parent.height();
+	      // Update canvas attributes (they can be undefined if canvas size is set using CSS).
+	      this.canvas.width = this.width;
+	      this.canvas.height = this.height;
+	      this._drawRaysView();
+	    }
+	  }, {
+	    key: '_drawRaysView',
+	    value: function _drawRaysView() {
+	      var solarAngle = this.getNoonSolarAltitude();
+	      var width = this.width;
+	      var height = this.height;
+	      var skyHeight = SKY_FRACTION * height;
+	      var groundHeight = height - skyHeight;
+
+	      var skyGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
+	      skyGradient.addColorStop(0, DARK_BLUE);
+	      skyGradient.addColorStop(1, LIGHT_BLUE);
+
+	      this.ctx.fillStyle = skyGradient;
+	      this.ctx.fillRect(0, 0, width, skyHeight);
+
+	      var groundGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
+	      groundGradient.addColorStop(0, LIGHT_GREEN);
+	      groundGradient.addColorStop(1, DARK_GREEN);
+
+	      this.ctx.fillStyle = groundGradient;
+	      this.ctx.fillRect(0, skyHeight, width, groundHeight);
+
+	      if (solarAngle < 0 || solarAngle > 180) {
+	        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+	        this.ctx.fillRect(0, 0, width, height);
+	        return;
+	      }
+
+	      // Longest possible line.
+	      var maxLength = Math.sqrt(skyHeight * skyHeight + width * width);
+	      var NUM_BEAMS = 10;
+	      var x = undefined;
+	      var dx = width / (NUM_BEAMS + 1) / Math.sin(solarAngle * Math.PI / 180);
+	      var lineRotationRadians = (90 - solarAngle) * (Math.PI / 180);
+
+	      this.ctx.strokeStyle = RAY_COLOR;
+	      this.ctx.fillStyle = RAY_COLOR;
+
+	      // Could be +/- Infinity when solarAngle is 0
+	      if (isFinite(dx)) {
+	        for (x = dx / 2; x < width; x += dx) {
+	          this.ctx.save();
+	          this.ctx.translate(x, skyHeight);
+	          this._drawLine(lineRotationRadians, 5, maxLength);
+	          this._drawArrow(lineRotationRadians);
+	          this.ctx.restore();
+	        }
+	      }
+
+	      var dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle * Math.PI / 180));
+	      var yInitial = solarAngle < 90 ? dy / 2 : (x - width) / dx * dy;
+	      var xEdge = solarAngle < 90 ? 0 : width;
+	      if (isFinite(dy)) {
+	        for (var y = skyHeight - yInitial; y > 0; y -= dy) {
+	          this.ctx.save();
+	          this.ctx.translate(xEdge, y);
+	          this._drawLine(lineRotationRadians, 0, maxLength);
+	          this.ctx.restore();
+	        }
+	      }
+	    }
+	  }, {
+	    key: '_drawLine',
+	    value: function _drawLine(angle, lengthAdjustment, maxLength) {
+	      this.ctx.save();
+
+	      this.ctx.rotate(angle);
+	      this.ctx.lineWidth = 4;
+
+	      this.ctx.beginPath();
+	      this.ctx.moveTo(0, -lengthAdjustment);
+	      this.ctx.lineTo(0, -maxLength);
+	      this.ctx.stroke();
+
+	      this.ctx.restore();
+	    }
+	  }, {
+	    key: '_drawArrow',
+	    value: function _drawArrow(angle) {
+	      this.ctx.save();
+
+	      this.ctx.rotate(angle);
+	      this.ctx.lineWidth = 1;
+
+	      this.ctx.beginPath();
+	      this.ctx.moveTo(0, 0);
+	      this.ctx.lineTo(-10, -20);
+	      this.ctx.lineTo(0, -16);
+	      this.ctx.lineTo(10, -20);
+	      this.ctx.lineTo(0, 0);
+	      this.ctx.fill();
+
+	      this.ctx.restore();
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(195);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(197)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./view-manager.css", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./view-manager.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(196)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".view-manager {\n  width: 1200px;\n  height: 800px;\n  margin: 0 auto;\n  position: relative;\n}\n\n.view {\n  position: absolute;\n}\n\n.view.main {\n  width: 800px;\n  height: 800px;\n  left: 0;\n}\n\n.view.small-top {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  top: 0;\n}\n\n.view.small-bottom {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  bottom: 0;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 196 */
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 197 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0;
+
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function createStyleElement() {
+		var styleElement = document.createElement("style");
+		var head = getHeadElement();
+		styleElement.type = "text/css";
+		head.appendChild(styleElement);
+		return styleElement;
+	}
+
+	function createLinkElement() {
+		var linkElement = document.createElement("link");
+		var head = getHeadElement();
+		linkElement.rel = "stylesheet";
+		head.appendChild(linkElement);
+		return linkElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement());
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement();
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				styleElement.parentNode.removeChild(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement();
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				styleElement.parentNode.removeChild(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		var blob = new Blob([css], { type: "text/css" });
+
+		var oldSrc = linkElement.href;
+
+		linkElement.href = URL.createObjectURL(blob);
+
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ },
+/* 198 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _jquery = __webpack_require__(183);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	__webpack_require__(199);
+
+	__webpack_require__(203);
 
 	var Slider = (function (_React$Component) {
 	  function Slider(props) {
@@ -30059,13 +34749,13 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 161 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(159);
-	__webpack_require__(162);
-	__webpack_require__(163);
-	__webpack_require__(164);
+	var jQuery = __webpack_require__(183);
+	__webpack_require__(200);
+	__webpack_require__(201);
+	__webpack_require__(202);
 
 	/*!
 	 * jQuery UI Slider 1.10.4
@@ -30746,10 +35436,10 @@
 
 
 /***/ },
-/* 162 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(159);
+	var jQuery = __webpack_require__(183);
 
 	/*!
 	 * jQuery UI Core 1.10.4
@@ -31074,11 +35764,11 @@
 
 
 /***/ },
-/* 163 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(159);
-	__webpack_require__(164);
+	var jQuery = __webpack_require__(183);
+	__webpack_require__(202);
 
 	/*!
 	 * jQuery UI Mouse 1.10.4
@@ -31252,10 +35942,10 @@
 
 
 /***/ },
-/* 164 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(159);
+	var jQuery = __webpack_require__(183);
 
 	/*!
 	 * jQuery UI Widget 1.10.4
@@ -31781,16 +36471,16 @@
 
 
 /***/ },
-/* 165 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(166);
+	var content = __webpack_require__(204);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(168)(content, {});
+	var update = __webpack_require__(197)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -31807,10 +36497,10 @@
 	}
 
 /***/ },
-/* 166 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(167)();
+	exports = module.exports = __webpack_require__(196)();
 	// imports
 
 
@@ -31821,299 +36511,96 @@
 
 
 /***/ },
-/* 167 */
-/***/ function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
-/* 168 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0;
+	'use strict';
 
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
 
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
-	function createStyleElement() {
-		var styleElement = document.createElement("style");
-		var head = getHeadElement();
-		styleElement.type = "text/css";
-		head.appendChild(styleElement);
-		return styleElement;
-	}
+	var _jquery = __webpack_require__(183);
 
-	function createLinkElement() {
-		var linkElement = document.createElement("link");
-		var head = getHeadElement();
-		linkElement.rel = "stylesheet";
-		head.appendChild(linkElement);
-		return linkElement;
-	}
+	var _jquery2 = _interopRequireDefault(_jquery);
 
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
+	var _sliderJsx = __webpack_require__(198);
 
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement());
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement();
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				styleElement.parentNode.removeChild(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement();
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				styleElement.parentNode.removeChild(styleElement);
-			};
-		}
+	var _sliderJsx2 = _interopRequireDefault(_sliderJsx);
 
-		update(obj);
+	__webpack_require__(206);
 
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
+	var MONTH_NAMES_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-	var replaceText = (function () {
-		var textStore = [];
+	var DaySlider = (function (_Slider) {
+	  function DaySlider(props) {
+	    _classCallCheck(this, DaySlider);
 
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
+	    _get(Object.getPrototypeOf(DaySlider.prototype), 'constructor', this).call(this, props);
+	    // Custom, tweaked jQuery UI slider (defined in ui/grasp-slider).
+	    this.sliderFuncName = 'graspSlider';
+	  }
 
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
+	  _inherits(DaySlider, _Slider);
 
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
+	  _createClass(DaySlider, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      _get(Object.getPrototypeOf(DaySlider.prototype), 'componentDidMount', this).call(this);
+	      this.$slider.graspSlider({
+	        min: 0,
+	        max: 364,
+	        step: 1
+	      });
+	      this.generateMonthTicks();
+	    }
+	  }, {
+	    key: 'generateMonthTicks',
+	    value: function generateMonthTicks() {
+	      var ticks = [];
+	      for (var m = 0; m < 12; m++) {
+	        ticks.push({ value: m * 30.4, name: MONTH_NAMES_SHORT[m] });
+	      }
+	      this.$slider.graspSlider('option', 'ticks', ticks);
+	      // Shift tick labels so they are in the middle of the month section on the slider.
+	      var monthWidth = this.$slider.width() / 12;
+	      this.$slider.find('.ui-slider-tick-label').each(function () {
+	        var $label = (0, _jquery2['default'])(this);
+	        var labelWidth = $label.width();
+	        $label.css('margin-left', -labelWidth * 0.5 + monthWidth * 0.5);
+	      });
+	    }
+	  }]);
 
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
+	  return DaySlider;
+	})(_sliderJsx2['default']);
 
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		var blob = new Blob([css], { type: "text/css" });
-
-		var oldSrc = linkElement.href;
-
-		linkElement.href = URL.createObjectURL(blob);
-
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
+	exports['default'] = DaySlider;
+	module.exports = exports['default'];
 
 /***/ },
-/* 169 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _jquery = __webpack_require__(159);
+	var _jquery = __webpack_require__(183);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	__webpack_require__(161);
+	__webpack_require__(199);
 
 	var TICK_WIDTH = 1;
 
@@ -32183,3646 +36670,6 @@
 	    return this._trimAlignValue(valueMouse);
 	  }
 	});
-
-/***/ },
-/* 170 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(171);
-
-
-/***/ },
-/* 171 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactWithAddons
-	 */
-
-	/**
-	 * This module exists purely in the open source project, and is meant as a way
-	 * to create a separate standalone build of React. This build has "addons", or
-	 * functionality we've built and think might be useful but doesn't have a good
-	 * place to live inside React core.
-	 */
-
-	'use strict';
-
-	var LinkedStateMixin = __webpack_require__(172);
-	var React = __webpack_require__(2);
-	var ReactComponentWithPureRenderMixin =
-	  __webpack_require__(175);
-	var ReactCSSTransitionGroup = __webpack_require__(176);
-	var ReactFragment = __webpack_require__(10);
-	var ReactTransitionGroup = __webpack_require__(177);
-	var ReactUpdates = __webpack_require__(24);
-
-	var cx = __webpack_require__(185);
-	var cloneWithProps = __webpack_require__(179);
-	var update = __webpack_require__(186);
-
-	React.addons = {
-	  CSSTransitionGroup: ReactCSSTransitionGroup,
-	  LinkedStateMixin: LinkedStateMixin,
-	  PureRenderMixin: ReactComponentWithPureRenderMixin,
-	  TransitionGroup: ReactTransitionGroup,
-
-	  batchedUpdates: ReactUpdates.batchedUpdates,
-	  classSet: cx,
-	  cloneWithProps: cloneWithProps,
-	  createFragment: ReactFragment.create,
-	  update: update
-	};
-
-	if ("production" !== process.env.NODE_ENV) {
-	  React.addons.Perf = __webpack_require__(150);
-	  React.addons.TestUtils = __webpack_require__(187);
-	}
-
-	module.exports = React;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 172 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule LinkedStateMixin
-	 * @typechecks static-only
-	 */
-
-	'use strict';
-
-	var ReactLink = __webpack_require__(173);
-	var ReactStateSetters = __webpack_require__(174);
-
-	/**
-	 * A simple mixin around ReactLink.forState().
-	 */
-	var LinkedStateMixin = {
-	  /**
-	   * Create a ReactLink that's linked to part of this component's state. The
-	   * ReactLink will have the current value of this.state[key] and will call
-	   * setState() when a change is requested.
-	   *
-	   * @param {string} key state key to update. Note: you may want to use keyOf()
-	   * if you're using Google Closure Compiler advanced mode.
-	   * @return {ReactLink} ReactLink instance linking to the state.
-	   */
-	  linkState: function(key) {
-	    return new ReactLink(
-	      this.state[key],
-	      ReactStateSetters.createStateKeySetter(this, key)
-	    );
-	  }
-	};
-
-	module.exports = LinkedStateMixin;
-
-
-/***/ },
-/* 173 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactLink
-	 * @typechecks static-only
-	 */
-
-	'use strict';
-
-	/**
-	 * ReactLink encapsulates a common pattern in which a component wants to modify
-	 * a prop received from its parent. ReactLink allows the parent to pass down a
-	 * value coupled with a callback that, when invoked, expresses an intent to
-	 * modify that value. For example:
-	 *
-	 * React.createClass({
-	 *   getInitialState: function() {
-	 *     return {value: ''};
-	 *   },
-	 *   render: function() {
-	 *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
-	 *     return <input valueLink={valueLink} />;
-	 *   },
-	 *   this._handleValueChange: function(newValue) {
-	 *     this.setState({value: newValue});
-	 *   }
-	 * });
-	 *
-	 * We have provided some sugary mixins to make the creation and
-	 * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
-	 */
-
-	var React = __webpack_require__(2);
-
-	/**
-	 * @param {*} value current value of the link
-	 * @param {function} requestChange callback to request a change
-	 */
-	function ReactLink(value, requestChange) {
-	  this.value = value;
-	  this.requestChange = requestChange;
-	}
-
-	/**
-	 * Creates a PropType that enforces the ReactLink API and optionally checks the
-	 * type of the value being passed inside the link. Example:
-	 *
-	 * MyComponent.propTypes = {
-	 *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
-	 * }
-	 */
-	function createLinkTypeChecker(linkType) {
-	  var shapes = {
-	    value: typeof linkType === 'undefined' ?
-	      React.PropTypes.any.isRequired :
-	      linkType.isRequired,
-	    requestChange: React.PropTypes.func.isRequired
-	  };
-	  return React.PropTypes.shape(shapes);
-	}
-
-	ReactLink.PropTypes = {
-	  link: createLinkTypeChecker
-	};
-
-	module.exports = ReactLink;
-
-
-/***/ },
-/* 174 */
-/***/ function(module, exports) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactStateSetters
-	 */
-
-	'use strict';
-
-	var ReactStateSetters = {
-	  /**
-	   * Returns a function that calls the provided function, and uses the result
-	   * of that to set the component's state.
-	   *
-	   * @param {ReactCompositeComponent} component
-	   * @param {function} funcReturningState Returned callback uses this to
-	   *                                      determine how to update state.
-	   * @return {function} callback that when invoked uses funcReturningState to
-	   *                    determined the object literal to setState.
-	   */
-	  createStateSetter: function(component, funcReturningState) {
-	    return function(a, b, c, d, e, f) {
-	      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
-	      if (partialState) {
-	        component.setState(partialState);
-	      }
-	    };
-	  },
-
-	  /**
-	   * Returns a single-argument callback that can be used to update a single
-	   * key in the component's state.
-	   *
-	   * Note: this is memoized function, which makes it inexpensive to call.
-	   *
-	   * @param {ReactCompositeComponent} component
-	   * @param {string} key The key in the state that you should update.
-	   * @return {function} callback of 1 argument which calls setState() with
-	   *                    the provided keyName and callback argument.
-	   */
-	  createStateKeySetter: function(component, key) {
-	    // Memoize the setters.
-	    var cache = component.__keySetters || (component.__keySetters = {});
-	    return cache[key] || (cache[key] = createStateKeySetter(component, key));
-	  }
-	};
-
-	function createStateKeySetter(component, key) {
-	  // Partial state is allocated outside of the function closure so it can be
-	  // reused with every call, avoiding memory allocation when this function
-	  // is called.
-	  var partialState = {};
-	  return function stateKeySetter(value) {
-	    partialState[key] = value;
-	    component.setState(partialState);
-	  };
-	}
-
-	ReactStateSetters.Mixin = {
-	  /**
-	   * Returns a function that calls the provided function, and uses the result
-	   * of that to set the component's state.
-	   *
-	   * For example, these statements are equivalent:
-	   *
-	   *   this.setState({x: 1});
-	   *   this.createStateSetter(function(xValue) {
-	   *     return {x: xValue};
-	   *   })(1);
-	   *
-	   * @param {function} funcReturningState Returned callback uses this to
-	   *                                      determine how to update state.
-	   * @return {function} callback that when invoked uses funcReturningState to
-	   *                    determined the object literal to setState.
-	   */
-	  createStateSetter: function(funcReturningState) {
-	    return ReactStateSetters.createStateSetter(this, funcReturningState);
-	  },
-
-	  /**
-	   * Returns a single-argument callback that can be used to update a single
-	   * key in the component's state.
-	   *
-	   * For example, these statements are equivalent:
-	   *
-	   *   this.setState({x: 1});
-	   *   this.createStateKeySetter('x')(1);
-	   *
-	   * Note: this is memoized function, which makes it inexpensive to call.
-	   *
-	   * @param {string} key The key in the state that you should update.
-	   * @return {function} callback of 1 argument which calls setState() with
-	   *                    the provided keyName and callback argument.
-	   */
-	  createStateKeySetter: function(key) {
-	    return ReactStateSetters.createStateKeySetter(this, key);
-	  }
-	};
-
-	module.exports = ReactStateSetters;
-
-
-/***/ },
-/* 175 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	* @providesModule ReactComponentWithPureRenderMixin
-	*/
-
-	'use strict';
-
-	var shallowEqual = __webpack_require__(137);
-
-	/**
-	 * If your React component's render function is "pure", e.g. it will render the
-	 * same result given the same props and state, provide this Mixin for a
-	 * considerable performance boost.
-	 *
-	 * Most React components have pure render functions.
-	 *
-	 * Example:
-	 *
-	 *   var ReactComponentWithPureRenderMixin =
-	 *     require('ReactComponentWithPureRenderMixin');
-	 *   React.createClass({
-	 *     mixins: [ReactComponentWithPureRenderMixin],
-	 *
-	 *     render: function() {
-	 *       return <div className={this.props.className}>foo</div>;
-	 *     }
-	 *   });
-	 *
-	 * Note: This only checks shallow equality for props and state. If these contain
-	 * complex data structures this mixin may have false-negatives for deeper
-	 * differences. Only mixin to components which have simple props and state, or
-	 * use `forceUpdate()` when you know deep data structures have changed.
-	 */
-	var ReactComponentWithPureRenderMixin = {
-	  shouldComponentUpdate: function(nextProps, nextState) {
-	    return !shallowEqual(this.props, nextProps) ||
-	           !shallowEqual(this.state, nextState);
-	  }
-	};
-
-	module.exports = ReactComponentWithPureRenderMixin;
-
-
-/***/ },
-/* 176 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @typechecks
-	 * @providesModule ReactCSSTransitionGroup
-	 */
-
-	'use strict';
-
-	var React = __webpack_require__(2);
-
-	var assign = __webpack_require__(13);
-
-	var ReactTransitionGroup = React.createFactory(
-	  __webpack_require__(177)
-	);
-	var ReactCSSTransitionGroupChild = React.createFactory(
-	  __webpack_require__(182)
-	);
-
-	var ReactCSSTransitionGroup = React.createClass({
-	  displayName: 'ReactCSSTransitionGroup',
-
-	  propTypes: {
-	    transitionName: React.PropTypes.string.isRequired,
-	    transitionAppear: React.PropTypes.bool,
-	    transitionEnter: React.PropTypes.bool,
-	    transitionLeave: React.PropTypes.bool
-	  },
-
-	  getDefaultProps: function() {
-	    return {
-	      transitionAppear: false,
-	      transitionEnter: true,
-	      transitionLeave: true
-	    };
-	  },
-
-	  _wrapChild: function(child) {
-	    // We need to provide this childFactory so that
-	    // ReactCSSTransitionGroupChild can receive updates to name, enter, and
-	    // leave while it is leaving.
-	    return ReactCSSTransitionGroupChild(
-	      {
-	        name: this.props.transitionName,
-	        appear: this.props.transitionAppear,
-	        enter: this.props.transitionEnter,
-	        leave: this.props.transitionLeave
-	      },
-	      child
-	    );
-	  },
-
-	  render: function() {
-	    return (
-	      ReactTransitionGroup(
-	        assign({}, this.props, {childFactory: this._wrapChild})
-	      )
-	    );
-	  }
-	});
-
-	module.exports = ReactCSSTransitionGroup;
-
-
-/***/ },
-/* 177 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactTransitionGroup
-	 */
-
-	'use strict';
-
-	var React = __webpack_require__(2);
-	var ReactTransitionChildMapping = __webpack_require__(178);
-
-	var assign = __webpack_require__(13);
-	var cloneWithProps = __webpack_require__(179);
-	var emptyFunction = __webpack_require__(16);
-
-	var ReactTransitionGroup = React.createClass({
-	  displayName: 'ReactTransitionGroup',
-
-	  propTypes: {
-	    component: React.PropTypes.any,
-	    childFactory: React.PropTypes.func
-	  },
-
-	  getDefaultProps: function() {
-	    return {
-	      component: 'span',
-	      childFactory: emptyFunction.thatReturnsArgument
-	    };
-	  },
-
-	  getInitialState: function() {
-	    return {
-	      children: ReactTransitionChildMapping.getChildMapping(this.props.children)
-	    };
-	  },
-
-	  componentWillMount: function() {
-	    this.currentlyTransitioningKeys = {};
-	    this.keysToEnter = [];
-	    this.keysToLeave = [];
-	  },
-
-	  componentDidMount: function() {
-	    var initialChildMapping = this.state.children;
-	    for (var key in initialChildMapping) {
-	      if (initialChildMapping[key]) {
-	        this.performAppear(key);
-	      }
-	    }
-	  },
-
-	  componentWillReceiveProps: function(nextProps) {
-	    var nextChildMapping = ReactTransitionChildMapping.getChildMapping(
-	      nextProps.children
-	    );
-	    var prevChildMapping = this.state.children;
-
-	    this.setState({
-	      children: ReactTransitionChildMapping.mergeChildMappings(
-	        prevChildMapping,
-	        nextChildMapping
-	      )
-	    });
-
-	    var key;
-
-	    for (key in nextChildMapping) {
-	      var hasPrev = prevChildMapping && prevChildMapping.hasOwnProperty(key);
-	      if (nextChildMapping[key] && !hasPrev &&
-	          !this.currentlyTransitioningKeys[key]) {
-	        this.keysToEnter.push(key);
-	      }
-	    }
-
-	    for (key in prevChildMapping) {
-	      var hasNext = nextChildMapping && nextChildMapping.hasOwnProperty(key);
-	      if (prevChildMapping[key] && !hasNext &&
-	          !this.currentlyTransitioningKeys[key]) {
-	        this.keysToLeave.push(key);
-	      }
-	    }
-
-	    // If we want to someday check for reordering, we could do it here.
-	  },
-
-	  componentDidUpdate: function() {
-	    var keysToEnter = this.keysToEnter;
-	    this.keysToEnter = [];
-	    keysToEnter.forEach(this.performEnter);
-
-	    var keysToLeave = this.keysToLeave;
-	    this.keysToLeave = [];
-	    keysToLeave.forEach(this.performLeave);
-	  },
-
-	  performAppear: function(key) {
-	    this.currentlyTransitioningKeys[key] = true;
-
-	    var component = this.refs[key];
-
-	    if (component.componentWillAppear) {
-	      component.componentWillAppear(
-	        this._handleDoneAppearing.bind(this, key)
-	      );
-	    } else {
-	      this._handleDoneAppearing(key);
-	    }
-	  },
-
-	  _handleDoneAppearing: function(key) {
-	    var component = this.refs[key];
-	    if (component.componentDidAppear) {
-	      component.componentDidAppear();
-	    }
-
-	    delete this.currentlyTransitioningKeys[key];
-
-	    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
-	      this.props.children
-	    );
-
-	    if (!currentChildMapping || !currentChildMapping.hasOwnProperty(key)) {
-	      // This was removed before it had fully appeared. Remove it.
-	      this.performLeave(key);
-	    }
-	  },
-
-	  performEnter: function(key) {
-	    this.currentlyTransitioningKeys[key] = true;
-
-	    var component = this.refs[key];
-
-	    if (component.componentWillEnter) {
-	      component.componentWillEnter(
-	        this._handleDoneEntering.bind(this, key)
-	      );
-	    } else {
-	      this._handleDoneEntering(key);
-	    }
-	  },
-
-	  _handleDoneEntering: function(key) {
-	    var component = this.refs[key];
-	    if (component.componentDidEnter) {
-	      component.componentDidEnter();
-	    }
-
-	    delete this.currentlyTransitioningKeys[key];
-
-	    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
-	      this.props.children
-	    );
-
-	    if (!currentChildMapping || !currentChildMapping.hasOwnProperty(key)) {
-	      // This was removed before it had fully entered. Remove it.
-	      this.performLeave(key);
-	    }
-	  },
-
-	  performLeave: function(key) {
-	    this.currentlyTransitioningKeys[key] = true;
-
-	    var component = this.refs[key];
-	    if (component.componentWillLeave) {
-	      component.componentWillLeave(this._handleDoneLeaving.bind(this, key));
-	    } else {
-	      // Note that this is somewhat dangerous b/c it calls setState()
-	      // again, effectively mutating the component before all the work
-	      // is done.
-	      this._handleDoneLeaving(key);
-	    }
-	  },
-
-	  _handleDoneLeaving: function(key) {
-	    var component = this.refs[key];
-
-	    if (component.componentDidLeave) {
-	      component.componentDidLeave();
-	    }
-
-	    delete this.currentlyTransitioningKeys[key];
-
-	    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
-	      this.props.children
-	    );
-
-	    if (currentChildMapping && currentChildMapping.hasOwnProperty(key)) {
-	      // This entered again before it fully left. Add it again.
-	      this.performEnter(key);
-	    } else {
-	      var newChildren = assign({}, this.state.children);
-	      delete newChildren[key];
-	      this.setState({children: newChildren});
-	    }
-	  },
-
-	  render: function() {
-	    // TODO: we could get rid of the need for the wrapper node
-	    // by cloning a single child
-	    var childrenToRender = [];
-	    for (var key in this.state.children) {
-	      var child = this.state.children[key];
-	      if (child) {
-	        // You may need to apply reactive updates to a child as it is leaving.
-	        // The normal React way to do it won't work since the child will have
-	        // already been removed. In case you need this behavior you can provide
-	        // a childFactory function to wrap every child, even the ones that are
-	        // leaving.
-	        childrenToRender.push(cloneWithProps(
-	          this.props.childFactory(child),
-	          {ref: key, key: key}
-	        ));
-	      }
-	    }
-	    return React.createElement(
-	      this.props.component,
-	      this.props,
-	      childrenToRender
-	    );
-	  }
-	});
-
-	module.exports = ReactTransitionGroup;
-
-
-/***/ },
-/* 178 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @typechecks static-only
-	 * @providesModule ReactTransitionChildMapping
-	 */
-
-	'use strict';
-
-	var ReactChildren = __webpack_require__(8);
-	var ReactFragment = __webpack_require__(10);
-
-	var ReactTransitionChildMapping = {
-	  /**
-	   * Given `this.props.children`, return an object mapping key to child. Just
-	   * simple syntactic sugar around ReactChildren.map().
-	   *
-	   * @param {*} children `this.props.children`
-	   * @return {object} Mapping of key to child
-	   */
-	  getChildMapping: function(children) {
-	    if (!children) {
-	      return children;
-	    }
-	    return ReactFragment.extract(ReactChildren.map(children, function(child) {
-	      return child;
-	    }));
-	  },
-
-	  /**
-	   * When you're adding or removing children some may be added or removed in the
-	   * same render pass. We want to show *both* since we want to simultaneously
-	   * animate elements in and out. This function takes a previous set of keys
-	   * and a new set of keys and merges them with its best guess of the correct
-	   * ordering. In the future we may expose some of the utilities in
-	   * ReactMultiChild to make this easy, but for now React itself does not
-	   * directly have this concept of the union of prevChildren and nextChildren
-	   * so we implement it here.
-	   *
-	   * @param {object} prev prev children as returned from
-	   * `ReactTransitionChildMapping.getChildMapping()`.
-	   * @param {object} next next children as returned from
-	   * `ReactTransitionChildMapping.getChildMapping()`.
-	   * @return {object} a key set that contains all keys in `prev` and all keys
-	   * in `next` in a reasonable order.
-	   */
-	  mergeChildMappings: function(prev, next) {
-	    prev = prev || {};
-	    next = next || {};
-
-	    function getValueForKey(key) {
-	      if (next.hasOwnProperty(key)) {
-	        return next[key];
-	      } else {
-	        return prev[key];
-	      }
-	    }
-
-	    // For each key of `next`, the list of keys to insert before that key in
-	    // the combined list
-	    var nextKeysPending = {};
-
-	    var pendingKeys = [];
-	    for (var prevKey in prev) {
-	      if (next.hasOwnProperty(prevKey)) {
-	        if (pendingKeys.length) {
-	          nextKeysPending[prevKey] = pendingKeys;
-	          pendingKeys = [];
-	        }
-	      } else {
-	        pendingKeys.push(prevKey);
-	      }
-	    }
-
-	    var i;
-	    var childMapping = {};
-	    for (var nextKey in next) {
-	      if (nextKeysPending.hasOwnProperty(nextKey)) {
-	        for (i = 0; i < nextKeysPending[nextKey].length; i++) {
-	          var pendingNextKey = nextKeysPending[nextKey][i];
-	          childMapping[nextKeysPending[nextKey][i]] = getValueForKey(
-	            pendingNextKey
-	          );
-	        }
-	      }
-	      childMapping[nextKey] = getValueForKey(nextKey);
-	    }
-
-	    // Finally, add the keys which didn't appear before any key in `next`
-	    for (i = 0; i < pendingKeys.length; i++) {
-	      childMapping[pendingKeys[i]] = getValueForKey(pendingKeys[i]);
-	    }
-
-	    return childMapping;
-	  }
-	};
-
-	module.exports = ReactTransitionChildMapping;
-
-
-/***/ },
-/* 179 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @typechecks static-only
-	 * @providesModule cloneWithProps
-	 */
-
-	'use strict';
-
-	var ReactElement = __webpack_require__(11);
-	var ReactPropTransferer = __webpack_require__(180);
-
-	var keyOf = __webpack_require__(39);
-	var warning = __webpack_require__(15);
-
-	var CHILDREN_PROP = keyOf({children: null});
-
-	/**
-	 * Sometimes you want to change the props of a child passed to you. Usually
-	 * this is to add a CSS class.
-	 *
-	 * @param {ReactElement} child child element you'd like to clone
-	 * @param {object} props props you'd like to modify. className and style will be
-	 * merged automatically.
-	 * @return {ReactElement} a clone of child with props merged in.
-	 */
-	function cloneWithProps(child, props) {
-	  if ("production" !== process.env.NODE_ENV) {
-	    ("production" !== process.env.NODE_ENV ? warning(
-	      !child.ref,
-	      'You are calling cloneWithProps() on a child with a ref. This is ' +
-	      'dangerous because you\'re creating a new child which will not be ' +
-	      'added as a ref to its parent.'
-	    ) : null);
-	  }
-
-	  var newProps = ReactPropTransferer.mergeProps(props, child.props);
-
-	  // Use `child.props.children` if it is provided.
-	  if (!newProps.hasOwnProperty(CHILDREN_PROP) &&
-	      child.props.hasOwnProperty(CHILDREN_PROP)) {
-	    newProps.children = child.props.children;
-	  }
-
-	  // The current API doesn't retain _owner and _context, which is why this
-	  // doesn't use ReactElement.cloneAndReplaceProps.
-	  return ReactElement.createElement(child.type, newProps);
-	}
-
-	module.exports = cloneWithProps;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 180 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactPropTransferer
-	 */
-
-	'use strict';
-
-	var assign = __webpack_require__(13);
-	var emptyFunction = __webpack_require__(16);
-	var joinClasses = __webpack_require__(181);
-
-	/**
-	 * Creates a transfer strategy that will merge prop values using the supplied
-	 * `mergeStrategy`. If a prop was previously unset, this just sets it.
-	 *
-	 * @param {function} mergeStrategy
-	 * @return {function}
-	 */
-	function createTransferStrategy(mergeStrategy) {
-	  return function(props, key, value) {
-	    if (!props.hasOwnProperty(key)) {
-	      props[key] = value;
-	    } else {
-	      props[key] = mergeStrategy(props[key], value);
-	    }
-	  };
-	}
-
-	var transferStrategyMerge = createTransferStrategy(function(a, b) {
-	  // `merge` overrides the first object's (`props[key]` above) keys using the
-	  // second object's (`value`) keys. An object's style's existing `propA` would
-	  // get overridden. Flip the order here.
-	  return assign({}, b, a);
-	});
-
-	/**
-	 * Transfer strategies dictate how props are transferred by `transferPropsTo`.
-	 * NOTE: if you add any more exceptions to this list you should be sure to
-	 * update `cloneWithProps()` accordingly.
-	 */
-	var TransferStrategies = {
-	  /**
-	   * Never transfer `children`.
-	   */
-	  children: emptyFunction,
-	  /**
-	   * Transfer the `className` prop by merging them.
-	   */
-	  className: createTransferStrategy(joinClasses),
-	  /**
-	   * Transfer the `style` prop (which is an object) by merging them.
-	   */
-	  style: transferStrategyMerge
-	};
-
-	/**
-	 * Mutates the first argument by transferring the properties from the second
-	 * argument.
-	 *
-	 * @param {object} props
-	 * @param {object} newProps
-	 * @return {object}
-	 */
-	function transferInto(props, newProps) {
-	  for (var thisKey in newProps) {
-	    if (!newProps.hasOwnProperty(thisKey)) {
-	      continue;
-	    }
-
-	    var transferStrategy = TransferStrategies[thisKey];
-
-	    if (transferStrategy && TransferStrategies.hasOwnProperty(thisKey)) {
-	      transferStrategy(props, thisKey, newProps[thisKey]);
-	    } else if (!props.hasOwnProperty(thisKey)) {
-	      props[thisKey] = newProps[thisKey];
-	    }
-	  }
-	  return props;
-	}
-
-	/**
-	 * ReactPropTransferer are capable of transferring props to another component
-	 * using a `transferPropsTo` method.
-	 *
-	 * @class ReactPropTransferer
-	 */
-	var ReactPropTransferer = {
-
-	  /**
-	   * Merge two props objects using TransferStrategies.
-	   *
-	   * @param {object} oldProps original props (they take precedence)
-	   * @param {object} newProps new props to merge in
-	   * @return {object} a new object containing both sets of props merged.
-	   */
-	  mergeProps: function(oldProps, newProps) {
-	    return transferInto(assign({}, oldProps), newProps);
-	  }
-
-	};
-
-	module.exports = ReactPropTransferer;
-
-
-/***/ },
-/* 181 */
-/***/ function(module, exports) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule joinClasses
-	 * @typechecks static-only
-	 */
-
-	'use strict';
-
-	/**
-	 * Combines multiple className strings into one.
-	 * http://jsperf.com/joinclasses-args-vs-array
-	 *
-	 * @param {...?string} classes
-	 * @return {string}
-	 */
-	function joinClasses(className/*, ... */) {
-	  if (!className) {
-	    className = '';
-	  }
-	  var nextClass;
-	  var argLength = arguments.length;
-	  if (argLength > 1) {
-	    for (var ii = 1; ii < argLength; ii++) {
-	      nextClass = arguments[ii];
-	      if (nextClass) {
-	        className = (className ? className + ' ' : '') + nextClass;
-	      }
-	    }
-	  }
-	  return className;
-	}
-
-	module.exports = joinClasses;
-
-
-/***/ },
-/* 182 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @typechecks
-	 * @providesModule ReactCSSTransitionGroupChild
-	 */
-
-	'use strict';
-
-	var React = __webpack_require__(2);
-
-	var CSSCore = __webpack_require__(183);
-	var ReactTransitionEvents = __webpack_require__(184);
-
-	var onlyChild = __webpack_require__(156);
-	var warning = __webpack_require__(15);
-
-	// We don't remove the element from the DOM until we receive an animationend or
-	// transitionend event. If the user screws up and forgets to add an animation
-	// their node will be stuck in the DOM forever, so we detect if an animation
-	// does not start and if it doesn't, we just call the end listener immediately.
-	var TICK = 17;
-	var NO_EVENT_TIMEOUT = 5000;
-
-	var noEventListener = null;
-
-
-	if ("production" !== process.env.NODE_ENV) {
-	  noEventListener = function() {
-	    ("production" !== process.env.NODE_ENV ? warning(
-	      false,
-	      'transition(): tried to perform an animation without ' +
-	      'an animationend or transitionend event after timeout (' +
-	      '%sms). You should either disable this ' +
-	      'transition in JS or add a CSS animation/transition.',
-	      NO_EVENT_TIMEOUT
-	    ) : null);
-	  };
-	}
-
-	var ReactCSSTransitionGroupChild = React.createClass({
-	  displayName: 'ReactCSSTransitionGroupChild',
-
-	  transition: function(animationType, finishCallback) {
-	    var node = this.getDOMNode();
-	    var className = this.props.name + '-' + animationType;
-	    var activeClassName = className + '-active';
-	    var noEventTimeout = null;
-
-	    var endListener = function(e) {
-	      if (e && e.target !== node) {
-	        return;
-	      }
-	      if ("production" !== process.env.NODE_ENV) {
-	        clearTimeout(noEventTimeout);
-	      }
-
-	      CSSCore.removeClass(node, className);
-	      CSSCore.removeClass(node, activeClassName);
-
-	      ReactTransitionEvents.removeEndEventListener(node, endListener);
-
-	      // Usually this optional callback is used for informing an owner of
-	      // a leave animation and telling it to remove the child.
-	      if (finishCallback) {
-	        finishCallback();
-	      }
-	    };
-
-	    ReactTransitionEvents.addEndEventListener(node, endListener);
-
-	    CSSCore.addClass(node, className);
-
-	    // Need to do this to actually trigger a transition.
-	    this.queueClass(activeClassName);
-
-	    if ("production" !== process.env.NODE_ENV) {
-	      noEventTimeout = setTimeout(noEventListener, NO_EVENT_TIMEOUT);
-	    }
-	  },
-
-	  queueClass: function(className) {
-	    this.classNameQueue.push(className);
-
-	    if (!this.timeout) {
-	      this.timeout = setTimeout(this.flushClassNameQueue, TICK);
-	    }
-	  },
-
-	  flushClassNameQueue: function() {
-	    if (this.isMounted()) {
-	      this.classNameQueue.forEach(
-	        CSSCore.addClass.bind(CSSCore, this.getDOMNode())
-	      );
-	    }
-	    this.classNameQueue.length = 0;
-	    this.timeout = null;
-	  },
-
-	  componentWillMount: function() {
-	    this.classNameQueue = [];
-	  },
-
-	  componentWillUnmount: function() {
-	    if (this.timeout) {
-	      clearTimeout(this.timeout);
-	    }
-	  },
-
-	  componentWillAppear: function(done) {
-	    if (this.props.appear) {
-	      this.transition('appear', done);
-	    } else {
-	      done();
-	    }
-	  },
-
-	  componentWillEnter: function(done) {
-	    if (this.props.enter) {
-	      this.transition('enter', done);
-	    } else {
-	      done();
-	    }
-	  },
-
-	  componentWillLeave: function(done) {
-	    if (this.props.leave) {
-	      this.transition('leave', done);
-	    } else {
-	      done();
-	    }
-	  },
-
-	  render: function() {
-	    return onlyChild(this.props.children);
-	  }
-	});
-
-	module.exports = ReactCSSTransitionGroupChild;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 183 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule CSSCore
-	 * @typechecks
-	 */
-
-	var invariant = __webpack_require__(7);
-
-	/**
-	 * The CSSCore module specifies the API (and implements most of the methods)
-	 * that should be used when dealing with the display of elements (via their
-	 * CSS classes and visibility on screen. It is an API focused on mutating the
-	 * display and not reading it as no logical state should be encoded in the
-	 * display of elements.
-	 */
-
-	var CSSCore = {
-
-	  /**
-	   * Adds the class passed in to the element if it doesn't already have it.
-	   *
-	   * @param {DOMElement} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @return {DOMElement} the element passed in
-	   */
-	  addClass: function(element, className) {
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      !/\s/.test(className),
-	      'CSSCore.addClass takes only a single class name. "%s" contains ' +
-	      'multiple classes.', className
-	    ) : invariant(!/\s/.test(className)));
-
-	    if (className) {
-	      if (element.classList) {
-	        element.classList.add(className);
-	      } else if (!CSSCore.hasClass(element, className)) {
-	        element.className = element.className + ' ' + className;
-	      }
-	    }
-	    return element;
-	  },
-
-	  /**
-	   * Removes the class passed in from the element
-	   *
-	   * @param {DOMElement} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @return {DOMElement} the element passed in
-	   */
-	  removeClass: function(element, className) {
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      !/\s/.test(className),
-	      'CSSCore.removeClass takes only a single class name. "%s" contains ' +
-	      'multiple classes.', className
-	    ) : invariant(!/\s/.test(className)));
-
-	    if (className) {
-	      if (element.classList) {
-	        element.classList.remove(className);
-	      } else if (CSSCore.hasClass(element, className)) {
-	        element.className = element.className
-	          .replace(new RegExp('(^|\\s)' + className + '(?:\\s|$)', 'g'), '$1')
-	          .replace(/\s+/g, ' ') // multiple spaces to one
-	          .replace(/^\s*|\s*$/g, ''); // trim the ends
-	      }
-	    }
-	    return element;
-	  },
-
-	  /**
-	   * Helper to add or remove a class from an element based on a condition.
-	   *
-	   * @param {DOMElement} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @param {*} bool condition to whether to add or remove the class
-	   * @return {DOMElement} the element passed in
-	   */
-	  conditionClass: function(element, className, bool) {
-	    return (bool ? CSSCore.addClass : CSSCore.removeClass)(element, className);
-	  },
-
-	  /**
-	   * Tests whether the element has the class specified.
-	   *
-	   * @param {DOMNode|DOMWindow} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @return {boolean} true if the element has the class, false if not
-	   */
-	  hasClass: function(element, className) {
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      !/\s/.test(className),
-	      'CSS.hasClass takes only a single class name.'
-	    ) : invariant(!/\s/.test(className)));
-	    if (element.classList) {
-	      return !!className && element.classList.contains(className);
-	    }
-	    return (' ' + element.className + ' ').indexOf(' ' + className + ' ') > -1;
-	  }
-
-	};
-
-	module.exports = CSSCore;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 184 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactTransitionEvents
-	 */
-
-	'use strict';
-
-	var ExecutionEnvironment = __webpack_require__(51);
-
-	/**
-	 * EVENT_NAME_MAP is used to determine which event fired when a
-	 * transition/animation ends, based on the style property used to
-	 * define that event.
-	 */
-	var EVENT_NAME_MAP = {
-	  transitionend: {
-	    'transition': 'transitionend',
-	    'WebkitTransition': 'webkitTransitionEnd',
-	    'MozTransition': 'mozTransitionEnd',
-	    'OTransition': 'oTransitionEnd',
-	    'msTransition': 'MSTransitionEnd'
-	  },
-
-	  animationend: {
-	    'animation': 'animationend',
-	    'WebkitAnimation': 'webkitAnimationEnd',
-	    'MozAnimation': 'mozAnimationEnd',
-	    'OAnimation': 'oAnimationEnd',
-	    'msAnimation': 'MSAnimationEnd'
-	  }
-	};
-
-	var endEvents = [];
-
-	function detectEvents() {
-	  var testEl = document.createElement('div');
-	  var style = testEl.style;
-
-	  // On some platforms, in particular some releases of Android 4.x,
-	  // the un-prefixed "animation" and "transition" properties are defined on the
-	  // style object but the events that fire will still be prefixed, so we need
-	  // to check if the un-prefixed events are useable, and if not remove them
-	  // from the map
-	  if (!('AnimationEvent' in window)) {
-	    delete EVENT_NAME_MAP.animationend.animation;
-	  }
-
-	  if (!('TransitionEvent' in window)) {
-	    delete EVENT_NAME_MAP.transitionend.transition;
-	  }
-
-	  for (var baseEventName in EVENT_NAME_MAP) {
-	    var baseEvents = EVENT_NAME_MAP[baseEventName];
-	    for (var styleName in baseEvents) {
-	      if (styleName in style) {
-	        endEvents.push(baseEvents[styleName]);
-	        break;
-	      }
-	    }
-	  }
-	}
-
-	if (ExecutionEnvironment.canUseDOM) {
-	  detectEvents();
-	}
-
-	// We use the raw {add|remove}EventListener() call because EventListener
-	// does not know how to remove event listeners and we really should
-	// clean up. Also, these events are not triggered in older browsers
-	// so we should be A-OK here.
-
-	function addEventListener(node, eventName, eventListener) {
-	  node.addEventListener(eventName, eventListener, false);
-	}
-
-	function removeEventListener(node, eventName, eventListener) {
-	  node.removeEventListener(eventName, eventListener, false);
-	}
-
-	var ReactTransitionEvents = {
-	  addEndEventListener: function(node, eventListener) {
-	    if (endEvents.length === 0) {
-	      // If CSS transitions are not supported, trigger an "end animation"
-	      // event immediately.
-	      window.setTimeout(eventListener, 0);
-	      return;
-	    }
-	    endEvents.forEach(function(endEvent) {
-	      addEventListener(node, endEvent, eventListener);
-	    });
-	  },
-
-	  removeEndEventListener: function(node, eventListener) {
-	    if (endEvents.length === 0) {
-	      return;
-	    }
-	    endEvents.forEach(function(endEvent) {
-	      removeEventListener(node, endEvent, eventListener);
-	    });
-	  }
-	};
-
-	module.exports = ReactTransitionEvents;
-
-
-/***/ },
-/* 185 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule cx
-	 */
-
-	/**
-	 * This function is used to mark string literals representing CSS class names
-	 * so that they can be transformed statically. This allows for modularization
-	 * and minification of CSS class names.
-	 *
-	 * In static_upstream, this function is actually implemented, but it should
-	 * eventually be replaced with something more descriptive, and the transform
-	 * that is used in the main stack should be ported for use elsewhere.
-	 *
-	 * @param string|object className to modularize, or an object of key/values.
-	 *                      In the object case, the values are conditions that
-	 *                      determine if the className keys should be included.
-	 * @param [string ...]  Variable list of classNames in the string case.
-	 * @return string       Renderable space-separated CSS className.
-	 */
-
-	'use strict';
-	var warning = __webpack_require__(15);
-
-	var warned = false;
-
-	function cx(classNames) {
-	  if ("production" !== process.env.NODE_ENV) {
-	    ("production" !== process.env.NODE_ENV ? warning(
-	      warned,
-	      'React.addons.classSet will be deprecated in a future version. See ' +
-	      'http://fb.me/react-addons-classset'
-	    ) : null);
-	    warned = true;
-	  }
-
-	  if (typeof classNames == 'object') {
-	    return Object.keys(classNames).filter(function(className) {
-	      return classNames[className];
-	    }).join(' ');
-	  } else {
-	    return Array.prototype.join.call(arguments, ' ');
-	  }
-	}
-
-	module.exports = cx;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 186 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule update
-	 */
-
-	 /* global hasOwnProperty:true */
-
-	'use strict';
-
-	var assign = __webpack_require__(13);
-	var keyOf = __webpack_require__(39);
-	var invariant = __webpack_require__(7);
-	var hasOwnProperty = {}.hasOwnProperty;
-
-	function shallowCopy(x) {
-	  if (Array.isArray(x)) {
-	    return x.concat();
-	  } else if (x && typeof x === 'object') {
-	    return assign(new x.constructor(), x);
-	  } else {
-	    return x;
-	  }
-	}
-
-	var COMMAND_PUSH = keyOf({$push: null});
-	var COMMAND_UNSHIFT = keyOf({$unshift: null});
-	var COMMAND_SPLICE = keyOf({$splice: null});
-	var COMMAND_SET = keyOf({$set: null});
-	var COMMAND_MERGE = keyOf({$merge: null});
-	var COMMAND_APPLY = keyOf({$apply: null});
-
-	var ALL_COMMANDS_LIST = [
-	  COMMAND_PUSH,
-	  COMMAND_UNSHIFT,
-	  COMMAND_SPLICE,
-	  COMMAND_SET,
-	  COMMAND_MERGE,
-	  COMMAND_APPLY
-	];
-
-	var ALL_COMMANDS_SET = {};
-
-	ALL_COMMANDS_LIST.forEach(function(command) {
-	  ALL_COMMANDS_SET[command] = true;
-	});
-
-	function invariantArrayCase(value, spec, command) {
-	  ("production" !== process.env.NODE_ENV ? invariant(
-	    Array.isArray(value),
-	    'update(): expected target of %s to be an array; got %s.',
-	    command,
-	    value
-	  ) : invariant(Array.isArray(value)));
-	  var specValue = spec[command];
-	  ("production" !== process.env.NODE_ENV ? invariant(
-	    Array.isArray(specValue),
-	    'update(): expected spec of %s to be an array; got %s. ' +
-	    'Did you forget to wrap your parameter in an array?',
-	    command,
-	    specValue
-	  ) : invariant(Array.isArray(specValue)));
-	}
-
-	function update(value, spec) {
-	  ("production" !== process.env.NODE_ENV ? invariant(
-	    typeof spec === 'object',
-	    'update(): You provided a key path to update() that did not contain one ' +
-	    'of %s. Did you forget to include {%s: ...}?',
-	    ALL_COMMANDS_LIST.join(', '),
-	    COMMAND_SET
-	  ) : invariant(typeof spec === 'object'));
-
-	  if (hasOwnProperty.call(spec, COMMAND_SET)) {
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      Object.keys(spec).length === 1,
-	      'Cannot have more than one key in an object with %s',
-	      COMMAND_SET
-	    ) : invariant(Object.keys(spec).length === 1));
-
-	    return spec[COMMAND_SET];
-	  }
-
-	  var nextValue = shallowCopy(value);
-
-	  if (hasOwnProperty.call(spec, COMMAND_MERGE)) {
-	    var mergeObj = spec[COMMAND_MERGE];
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      mergeObj && typeof mergeObj === 'object',
-	      'update(): %s expects a spec of type \'object\'; got %s',
-	      COMMAND_MERGE,
-	      mergeObj
-	    ) : invariant(mergeObj && typeof mergeObj === 'object'));
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      nextValue && typeof nextValue === 'object',
-	      'update(): %s expects a target of type \'object\'; got %s',
-	      COMMAND_MERGE,
-	      nextValue
-	    ) : invariant(nextValue && typeof nextValue === 'object'));
-	    assign(nextValue, spec[COMMAND_MERGE]);
-	  }
-
-	  if (hasOwnProperty.call(spec, COMMAND_PUSH)) {
-	    invariantArrayCase(value, spec, COMMAND_PUSH);
-	    spec[COMMAND_PUSH].forEach(function(item) {
-	      nextValue.push(item);
-	    });
-	  }
-
-	  if (hasOwnProperty.call(spec, COMMAND_UNSHIFT)) {
-	    invariantArrayCase(value, spec, COMMAND_UNSHIFT);
-	    spec[COMMAND_UNSHIFT].forEach(function(item) {
-	      nextValue.unshift(item);
-	    });
-	  }
-
-	  if (hasOwnProperty.call(spec, COMMAND_SPLICE)) {
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      Array.isArray(value),
-	      'Expected %s target to be an array; got %s',
-	      COMMAND_SPLICE,
-	      value
-	    ) : invariant(Array.isArray(value)));
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      Array.isArray(spec[COMMAND_SPLICE]),
-	      'update(): expected spec of %s to be an array of arrays; got %s. ' +
-	      'Did you forget to wrap your parameters in an array?',
-	      COMMAND_SPLICE,
-	      spec[COMMAND_SPLICE]
-	    ) : invariant(Array.isArray(spec[COMMAND_SPLICE])));
-	    spec[COMMAND_SPLICE].forEach(function(args) {
-	      ("production" !== process.env.NODE_ENV ? invariant(
-	        Array.isArray(args),
-	        'update(): expected spec of %s to be an array of arrays; got %s. ' +
-	        'Did you forget to wrap your parameters in an array?',
-	        COMMAND_SPLICE,
-	        spec[COMMAND_SPLICE]
-	      ) : invariant(Array.isArray(args)));
-	      nextValue.splice.apply(nextValue, args);
-	    });
-	  }
-
-	  if (hasOwnProperty.call(spec, COMMAND_APPLY)) {
-	    ("production" !== process.env.NODE_ENV ? invariant(
-	      typeof spec[COMMAND_APPLY] === 'function',
-	      'update(): expected spec of %s to be a function; got %s.',
-	      COMMAND_APPLY,
-	      spec[COMMAND_APPLY]
-	    ) : invariant(typeof spec[COMMAND_APPLY] === 'function'));
-	    nextValue = spec[COMMAND_APPLY](nextValue);
-	  }
-
-	  for (var k in spec) {
-	    if (!(ALL_COMMANDS_SET.hasOwnProperty(k) && ALL_COMMANDS_SET[k])) {
-	      nextValue[k] = update(value[k], spec[k]);
-	    }
-	  }
-
-	  return nextValue;
-	}
-
-	module.exports = update;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 187 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactTestUtils
-	 */
-
-	'use strict';
-
-	var EventConstants = __webpack_require__(5);
-	var EventPluginHub = __webpack_require__(69);
-	var EventPropagators = __webpack_require__(93);
-	var React = __webpack_require__(2);
-	var ReactElement = __webpack_require__(11);
-	var ReactEmptyComponent = __webpack_require__(76);
-	var ReactBrowserEventEmitter = __webpack_require__(68);
-	var ReactCompositeComponent = __webpack_require__(84);
-	var ReactInstanceHandles = __webpack_require__(20);
-	var ReactInstanceMap = __webpack_require__(36);
-	var ReactMount = __webpack_require__(67);
-	var ReactUpdates = __webpack_require__(24);
-	var SyntheticEvent = __webpack_require__(97);
-
-	var assign = __webpack_require__(13);
-	var emptyObject = __webpack_require__(14);
-
-	var topLevelTypes = EventConstants.topLevelTypes;
-
-	function Event(suffix) {}
-
-	/**
-	 * @class ReactTestUtils
-	 */
-
-	/**
-	 * Todo: Support the entire DOM.scry query syntax. For now, these simple
-	 * utilities will suffice for testing purposes.
-	 * @lends ReactTestUtils
-	 */
-	var ReactTestUtils = {
-	  renderIntoDocument: function(instance) {
-	    var div = document.createElement('div');
-	    // None of our tests actually require attaching the container to the
-	    // DOM, and doing so creates a mess that we rely on test isolation to
-	    // clean up, so we're going to stop honoring the name of this method
-	    // (and probably rename it eventually) if no problems arise.
-	    // document.documentElement.appendChild(div);
-	    return React.render(instance, div);
-	  },
-
-	  isElement: function(element) {
-	    return ReactElement.isValidElement(element);
-	  },
-
-	  isElementOfType: function(inst, convenienceConstructor) {
-	    return (
-	      ReactElement.isValidElement(inst) &&
-	      inst.type === convenienceConstructor
-	    );
-	  },
-
-	  isDOMComponent: function(inst) {
-	    // TODO: Fix this heuristic. It's just here because composites can currently
-	    // pretend to be DOM components.
-	    return !!(inst && inst.tagName && inst.getDOMNode);
-	  },
-
-	  isDOMComponentElement: function(inst) {
-	    return !!(inst &&
-	              ReactElement.isValidElement(inst) &&
-	              !!inst.tagName);
-	  },
-
-	  isCompositeComponent: function(inst) {
-	    return typeof inst.render === 'function' &&
-	           typeof inst.setState === 'function';
-	  },
-
-	  isCompositeComponentWithType: function(inst, type) {
-	    return !!(ReactTestUtils.isCompositeComponent(inst) &&
-	             (inst.constructor === type));
-	  },
-
-	  isCompositeComponentElement: function(inst) {
-	    if (!ReactElement.isValidElement(inst)) {
-	      return false;
-	    }
-	    // We check the prototype of the type that will get mounted, not the
-	    // instance itself. This is a future proof way of duck typing.
-	    var prototype = inst.type.prototype;
-	    return (
-	      typeof prototype.render === 'function' &&
-	      typeof prototype.setState === 'function'
-	    );
-	  },
-
-	  isCompositeComponentElementWithType: function(inst, type) {
-	    return !!(ReactTestUtils.isCompositeComponentElement(inst) &&
-	             (inst.constructor === type));
-	  },
-
-	  getRenderedChildOfCompositeComponent: function(inst) {
-	    if (!ReactTestUtils.isCompositeComponent(inst)) {
-	      return null;
-	    }
-	    var internalInstance = ReactInstanceMap.get(inst);
-	    return internalInstance._renderedComponent.getPublicInstance();
-	  },
-
-	  findAllInRenderedTree: function(inst, test) {
-	    if (!inst) {
-	      return [];
-	    }
-	    var ret = test(inst) ? [inst] : [];
-	    if (ReactTestUtils.isDOMComponent(inst)) {
-	      var internalInstance = ReactInstanceMap.get(inst);
-	      var renderedChildren = internalInstance
-	        ._renderedComponent
-	        ._renderedChildren;
-	      var key;
-	      for (key in renderedChildren) {
-	        if (!renderedChildren.hasOwnProperty(key)) {
-	          continue;
-	        }
-	        if (!renderedChildren[key].getPublicInstance) {
-	          continue;
-	        }
-	        ret = ret.concat(
-	          ReactTestUtils.findAllInRenderedTree(
-	            renderedChildren[key].getPublicInstance(),
-	            test
-	          )
-	        );
-	      }
-	    } else if (ReactTestUtils.isCompositeComponent(inst)) {
-	      ret = ret.concat(
-	        ReactTestUtils.findAllInRenderedTree(
-	          ReactTestUtils.getRenderedChildOfCompositeComponent(inst),
-	          test
-	        )
-	      );
-	    }
-	    return ret;
-	  },
-
-	  /**
-	   * Finds all instance of components in the rendered tree that are DOM
-	   * components with the class name matching `className`.
-	   * @return an array of all the matches.
-	   */
-	  scryRenderedDOMComponentsWithClass: function(root, className) {
-	    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
-	      var instClassName = inst.props.className;
-	      return ReactTestUtils.isDOMComponent(inst) && (
-	        (instClassName && (' ' + instClassName + ' ').indexOf(' ' + className + ' ') !== -1)
-	      );
-	    });
-	  },
-
-	  /**
-	   * Like scryRenderedDOMComponentsWithClass but expects there to be one result,
-	   * and returns that one result, or throws exception if there is any other
-	   * number of matches besides one.
-	   * @return {!ReactDOMComponent} The one match.
-	   */
-	  findRenderedDOMComponentWithClass: function(root, className) {
-	    var all =
-	      ReactTestUtils.scryRenderedDOMComponentsWithClass(root, className);
-	    if (all.length !== 1) {
-	      throw new Error('Did not find exactly one match ' +
-	        '(found: ' + all.length + ') for class:' + className
-	      );
-	    }
-	    return all[0];
-	  },
-
-
-	  /**
-	   * Finds all instance of components in the rendered tree that are DOM
-	   * components with the tag name matching `tagName`.
-	   * @return an array of all the matches.
-	   */
-	  scryRenderedDOMComponentsWithTag: function(root, tagName) {
-	    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
-	      return ReactTestUtils.isDOMComponent(inst) &&
-	            inst.tagName === tagName.toUpperCase();
-	    });
-	  },
-
-	  /**
-	   * Like scryRenderedDOMComponentsWithTag but expects there to be one result,
-	   * and returns that one result, or throws exception if there is any other
-	   * number of matches besides one.
-	   * @return {!ReactDOMComponent} The one match.
-	   */
-	  findRenderedDOMComponentWithTag: function(root, tagName) {
-	    var all = ReactTestUtils.scryRenderedDOMComponentsWithTag(root, tagName);
-	    if (all.length !== 1) {
-	      throw new Error('Did not find exactly one match for tag:' + tagName);
-	    }
-	    return all[0];
-	  },
-
-
-	  /**
-	   * Finds all instances of components with type equal to `componentType`.
-	   * @return an array of all the matches.
-	   */
-	  scryRenderedComponentsWithType: function(root, componentType) {
-	    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
-	      return ReactTestUtils.isCompositeComponentWithType(
-	        inst,
-	        componentType
-	      );
-	    });
-	  },
-
-	  /**
-	   * Same as `scryRenderedComponentsWithType` but expects there to be one result
-	   * and returns that one result, or throws exception if there is any other
-	   * number of matches besides one.
-	   * @return {!ReactComponent} The one match.
-	   */
-	  findRenderedComponentWithType: function(root, componentType) {
-	    var all = ReactTestUtils.scryRenderedComponentsWithType(
-	      root,
-	      componentType
-	    );
-	    if (all.length !== 1) {
-	      throw new Error(
-	        'Did not find exactly one match for componentType:' + componentType
-	      );
-	    }
-	    return all[0];
-	  },
-
-	  /**
-	   * Pass a mocked component module to this method to augment it with
-	   * useful methods that allow it to be used as a dummy React component.
-	   * Instead of rendering as usual, the component will become a simple
-	   * <div> containing any provided children.
-	   *
-	   * @param {object} module the mock function object exported from a
-	   *                        module that defines the component to be mocked
-	   * @param {?string} mockTagName optional dummy root tag name to return
-	   *                              from render method (overrides
-	   *                              module.mockTagName if provided)
-	   * @return {object} the ReactTestUtils object (for chaining)
-	   */
-	  mockComponent: function(module, mockTagName) {
-	    mockTagName = mockTagName || module.mockTagName || "div";
-
-	    module.prototype.render.mockImplementation(function() {
-	      return React.createElement(
-	        mockTagName,
-	        null,
-	        this.props.children
-	      );
-	    });
-
-	    return this;
-	  },
-
-	  /**
-	   * Simulates a top level event being dispatched from a raw event that occured
-	   * on an `Element` node.
-	   * @param topLevelType {Object} A type from `EventConstants.topLevelTypes`
-	   * @param {!Element} node The dom to simulate an event occurring on.
-	   * @param {?Event} fakeNativeEvent Fake native event to use in SyntheticEvent.
-	   */
-	  simulateNativeEventOnNode: function(topLevelType, node, fakeNativeEvent) {
-	    fakeNativeEvent.target = node;
-	    ReactBrowserEventEmitter.ReactEventListener.dispatchEvent(
-	      topLevelType,
-	      fakeNativeEvent
-	    );
-	  },
-
-	  /**
-	   * Simulates a top level event being dispatched from a raw event that occured
-	   * on the `ReactDOMComponent` `comp`.
-	   * @param topLevelType {Object} A type from `EventConstants.topLevelTypes`.
-	   * @param comp {!ReactDOMComponent}
-	   * @param {?Event} fakeNativeEvent Fake native event to use in SyntheticEvent.
-	   */
-	  simulateNativeEventOnDOMComponent: function(
-	      topLevelType,
-	      comp,
-	      fakeNativeEvent) {
-	    ReactTestUtils.simulateNativeEventOnNode(
-	      topLevelType,
-	      comp.getDOMNode(),
-	      fakeNativeEvent
-	    );
-	  },
-
-	  nativeTouchData: function(x, y) {
-	    return {
-	      touches: [
-	        {pageX: x, pageY: y}
-	      ]
-	    };
-	  },
-
-	  createRenderer: function() {
-	    return new ReactShallowRenderer();
-	  },
-
-	  Simulate: null,
-	  SimulateNative: {}
-	};
-
-	/**
-	 * @class ReactShallowRenderer
-	 */
-	var ReactShallowRenderer = function() {
-	  this._instance = null;
-	};
-
-	ReactShallowRenderer.prototype.getRenderOutput = function() {
-	  return (
-	    (this._instance && this._instance._renderedComponent &&
-	     this._instance._renderedComponent._renderedOutput)
-	    || null
-	  );
-	};
-
-	var NoopInternalComponent = function(element) {
-	  this._renderedOutput = element;
-	  this._currentElement = element === null || element === false ?
-	    ReactEmptyComponent.emptyElement :
-	    element;
-	};
-
-	NoopInternalComponent.prototype = {
-
-	  mountComponent: function() {
-	  },
-
-	  receiveComponent: function(element) {
-	    this._renderedOutput = element;
-	    this._currentElement = element === null || element === false ?
-	      ReactEmptyComponent.emptyElement :
-	      element;
-	  },
-
-	  unmountComponent: function() {
-	  }
-
-	};
-
-	var ShallowComponentWrapper = function() { };
-	assign(
-	  ShallowComponentWrapper.prototype,
-	  ReactCompositeComponent.Mixin, {
-	    _instantiateReactComponent: function(element) {
-	      return new NoopInternalComponent(element);
-	    },
-	    _replaceNodeWithMarkupByID: function() {},
-	    _renderValidatedComponent:
-	      ReactCompositeComponent.Mixin.
-	        _renderValidatedComponentWithoutOwnerOrContext
-	  }
-	);
-
-	ReactShallowRenderer.prototype.render = function(element, context) {
-	  if (!context) {
-	    context = emptyObject;
-	  }
-	  var transaction = ReactUpdates.ReactReconcileTransaction.getPooled();
-	  this._render(element, transaction, context);
-	  ReactUpdates.ReactReconcileTransaction.release(transaction);
-	};
-
-	ReactShallowRenderer.prototype.unmount = function() {
-	  if (this._instance) {
-	    this._instance.unmountComponent();
-	  }
-	};
-
-	ReactShallowRenderer.prototype._render = function(element, transaction, context) {
-	  if (!this._instance) {
-	    var rootID = ReactInstanceHandles.createReactRootID();
-	    var instance = new ShallowComponentWrapper(element.type);
-	    instance.construct(element);
-
-	    instance.mountComponent(rootID, transaction, context);
-
-	    this._instance = instance;
-	  } else {
-	    this._instance.receiveComponent(element, transaction, context);
-	  }
-	};
-
-	/**
-	 * Exports:
-	 *
-	 * - `ReactTestUtils.Simulate.click(Element/ReactDOMComponent)`
-	 * - `ReactTestUtils.Simulate.mouseMove(Element/ReactDOMComponent)`
-	 * - `ReactTestUtils.Simulate.change(Element/ReactDOMComponent)`
-	 * - ... (All keys from event plugin `eventTypes` objects)
-	 */
-	function makeSimulator(eventType) {
-	  return function(domComponentOrNode, eventData) {
-	    var node;
-	    if (ReactTestUtils.isDOMComponent(domComponentOrNode)) {
-	      node = domComponentOrNode.getDOMNode();
-	    } else if (domComponentOrNode.tagName) {
-	      node = domComponentOrNode;
-	    }
-
-	    var fakeNativeEvent = new Event();
-	    fakeNativeEvent.target = node;
-	    // We don't use SyntheticEvent.getPooled in order to not have to worry about
-	    // properly destroying any properties assigned from `eventData` upon release
-	    var event = new SyntheticEvent(
-	      ReactBrowserEventEmitter.eventNameDispatchConfigs[eventType],
-	      ReactMount.getID(node),
-	      fakeNativeEvent
-	    );
-	    assign(event, eventData);
-	    EventPropagators.accumulateTwoPhaseDispatches(event);
-
-	    ReactUpdates.batchedUpdates(function() {
-	      EventPluginHub.enqueueEvents(event);
-	      EventPluginHub.processEventQueue();
-	    });
-	  };
-	}
-
-	function buildSimulators() {
-	  ReactTestUtils.Simulate = {};
-
-	  var eventType;
-	  for (eventType in ReactBrowserEventEmitter.eventNameDispatchConfigs) {
-	    /**
-	     * @param {!Element || ReactDOMComponent} domComponentOrNode
-	     * @param {?object} eventData Fake event data to use in SyntheticEvent.
-	     */
-	    ReactTestUtils.Simulate[eventType] = makeSimulator(eventType);
-	  }
-	}
-
-	// Rebuild ReactTestUtils.Simulate whenever event plugins are injected
-	var oldInjectEventPluginOrder = EventPluginHub.injection.injectEventPluginOrder;
-	EventPluginHub.injection.injectEventPluginOrder = function() {
-	  oldInjectEventPluginOrder.apply(this, arguments);
-	  buildSimulators();
-	};
-	var oldInjectEventPlugins = EventPluginHub.injection.injectEventPluginsByName;
-	EventPluginHub.injection.injectEventPluginsByName = function() {
-	  oldInjectEventPlugins.apply(this, arguments);
-	  buildSimulators();
-	};
-
-	buildSimulators();
-
-	/**
-	 * Exports:
-	 *
-	 * - `ReactTestUtils.SimulateNative.click(Element/ReactDOMComponent)`
-	 * - `ReactTestUtils.SimulateNative.mouseMove(Element/ReactDOMComponent)`
-	 * - `ReactTestUtils.SimulateNative.mouseIn/ReactDOMComponent)`
-	 * - `ReactTestUtils.SimulateNative.mouseOut(Element/ReactDOMComponent)`
-	 * - ... (All keys from `EventConstants.topLevelTypes`)
-	 *
-	 * Note: Top level event types are a subset of the entire set of handler types
-	 * (which include a broader set of "synthetic" events). For example, onDragDone
-	 * is a synthetic event. Except when testing an event plugin or React's event
-	 * handling code specifically, you probably want to use ReactTestUtils.Simulate
-	 * to dispatch synthetic events.
-	 */
-
-	function makeNativeSimulator(eventType) {
-	  return function(domComponentOrNode, nativeEventData) {
-	    var fakeNativeEvent = new Event(eventType);
-	    assign(fakeNativeEvent, nativeEventData);
-	    if (ReactTestUtils.isDOMComponent(domComponentOrNode)) {
-	      ReactTestUtils.simulateNativeEventOnDOMComponent(
-	        eventType,
-	        domComponentOrNode,
-	        fakeNativeEvent
-	      );
-	    } else if (!!domComponentOrNode.tagName) {
-	      // Will allow on actual dom nodes.
-	      ReactTestUtils.simulateNativeEventOnNode(
-	        eventType,
-	        domComponentOrNode,
-	        fakeNativeEvent
-	      );
-	    }
-	  };
-	}
-
-	var eventType;
-	for (eventType in topLevelTypes) {
-	  // Event type is stored as 'topClick' - we transform that to 'click'
-	  var convenienceName = eventType.indexOf('top') === 0 ?
-	    eventType.charAt(3).toLowerCase() + eventType.substr(4) : eventType;
-	  /**
-	   * @param {!Element || ReactDOMComponent} domComponentOrNode
-	   * @param {?Event} nativeEventData Fake native event to use in SyntheticEvent.
-	   */
-	  ReactTestUtils.SimulateNative[convenienceName] =
-	    makeNativeSimulator(eventType);
-	}
-
-	module.exports = ReactTestUtils;
-
-
-/***/ },
-/* 188 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _earthViewCompJsx = __webpack_require__(189);
-
-	var _earthViewCompJsx2 = _interopRequireDefault(_earthViewCompJsx);
-
-	var _orbitViewCompJsx = __webpack_require__(201);
-
-	var _orbitViewCompJsx2 = _interopRequireDefault(_orbitViewCompJsx);
-
-	var _raysViewCompJsx = __webpack_require__(203);
-
-	var _raysViewCompJsx2 = _interopRequireDefault(_raysViewCompJsx);
-
-	__webpack_require__(205);
-
-	var ViewManager = (function (_React$Component) {
-	  function ViewManager(props) {
-	    _classCallCheck(this, ViewManager);
-
-	    _get(Object.getPrototypeOf(ViewManager.prototype), 'constructor', this).call(this, props);
-	    this.rafCallback = this.rafCallback.bind(this);
-	  }
-
-	  _inherits(ViewManager, _React$Component);
-
-	  _createClass(ViewManager, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this._rafId = requestAnimationFrame(this.rafCallback);
-	      this.syncCameraAndViewAxis();
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      cancelAnimationFrame(this._rafId);
-	    }
-	  }, {
-	    key: 'componentDidUpdate',
-	    value: function componentDidUpdate(prevProps) {
-	      if (prevProps.mainView !== this.props.mainView) {
-	        this.refs.earth.resize();
-	        this.refs.orbit.resize();
-	        this.refs.rays.resize();
-	      }
-	    }
-	  }, {
-	    key: 'rafCallback',
-	    value: function rafCallback(timestamp) {
-	      this.refs.earth.rafCallback(timestamp);
-	      this.refs.orbit.rafCallback(timestamp);
-	      this._rafId = requestAnimationFrame(this.rafCallback);
-	    }
-	  }, {
-	    key: 'syncCameraAndViewAxis',
-
-	    // When earth view camera is changed, we need to update view axis in the orbit view.
-	    value: function syncCameraAndViewAxis() {
-	      var _this = this;
-
-	      var sync = function sync() {
-	        var camVec = _this.refs.earth.getCameraEarthVec();
-	        _this.refs.orbit.setViewAxis(camVec);
-	      };
-	      // Initial sync.
-	      sync();
-	      // When earth view camera is changed, we need to update view axis in the orbit view.
-	      this.refs.earth.onCameraChange(sync);
-	    }
-	  }, {
-	    key: 'getLayout',
-	    value: function getLayout() {
-	      switch (this.props.mainView) {
-	        case 'earth':
-	          return { earth: 'main', orbit: 'small-top', rays: 'small-bottom' };
-	        case 'orbit':
-	          return { earth: 'small-top', orbit: 'main', rays: 'small-bottom' };
-	        case 'rays':
-	          return { earth: 'small-top', orbit: 'small-bottom', rays: 'main' };
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var layout = this.getLayout();
-	      return _react2['default'].createElement(
-	        'div',
-	        { className: 'view-manager' },
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'view ' + layout.earth },
-	          _react2['default'].createElement(_earthViewCompJsx2['default'], { ref: 'earth', simulation: this.props.simulation, onLocationChange: this.props.onLocationChange })
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'view ' + layout.orbit },
-	          _react2['default'].createElement(_orbitViewCompJsx2['default'], { ref: 'orbit', simulation: this.props.simulation })
-	        ),
-	        _react2['default'].createElement(
-	          'div',
-	          { className: 'view ' + layout.rays },
-	          _react2['default'].createElement(_raysViewCompJsx2['default'], { ref: 'rays', simulation: this.props.simulation })
-	        )
-	      );
-	    }
-	  }]);
-
-	  return ViewManager;
-	})(_react2['default'].Component);
-
-	exports['default'] = ViewManager;
-	module.exports = exports['default'];
-
-/***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _canvasViewJsx = __webpack_require__(190);
-
-	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
-
-	var _viewsEarthViewJs = __webpack_require__(213);
-
-	var _viewsEarthViewJs2 = _interopRequireDefault(_viewsEarthViewJs);
-
-	var EarthViewComp = (function (_CanvasView) {
-	  function EarthViewComp(props) {
-	    _classCallCheck(this, EarthViewComp);
-
-	    _get(Object.getPrototypeOf(EarthViewComp.prototype), 'constructor', this).call(this, props);
-	    this.ExternalView = _viewsEarthViewJs2['default'];
-	  }
-
-	  _inherits(EarthViewComp, _CanvasView);
-
-	  _createClass(EarthViewComp, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _this = this;
-
-	      _get(Object.getPrototypeOf(EarthViewComp.prototype), 'componentDidMount', this).call(this);
-	      this.externalView.on('latitude.change', function (newLat) {
-	        _this.props.onLocationChange({ lat: newLat });
-	      });
-	      this.externalView.on('longitude.change', function (newLong) {
-	        _this.props.onLocationChange({ long: newLong });
-	      });
-	    }
-	  }, {
-	    key: 'onCameraChange',
-	    value: function onCameraChange(callback) {
-	      this.externalView.on('camera.change', callback);
-	    }
-	  }, {
-	    key: 'getCameraEarthVec',
-	    value: function getCameraEarthVec() {
-	      return this.externalView.getCameraEarthVec();
-	    }
-	  }]);
-
-	  return EarthViewComp;
-	})(_canvasViewJsx2['default']);
-
-	exports['default'] = EarthViewComp;
-	module.exports = exports['default'];
-
-/***/ },
-/* 190 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var CanvasView = (function (_React$Component) {
-	  function CanvasView() {
-	    _classCallCheck(this, CanvasView);
-
-	    _get(Object.getPrototypeOf(CanvasView.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _inherits(CanvasView, _React$Component);
-
-	  _createClass(CanvasView, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var node = _react2['default'].findDOMNode(this);
-	      this.externalView = new this.ExternalView(node, this.props.simulation);
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      this.externalView.setProps(nextProps.simulation);
-	    }
-	  }, {
-	    key: 'shouldComponentUpdate',
-	    value: function shouldComponentUpdate() {
-	      // Never update component as it's based on canvas.
-	      return false;
-	    }
-	  }, {
-	    key: 'rafCallback',
-
-	    // requestAnimationFrame callback.
-	    value: function rafCallback(timestamp) {
-	      if (this.externalView.render) this.externalView.render(timestamp);
-	    }
-	  }, {
-	    key: 'resize',
-	    value: function resize() {
-	      if (this.externalView.resize) this.externalView.resize();
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return _react2['default'].createElement('div', { style: { width: '100%', height: '100%' } });
-	    }
-	  }]);
-
-	  return CanvasView;
-	})(_react2['default'].Component);
-
-	exports['default'] = CanvasView;
-	module.exports = exports['default'];
-	/* Canvas will be inserted here by the external view. */
-
-/***/ },
-/* 191 */,
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _constantsJs = __webpack_require__(193);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	var DEG_2_RAD = Math.PI / 180;
-	var DEF_COLOR = 0xffffff;
-	var DEF_EMISSIVE = 0x999999;
-	var HIGHLIGHT_COLOR = 0xff0000;
-	var HIGHLIGHT_EMISSIVE = 0xbb3333;
-
-	var LatitudeLine = (function () {
-	  function LatitudeLine() {
-	    _classCallCheck(this, LatitudeLine);
-
-	    var geometry = new THREE.TorusGeometry(c.EARTH_RADIUS, c.EARTH_RADIUS * 0.01, 16, 100);
-	    var material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.rotation.x = Math.PI * 0.5;
-
-	    this.rootObject = mesh;
-	    this.mesh = mesh;
-	    this.material = material;
-	  }
-
-	  _createClass(LatitudeLine, [{
-	    key: 'setLat',
-	    value: function setLat(lat) {
-	      if (lat != null) {
-	        this.rootObject.position.y = c.EARTH_RADIUS * Math.sin(lat * DEG_2_RAD);
-	        this.rootObject.scale.x = Math.cos(lat * DEG_2_RAD);
-	        this.rootObject.scale.y = Math.cos(lat * DEG_2_RAD);
-	      }
-	    }
-	  }, {
-	    key: 'setHighlighted',
-	    value: function setHighlighted(v) {
-	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
-	      this.material.emissive.setHex(v ? HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
-	    }
-	  }]);
-
-	  return LatitudeLine;
-	})();
-
-	exports['default'] = LatitudeLine;
-	module.exports = exports['default'];
-
-/***/ },
-/* 193 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	// This constants define values used by 3D object, they don't have any physical meaning.
-
-	var SF = 1 / data.SCALE_FACTOR;
-
-	exports.SF = SF;
-	var EARTH_RADIUS = 7000000 * SF;
-	exports.EARTH_RADIUS = EARTH_RADIUS;
-	var SIMPLE_EARTH_RADIUS = 10000000 * SF;
-	exports.SIMPLE_EARTH_RADIUS = SIMPLE_EARTH_RADIUS;
-	var SUN_RADIUS = 4000000 * SF;
-	exports.SUN_RADIUS = SUN_RADIUS;
-	var SIMPLE_SUN_RADIUS = 15000000 * SF;
-	exports.SIMPLE_SUN_RADIUS = SIMPLE_SUN_RADIUS;
-	var SUN_COLOR = 0xFF8935;
-	exports.SUN_COLOR = SUN_COLOR;
-
-/***/ },
-/* 194 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.earthEllipseLocationByDay = earthEllipseLocationByDay;
-	var AU = 149597870.691;
-	var AU_2_KM = 149597870.7;
-	var EARTH_ECCENTRICITY = 0.01671123;
-
-	var SCALE_FACTOR = 100000;
-	exports.SCALE_FACTOR = SCALE_FACTOR;
-	var EARTH_ORBITAL_RADIUS = AU / SCALE_FACTOR;
-	exports.EARTH_ORBITAL_RADIUS = EARTH_ORBITAL_RADIUS;
-	var EARTH_SEMI_MAJOR_AXIS = 1.00000261;
-	exports.EARTH_SEMI_MAJOR_AXIS = EARTH_SEMI_MAJOR_AXIS;
-	var SUN_FOCUS = EARTH_ECCENTRICITY / EARTH_SEMI_MAJOR_AXIS / 2 * AU_2_KM / SCALE_FACTOR;
-	exports.SUN_FOCUS = SUN_FOCUS;
-	var EARTH_TILT = 0.41;
-
-	exports.EARTH_TILT = EARTH_TILT;
-	var DAY_NUMBER_BY_MONTH = {
-	  JAN: 19,
-	  FEB: 50,
-	  MAR: 78, // mar 20 17:42
-	  APR: 109,
-	  MAY: 139,
-	  JUN: 171, // jun 21 17:16
-	  JUL: 200,
-	  AUG: 231,
-	  SEP: 265, // sep 23 09:04
-	  OCT: 292,
-	  NOV: 323,
-	  DEC: 355 // dec 22 05:30
-	};
-
-	exports.DAY_NUMBER_BY_MONTH = DAY_NUMBER_BY_MONTH;
-
-	function earthEllipseLocationByDay(day) {
-	  var index = (DAY_NUMBER_BY_MONTH.JUN - day) / 365;
-	  var z = 1 / EARTH_SEMI_MAJOR_AXIS * Math.sin(index * 2 * Math.PI);
-	  var x = EARTH_SEMI_MAJOR_AXIS * Math.cos(index * 2 * Math.PI);
-
-	  x = x * EARTH_ORBITAL_RADIUS + SUN_FOCUS * 2;
-	  z = z * EARTH_ORBITAL_RADIUS;
-
-	  return new THREE.Vector3(x, 0, z);
-	}
-
-/***/ },
-/* 195 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * EventEmitter2
-	 * https://github.com/hij1nx/EventEmitter2
-	 *
-	 * Copyright (c) 2013 hij1nx
-	 * Licensed under the MIT license.
-	 */
-	;!function(undefined) {
-
-	  var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
-	    return Object.prototype.toString.call(obj) === "[object Array]";
-	  };
-	  var defaultMaxListeners = 10;
-
-	  function init() {
-	    this._events = {};
-	    if (this._conf) {
-	      configure.call(this, this._conf);
-	    }
-	  }
-
-	  function configure(conf) {
-	    if (conf) {
-
-	      this._conf = conf;
-
-	      conf.delimiter && (this.delimiter = conf.delimiter);
-	      conf.maxListeners && (this._events.maxListeners = conf.maxListeners);
-	      conf.wildcard && (this.wildcard = conf.wildcard);
-	      conf.newListener && (this.newListener = conf.newListener);
-
-	      if (this.wildcard) {
-	        this.listenerTree = {};
-	      }
-	    }
-	  }
-
-	  function EventEmitter(conf) {
-	    this._events = {};
-	    this.newListener = false;
-	    configure.call(this, conf);
-	  }
-
-	  //
-	  // Attention, function return type now is array, always !
-	  // It has zero elements if no any matches found and one or more
-	  // elements (leafs) if there are matches
-	  //
-	  function searchListenerTree(handlers, type, tree, i) {
-	    if (!tree) {
-	      return [];
-	    }
-	    var listeners=[], leaf, len, branch, xTree, xxTree, isolatedBranch, endReached,
-	        typeLength = type.length, currentType = type[i], nextType = type[i+1];
-	    if (i === typeLength && tree._listeners) {
-	      //
-	      // If at the end of the event(s) list and the tree has listeners
-	      // invoke those listeners.
-	      //
-	      if (typeof tree._listeners === 'function') {
-	        handlers && handlers.push(tree._listeners);
-	        return [tree];
-	      } else {
-	        for (leaf = 0, len = tree._listeners.length; leaf < len; leaf++) {
-	          handlers && handlers.push(tree._listeners[leaf]);
-	        }
-	        return [tree];
-	      }
-	    }
-
-	    if ((currentType === '*' || currentType === '**') || tree[currentType]) {
-	      //
-	      // If the event emitted is '*' at this part
-	      // or there is a concrete match at this patch
-	      //
-	      if (currentType === '*') {
-	        for (branch in tree) {
-	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-	            listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+1));
-	          }
-	        }
-	        return listeners;
-	      } else if(currentType === '**') {
-	        endReached = (i+1 === typeLength || (i+2 === typeLength && nextType === '*'));
-	        if(endReached && tree._listeners) {
-	          // The next element has a _listeners, add it to the handlers.
-	          listeners = listeners.concat(searchListenerTree(handlers, type, tree, typeLength));
-	        }
-
-	        for (branch in tree) {
-	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-	            if(branch === '*' || branch === '**') {
-	              if(tree[branch]._listeners && !endReached) {
-	                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], typeLength));
-	              }
-	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
-	            } else if(branch === nextType) {
-	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+2));
-	            } else {
-	              // No match on this one, shift into the tree but not in the type array.
-	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
-	            }
-	          }
-	        }
-	        return listeners;
-	      }
-
-	      listeners = listeners.concat(searchListenerTree(handlers, type, tree[currentType], i+1));
-	    }
-
-	    xTree = tree['*'];
-	    if (xTree) {
-	      //
-	      // If the listener tree will allow any match for this part,
-	      // then recursively explore all branches of the tree
-	      //
-	      searchListenerTree(handlers, type, xTree, i+1);
-	    }
-
-	    xxTree = tree['**'];
-	    if(xxTree) {
-	      if(i < typeLength) {
-	        if(xxTree._listeners) {
-	          // If we have a listener on a '**', it will catch all, so add its handler.
-	          searchListenerTree(handlers, type, xxTree, typeLength);
-	        }
-
-	        // Build arrays of matching next branches and others.
-	        for(branch in xxTree) {
-	          if(branch !== '_listeners' && xxTree.hasOwnProperty(branch)) {
-	            if(branch === nextType) {
-	              // We know the next element will match, so jump twice.
-	              searchListenerTree(handlers, type, xxTree[branch], i+2);
-	            } else if(branch === currentType) {
-	              // Current node matches, move into the tree.
-	              searchListenerTree(handlers, type, xxTree[branch], i+1);
-	            } else {
-	              isolatedBranch = {};
-	              isolatedBranch[branch] = xxTree[branch];
-	              searchListenerTree(handlers, type, { '**': isolatedBranch }, i+1);
-	            }
-	          }
-	        }
-	      } else if(xxTree._listeners) {
-	        // We have reached the end and still on a '**'
-	        searchListenerTree(handlers, type, xxTree, typeLength);
-	      } else if(xxTree['*'] && xxTree['*']._listeners) {
-	        searchListenerTree(handlers, type, xxTree['*'], typeLength);
-	      }
-	    }
-
-	    return listeners;
-	  }
-
-	  function growListenerTree(type, listener) {
-
-	    type = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-
-	    //
-	    // Looks for two consecutive '**', if so, don't add the event at all.
-	    //
-	    for(var i = 0, len = type.length; i+1 < len; i++) {
-	      if(type[i] === '**' && type[i+1] === '**') {
-	        return;
-	      }
-	    }
-
-	    var tree = this.listenerTree;
-	    var name = type.shift();
-
-	    while (name) {
-
-	      if (!tree[name]) {
-	        tree[name] = {};
-	      }
-
-	      tree = tree[name];
-
-	      if (type.length === 0) {
-
-	        if (!tree._listeners) {
-	          tree._listeners = listener;
-	        }
-	        else if(typeof tree._listeners === 'function') {
-	          tree._listeners = [tree._listeners, listener];
-	        }
-	        else if (isArray(tree._listeners)) {
-
-	          tree._listeners.push(listener);
-
-	          if (!tree._listeners.warned) {
-
-	            var m = defaultMaxListeners;
-
-	            if (typeof this._events.maxListeners !== 'undefined') {
-	              m = this._events.maxListeners;
-	            }
-
-	            if (m > 0 && tree._listeners.length > m) {
-
-	              tree._listeners.warned = true;
-	              console.error('(node) warning: possible EventEmitter memory ' +
-	                            'leak detected. %d listeners added. ' +
-	                            'Use emitter.setMaxListeners() to increase limit.',
-	                            tree._listeners.length);
-	              console.trace();
-	            }
-	          }
-	        }
-	        return true;
-	      }
-	      name = type.shift();
-	    }
-	    return true;
-	  }
-
-	  // By default EventEmitters will print a warning if more than
-	  // 10 listeners are added to it. This is a useful default which
-	  // helps finding memory leaks.
-	  //
-	  // Obviously not all Emitters should be limited to 10. This function allows
-	  // that to be increased. Set to zero for unlimited.
-
-	  EventEmitter.prototype.delimiter = '.';
-
-	  EventEmitter.prototype.setMaxListeners = function(n) {
-	    this._events || init.call(this);
-	    this._events.maxListeners = n;
-	    if (!this._conf) this._conf = {};
-	    this._conf.maxListeners = n;
-	  };
-
-	  EventEmitter.prototype.event = '';
-
-	  EventEmitter.prototype.once = function(event, fn) {
-	    this.many(event, 1, fn);
-	    return this;
-	  };
-
-	  EventEmitter.prototype.many = function(event, ttl, fn) {
-	    var self = this;
-
-	    if (typeof fn !== 'function') {
-	      throw new Error('many only accepts instances of Function');
-	    }
-
-	    function listener() {
-	      if (--ttl === 0) {
-	        self.off(event, listener);
-	      }
-	      fn.apply(this, arguments);
-	    }
-
-	    listener._origin = fn;
-
-	    this.on(event, listener);
-
-	    return self;
-	  };
-
-	  EventEmitter.prototype.emit = function() {
-
-	    this._events || init.call(this);
-
-	    var type = arguments[0];
-
-	    if (type === 'newListener' && !this.newListener) {
-	      if (!this._events.newListener) { return false; }
-	    }
-
-	    // Loop through the *_all* functions and invoke them.
-	    if (this._all) {
-	      var l = arguments.length;
-	      var args = new Array(l - 1);
-	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-	      for (i = 0, l = this._all.length; i < l; i++) {
-	        this.event = type;
-	        this._all[i].apply(this, args);
-	      }
-	    }
-
-	    // If there is no 'error' event listener then throw.
-	    if (type === 'error') {
-
-	      if (!this._all &&
-	        !this._events.error &&
-	        !(this.wildcard && this.listenerTree.error)) {
-
-	        if (arguments[1] instanceof Error) {
-	          throw arguments[1]; // Unhandled 'error' event
-	        } else {
-	          throw new Error("Uncaught, unspecified 'error' event.");
-	        }
-	        return false;
-	      }
-	    }
-
-	    var handler;
-
-	    if(this.wildcard) {
-	      handler = [];
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
-	    }
-	    else {
-	      handler = this._events[type];
-	    }
-
-	    if (typeof handler === 'function') {
-	      this.event = type;
-	      if (arguments.length === 1) {
-	        handler.call(this);
-	      }
-	      else if (arguments.length > 1)
-	        switch (arguments.length) {
-	          case 2:
-	            handler.call(this, arguments[1]);
-	            break;
-	          case 3:
-	            handler.call(this, arguments[1], arguments[2]);
-	            break;
-	          // slower
-	          default:
-	            var l = arguments.length;
-	            var args = new Array(l - 1);
-	            for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-	            handler.apply(this, args);
-	        }
-	      return true;
-	    }
-	    else if (handler) {
-	      var l = arguments.length;
-	      var args = new Array(l - 1);
-	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-
-	      var listeners = handler.slice();
-	      for (var i = 0, l = listeners.length; i < l; i++) {
-	        this.event = type;
-	        listeners[i].apply(this, args);
-	      }
-	      return (listeners.length > 0) || !!this._all;
-	    }
-	    else {
-	      return !!this._all;
-	    }
-
-	  };
-
-	  EventEmitter.prototype.on = function(type, listener) {
-
-	    if (typeof type === 'function') {
-	      this.onAny(type);
-	      return this;
-	    }
-
-	    if (typeof listener !== 'function') {
-	      throw new Error('on only accepts instances of Function');
-	    }
-	    this._events || init.call(this);
-
-	    // To avoid recursion in the case that type == "newListeners"! Before
-	    // adding it to the listeners, first emit "newListeners".
-	    this.emit('newListener', type, listener);
-
-	    if(this.wildcard) {
-	      growListenerTree.call(this, type, listener);
-	      return this;
-	    }
-
-	    if (!this._events[type]) {
-	      // Optimize the case of one listener. Don't need the extra array object.
-	      this._events[type] = listener;
-	    }
-	    else if(typeof this._events[type] === 'function') {
-	      // Adding the second element, need to change to array.
-	      this._events[type] = [this._events[type], listener];
-	    }
-	    else if (isArray(this._events[type])) {
-	      // If we've already got an array, just append.
-	      this._events[type].push(listener);
-
-	      // Check for listener leak
-	      if (!this._events[type].warned) {
-
-	        var m = defaultMaxListeners;
-
-	        if (typeof this._events.maxListeners !== 'undefined') {
-	          m = this._events.maxListeners;
-	        }
-
-	        if (m > 0 && this._events[type].length > m) {
-
-	          this._events[type].warned = true;
-	          console.error('(node) warning: possible EventEmitter memory ' +
-	                        'leak detected. %d listeners added. ' +
-	                        'Use emitter.setMaxListeners() to increase limit.',
-	                        this._events[type].length);
-	          console.trace();
-	        }
-	      }
-	    }
-	    return this;
-	  };
-
-	  EventEmitter.prototype.onAny = function(fn) {
-
-	    if (typeof fn !== 'function') {
-	      throw new Error('onAny only accepts instances of Function');
-	    }
-
-	    if(!this._all) {
-	      this._all = [];
-	    }
-
-	    // Add the function to the event listener collection.
-	    this._all.push(fn);
-	    return this;
-	  };
-
-	  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-	  EventEmitter.prototype.off = function(type, listener) {
-	    if (typeof listener !== 'function') {
-	      throw new Error('removeListener only takes instances of Function');
-	    }
-
-	    var handlers,leafs=[];
-
-	    if(this.wildcard) {
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-	    }
-	    else {
-	      // does not use listeners(), so no side effect of creating _events[type]
-	      if (!this._events[type]) return this;
-	      handlers = this._events[type];
-	      leafs.push({_listeners:handlers});
-	    }
-
-	    for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
-	      var leaf = leafs[iLeaf];
-	      handlers = leaf._listeners;
-	      if (isArray(handlers)) {
-
-	        var position = -1;
-
-	        for (var i = 0, length = handlers.length; i < length; i++) {
-	          if (handlers[i] === listener ||
-	            (handlers[i].listener && handlers[i].listener === listener) ||
-	            (handlers[i]._origin && handlers[i]._origin === listener)) {
-	            position = i;
-	            break;
-	          }
-	        }
-
-	        if (position < 0) {
-	          continue;
-	        }
-
-	        if(this.wildcard) {
-	          leaf._listeners.splice(position, 1);
-	        }
-	        else {
-	          this._events[type].splice(position, 1);
-	        }
-
-	        if (handlers.length === 0) {
-	          if(this.wildcard) {
-	            delete leaf._listeners;
-	          }
-	          else {
-	            delete this._events[type];
-	          }
-	        }
-	        return this;
-	      }
-	      else if (handlers === listener ||
-	        (handlers.listener && handlers.listener === listener) ||
-	        (handlers._origin && handlers._origin === listener)) {
-	        if(this.wildcard) {
-	          delete leaf._listeners;
-	        }
-	        else {
-	          delete this._events[type];
-	        }
-	      }
-	    }
-
-	    return this;
-	  };
-
-	  EventEmitter.prototype.offAny = function(fn) {
-	    var i = 0, l = 0, fns;
-	    if (fn && this._all && this._all.length > 0) {
-	      fns = this._all;
-	      for(i = 0, l = fns.length; i < l; i++) {
-	        if(fn === fns[i]) {
-	          fns.splice(i, 1);
-	          return this;
-	        }
-	      }
-	    } else {
-	      this._all = [];
-	    }
-	    return this;
-	  };
-
-	  EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
-
-	  EventEmitter.prototype.removeAllListeners = function(type) {
-	    if (arguments.length === 0) {
-	      !this._events || init.call(this);
-	      return this;
-	    }
-
-	    if(this.wildcard) {
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      var leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-
-	      for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
-	        var leaf = leafs[iLeaf];
-	        leaf._listeners = null;
-	      }
-	    }
-	    else {
-	      if (!this._events[type]) return this;
-	      this._events[type] = null;
-	    }
-	    return this;
-	  };
-
-	  EventEmitter.prototype.listeners = function(type) {
-	    if(this.wildcard) {
-	      var handlers = [];
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
-	      return handlers;
-	    }
-
-	    this._events || init.call(this);
-
-	    if (!this._events[type]) this._events[type] = [];
-	    if (!isArray(this._events[type])) {
-	      this._events[type] = [this._events[type]];
-	    }
-	    return this._events[type];
-	  };
-
-	  EventEmitter.prototype.listenersAny = function() {
-
-	    if(this._all) {
-	      return this._all;
-	    }
-	    else {
-	      return [];
-	    }
-
-	  };
-
-	  if (true) {
-	     // AMD. Register as an anonymous module.
-	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
-	      return EventEmitter;
-	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	  } else if (typeof exports === 'object') {
-	    // CommonJS
-	    exports.EventEmitter2 = EventEmitter;
-	  }
-	  else {
-	    // Browser global.
-	    window.EventEmitter2 = EventEmitter;
-	  }
-	}();
-
-
-/***/ },
-/* 196 */,
-/* 197 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var _constantsJs = __webpack_require__(193);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	exports['default'] = {
-	  stars: function stars() {
-	    var SIZE = 4000000 * c.SF;
-	    var MIN_RADIUS = 500000000 * c.SF;
-	    var MAX_RADIUS = 3 * MIN_RADIUS;
-	    var geometry = new THREE.Geometry();
-
-	    for (var i = 0; i < 2000; i++) {
-	      var vertex = new THREE.Vector3();
-	      var theta = 2 * Math.PI * Math.random();
-	      var u = Math.random() * 2 - 1;
-	      vertex.x = Math.sqrt(1 - u * u) * Math.cos(theta);
-	      vertex.y = Math.sqrt(1 - u * u) * Math.sin(theta);
-	      vertex.z = u;
-	      vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
-	      geometry.vertices.push(vertex);
-	    }
-	    var material = new THREE.PointCloudMaterial({ size: SIZE, color: 0xffffee });
-	    var particles = new THREE.PointCloud(geometry, material);
-	    return particles;
-	  },
-
-	  ambientLight: function ambientLight() {
-	    return new THREE.AmbientLight(0x111111);
-	  },
-
-	  sunLight: function sunLight() {
-	    return new THREE.PointLight(0xffffff, 1.2, 0);
-	  },
-
-	  // Light that affects only sun object (due to radius settings).
-	  sunOnlyLight: function sunOnlyLight() {
-	    var light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
-	    light.position.y = c.SUN_RADIUS * 4;
-	    return light;
-	  },
-
-	  sun: function sun(params) {
-	    var radius = params.type === 'orbit-view' ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
-	    var geometry = new THREE.SphereGeometry(radius, 32, 32);
-	    var material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    return mesh;
-	  },
-
-	  earth: function earth(params) {
-	    var simple = params.type === 'orbit-view';
-	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-	    var COLORS = simple ? { color: 0x1286CD, emissive: 0x023757 } : { specular: 0x252525 };
-	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
-	    var material = new THREE.MeshPhongMaterial(COLORS);
-	    if (!simple) {
-	      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
-	      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
-	      material.bumpScale = 100000 * c.SF;
-	      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
-	    }
-	    return new THREE.Mesh(geometry, material);
-	  },
-
-	  orbit: function orbit() {
-	    var curve = new THREE.EllipseCurve(data.SUN_FOCUS * 2, 0, // ax, aY
-	    data.EARTH_SEMI_MAJOR_AXIS * data.EARTH_ORBITAL_RADIUS, data.EARTH_ORBITAL_RADIUS, // xRadius, yRadius
-	    0, 2 * Math.PI, // aStartAngle, aEndAngle
-	    false // aClockwise
-	    );
-	    var path = new THREE.Path(curve.getPoints(150));
-	    var geometry = path.createPointsGeometry(150);
-	    var material = new THREE.LineBasicMaterial({ color: 0xffff00, linewidth: 2 });
-	    var mesh = new THREE.Line(geometry, material);
-	    mesh.rotateX(Math.PI / 2);
-
-	    return mesh;
-	  },
-
-	  label: function label(txt) {
-	    var geometry = new THREE.TextGeometry(txt, {
-	      size: 50000000 * c.SF,
-	      height: 1000000 * c.SF
-	    });
-	    var material = new THREE.LineBasicMaterial({ color: 0xffff00 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.rotation.x = -Math.PI * 0.5;
-	    return mesh;
-	  },
-
-	  grid: function grid(params) {
-	    var steps = params.type === 'orbit-view' ? 5 : 60;
-	    var size = data.EARTH_ORBITAL_RADIUS;
-	    var step = size / steps;
-
-	    var geometry = new THREE.Geometry();
-	    var material = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2 });
-
-	    for (var i = -size; i <= size; i += step) {
-	      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
-	      geometry.vertices.push(new THREE.Vector3(size, 0, i));
-
-	      geometry.vertices.push(new THREE.Vector3(i, 0, -size));
-	      geometry.vertices.push(new THREE.Vector3(i, 0, size));
-	    }
-	    return new THREE.Line(geometry, material, THREE.LinePieces);
-	  },
-
-	  earthAxis: function earthAxis(params) {
-	    var simple = params.type === 'orbit-view';
-	    var HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
-	    var RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
-	    var HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
-	    var HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
-	    var EMMSIVE_COL = simple ? 0xaa0000 : 0x330000;
-	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMMSIVE_COL });
-	    var mesh = new THREE.Mesh(geometry, material);
-
-	    var arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
-	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-	    arrowHeadMesh.position.y = HEIGHT * 0.5;
-	    mesh.add(arrowHeadMesh);
-
-	    return mesh;
-	  },
-
-	  viewAxis: function viewAxis() {
-	    var HEIGHT = 70000000 * c.SF;
-	    var HEAD_HEIGHT = HEIGHT * 0.2;
-	    var RADIUS = 2000000 * c.SF;
-	    var geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-	    var material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x009900 });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS + HEAD_HEIGHT;
-
-	    var arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEAD_HEIGHT, 32);
-	    var arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-	    arrowHeadMesh.position.y = -HEIGHT * 0.5 - HEAD_HEIGHT * 0.5;
-	    mesh.add(arrowHeadMesh);
-
-	    var pivot = new THREE.Object3D();
-	    pivot.add(mesh);
-	    return pivot;
-	  }
-	};
-	module.exports = exports['default'];
-
-/***/ },
-/* 198 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _constantsJs = __webpack_require__(193);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	var LINE_RADIUS = 30000 * c.SF;
-	var SIMPLE_LINE_RADIUS = 800000 * c.SF;
-	var POINTER_RADIUS = 100000 * c.SF;
-	var POINTER_TUBE = 45000 * c.SF;
-
-	var _default = (function () {
-	  var _class = function _default(props) {
-	    _classCallCheck(this, _class);
-
-	    var simple = props.type === 'orbit-view';
-
-	    // _refVector is used to calculate angle between it and the current earth position.
-	    this._refVector = new THREE.Vector3(-1, 0, 0);
-	    this._earthRadius = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-
-	    this._init3DObjects(simple);
-	  };
-
-	  _createClass(_class, [{
-	    key: 'setEarthPos',
-	    value: function setEarthPos(newPos) {
-	      var len = newPos.length() - this._earthRadius;
-	      var angleDiff = newPos.angleTo(this._refVector);
-	      if (newPos.z < 0) angleDiff *= -1;
-	      this.rootObject.rotation.y = angleDiff;
-	      this._lineMesh.scale.y = len;
-	      this._lineMesh.position.x = -len * 0.5;
-	      if (this._pointerMesh) {
-	        this._pointerMesh.position.x = -len;
-	      }
-	    }
-	  }, {
-	    key: '_init3DObjects',
-	    value: function _init3DObjects(simple) {
-	      var radius = simple ? SIMPLE_LINE_RADIUS : LINE_RADIUS;
-	      var segments = simple ? 4 : 8;
-	      var material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
-	      var geometry = new THREE.CylinderGeometry(radius, radius, 1, segments);
-	      this._lineMesh = new THREE.Mesh(geometry, material);
-	      this._lineMesh.rotation.z = Math.PI * 0.5;
-
-	      var container = new THREE.Object3D();
-	      container.add(this._lineMesh);
-	      var pivot = new THREE.Object3D();
-	      pivot.add(container);
-
-	      if (!simple) {
-	        this._pointerMesh = this._initPointer();
-	        container.add(this._pointerMesh);
-	      }
-
-	      this.rootObject = pivot;
-	    }
-	  }, {
-	    key: '_initPointer',
-	    value: function _initPointer() {
-	      var material = new THREE.MeshPhongMaterial({ color: c.SUN_COLOR });
-	      var geometry = new THREE.TorusGeometry(POINTER_RADIUS, POINTER_TUBE, 4, 16);
-	      var mesh = new THREE.Mesh(geometry, material);
-	      mesh.rotation.y = Math.PI * 0.5;
-	      return mesh;
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 199 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _constantsJs = __webpack_require__(193);
-
-	var c = _interopRequireWildcard(_constantsJs);
-
-	var _utilsJs = __webpack_require__(200);
-
-	var DEG_2_RAD = Math.PI / 180;
-	var DEF_COLOR = 0xffffff;
-	var DEF_EMISSIVE = 0x999999;
-	var HIGHLIGHT_COLOR = 0xff0000;
-	var HIGHLIGHT_EMISSIVE = 0xbb3333;
-
-	var LatLongMarker = (function () {
-	  function LatLongMarker() {
-	    _classCallCheck(this, LatLongMarker);
-
-	    var geometry = new THREE.SphereGeometry(300000 * c.SF, 32, 32);
-	    var material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
-	    var mesh = new THREE.Mesh(geometry, material);
-	    mesh.position.x = c.EARTH_RADIUS;
-	    var pivot = new THREE.Object3D();
-	    pivot.add(mesh);
-
-	    this.rootObject = pivot;
-	    this.mesh = mesh;
-	    this.material = material;
-	  }
-
-	  _createClass(LatLongMarker, [{
-	    key: 'setLatLong',
-	    value: function setLatLong(lat, long) {
-	      if (lat != null) {
-	        lat = lat * DEG_2_RAD;
-	        this.rootObject.rotation.z = lat;
-	      }
-	      if (long != null) {
-	        long = long * DEG_2_RAD;
-	        this.rootObject.rotation.y = long;
-	      }
-	    }
-	  }, {
-	    key: 'setHighlighted',
-	    value: function setHighlighted(v) {
-	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
-	      this.material.emissive.setHex(v ? HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
-	    }
-	  }]);
-
-	  return LatLongMarker;
-	})();
-
-	exports['default'] = LatLongMarker;
-	module.exports = exports['default'];
-
-/***/ },
-/* 200 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	exports.mousePos = mousePos;
-	exports.mousePosNormalized = mousePosNormalized;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	// Mouse position in pixels.
-
-	function mousePos(event, targetElement) {
-	  var $targetElement = (0, _jquery2['default'])(targetElement);
-	  var parentX = $targetElement.offset().left;
-	  var parentY = $targetElement.offset().top;
-	  return { x: event.pageX - parentX, y: event.pageY - parentY };
-	}
-
-	// Normalized mouse position [-1, 1].
-
-	function mousePosNormalized(event, targetElement) {
-	  var pos = mousePos(event, targetElement);
-	  var $targetElement = (0, _jquery2['default'])(targetElement);
-	  var parentWidth = $targetElement.width();
-	  var parentHeight = $targetElement.height();
-	  pos.x = pos.x / parentWidth * 2 - 1;
-	  pos.y = -(pos.y / parentHeight) * 2 + 1;
-	  return pos;
-	}
-
-/***/ },
-/* 201 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _canvasViewJsx = __webpack_require__(190);
-
-	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
-
-	var _viewsOrbitViewJs = __webpack_require__(215);
-
-	var _viewsOrbitViewJs2 = _interopRequireDefault(_viewsOrbitViewJs);
-
-	var OrbitViewComp = (function (_CanvasView) {
-	  function OrbitViewComp(props) {
-	    _classCallCheck(this, OrbitViewComp);
-
-	    _get(Object.getPrototypeOf(OrbitViewComp.prototype), 'constructor', this).call(this, props);
-	    this.ExternalView = _viewsOrbitViewJs2['default'];
-	  }
-
-	  _inherits(OrbitViewComp, _CanvasView);
-
-	  _createClass(OrbitViewComp, [{
-	    key: 'setViewAxis',
-	    value: function setViewAxis(vec) {
-	      this.externalView.setViewAxis(vec);
-	    }
-	  }]);
-
-	  return OrbitViewComp;
-	})(_canvasViewJsx2['default']);
-
-	exports['default'] = OrbitViewComp;
-	module.exports = exports['default'];
-
-/***/ },
-/* 202 */,
-/* 203 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _canvasViewJsx = __webpack_require__(190);
-
-	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
-
-	var _viewsRaysViewJs = __webpack_require__(216);
-
-	var _viewsRaysViewJs2 = _interopRequireDefault(_viewsRaysViewJs);
-
-	var RaysViewComp = (function (_CanvasView) {
-	  function RaysViewComp(props) {
-	    _classCallCheck(this, RaysViewComp);
-
-	    _get(Object.getPrototypeOf(RaysViewComp.prototype), 'constructor', this).call(this, props);
-	    this.ExternalView = _viewsRaysViewJs2['default'];
-	  }
-
-	  _inherits(RaysViewComp, _CanvasView);
-
-	  return RaysViewComp;
-	})(_canvasViewJsx2['default']);
-
-	exports['default'] = RaysViewComp;
-	module.exports = exports['default'];
-
-/***/ },
-/* 204 */,
-/* 205 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(206);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(168)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./view-manager.css", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./view-manager.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 206 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(167)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".view-manager {\n  width: 1200px;\n  height: 800px;\n  margin: 0 auto;\n  position: relative;\n}\n\n.view {\n  position: absolute;\n}\n\n.view.main {\n  width: 800px;\n  height: 800px;\n  left: 0;\n}\n\n.view.small-top {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  top: 0;\n}\n\n.view.small-bottom {\n  width: 400px;\n  height: 400px;\n  right: 0;\n  bottom: 0;\n}\n", ""]);
-
-	// exports
-
 
 /***/ },
 /* 207 */
@@ -35948,13 +36795,106 @@
 /* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var AnimationButton = (function (_React$Component) {
+	  function AnimationButton(props) {
+	    _classCallCheck(this, AnimationButton);
+
+	    _get(Object.getPrototypeOf(AnimationButton.prototype), 'constructor', this).call(this, props);
+	    this.state = {
+	      animationStarted: false
+	    };
+
+	    this.toggleState = this.toggleState.bind(this);
+	    this.animate = this.animate.bind(this);
+	  }
+
+	  _inherits(AnimationButton, _React$Component);
+
+	  _createClass(AnimationButton, [{
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      cancelAnimationFrame(this.rafId);
+	    }
+	  }, {
+	    key: 'toggleState',
+	    value: function toggleState() {
+	      if (!this.state.animationStarted) {
+	        this.startAnimation();
+	      } else {
+	        this.stopAnimation();
+	      }
+	    }
+	  }, {
+	    key: 'startAnimation',
+	    value: function startAnimation() {
+	      this.rafId = requestAnimationFrame(this.animate);
+	      this.setState({ animationStarted: true });
+	    }
+	  }, {
+	    key: 'stopAnimation',
+	    value: function stopAnimation() {
+	      cancelAnimationFrame(this.rafId);
+	      this.prevTimestamp = null;
+	      this.setState({ animationStarted: false });
+	    }
+	  }, {
+	    key: 'animate',
+	    value: function animate(timestamp) {
+	      this.rafId = requestAnimationFrame(this.animate);
+	      var progress = this.prevTimestamp ? timestamp - this.prevTimestamp : 0;
+	      var newValue = this.props.currentValue + progress * this.props.speed;
+	      this.props.onAnimationStep(newValue);
+	      this.prevTimestamp = timestamp;
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var label = this.state.animationStarted ? 'Stop' : 'Play';
+	      return _react2['default'].createElement(
+	        'button',
+	        { onClick: this.toggleState },
+	        label
+	      );
+	    }
+	  }]);
+
+	  return AnimationButton;
+	})(_react2['default'].Component);
+
+	exports['default'] = AnimationButton;
+	module.exports = exports['default'];
+
+/***/ },
+/* 210 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(210);
+	var content = __webpack_require__(211);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(168)(content, {});
+	var update = __webpack_require__(197)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -35971,10 +36911,10 @@
 	}
 
 /***/ },
-/* 210 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(167)();
+	exports = module.exports = __webpack_require__(196)();
 	// imports
 
 
@@ -35985,16 +36925,16 @@
 
 
 /***/ },
-/* 211 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(212);
+	var content = __webpack_require__(213);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(168)(content, {});
+	var update = __webpack_require__(197)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -36011,858 +36951,18 @@
 	}
 
 /***/ },
-/* 212 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(167)();
+	exports = module.exports = __webpack_require__(196)();
 	// imports
 
 
 	// module
-	exports.push([module.id, "html, body, div {\n  line-height: 1;\n  margin: 0;\n  padding: 0;\n}\n\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 18px;\n}\n", ""]);
+	exports.push([module.id, "html, body, div {\n  line-height: 1;\n  margin: 0;\n  padding: 0;\n}\n\nbody {\n  font-family: Helvetica, Arial, sans-serif;\n  font-size: 18px;\n}\n\nbutton {\n  margin-bottom: 2px;\n  vertical-align: middle;\n}\n", ""]);
 
 	// exports
 
-
-/***/ },
-/* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _eventemitter2 = __webpack_require__(195);
-
-	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
-
-	var _baseViewJs = __webpack_require__(214);
-
-	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
-
-	var _modelsCommonModelsJs = __webpack_require__(197);
-
-	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
-
-	var _modelsLatitudeLineJs = __webpack_require__(192);
-
-	var _modelsLatitudeLineJs2 = _interopRequireDefault(_modelsLatitudeLineJs);
-
-	var _modelsLatLongMarkerJs = __webpack_require__(199);
-
-	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var _utilsJs = __webpack_require__(200);
-
-	var DEG_2_RAD = Math.PI / 180;
-	var RAD_2_DEG = 180 / Math.PI;
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true,
-	  sunEarthLine: true,
-	  earthRotation: false,
-	  lat: 0,
-	  long: 0
-	};
-
-	var _default = (function (_BaseView) {
-	  var _class = function _default(parentEl) {
-	    var _this = this;
-
-	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
-
-	    _classCallCheck(this, _class);
-
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'earth-view');
-
-	    // Rotate earth a bit so USA is visible.
-	    this.rotateEarth(2);
-
-	    // Support mouse interaction.
-	    this.raycaster = new THREE.Raycaster();
-	    this.mouse = new THREE.Vector2(-1, -1);
-	    this._enableMousePicking();
-
-	    // Emit events when camera is changed.
-	    this.dispatch = new _eventemitter22['default']();
-	    this.controls.addEventListener('change', function () {
-	      _this.dispatch.emit('camera.change');
-	    });
-	  };
-
-	  _inherits(_class, _BaseView);
-
-	  _createClass(_class, [{
-	    key: 'on',
-
-	    // Delegate #on to EventEmitter object.
-	    value: function on() {
-	      this.dispatch.on.apply(this.dispatch, arguments);
-	    }
-	  }, {
-	    key: 'getCameraEarthVec',
-
-	    // Normalized vector pointing from camera to earth.
-	    value: function getCameraEarthVec() {
-	      return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(timestamp) {
-	      this._animate(timestamp);
-	      this._interactivityHandler();
-	      this.controls.update();
-	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
-	    }
-	  }, {
-	    key: '_updateDay',
-	    value: function _updateDay() {
-	      var oldPos = this.getEarthPosition().clone();
-	      _get(Object.getPrototypeOf(_class.prototype), '_updateDay', this).call(this);
-	      var newPos = this.getEarthPosition().clone();
-
-	      var angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
-	      // Make sure that earth maintains its current rotation.
-	      this.rotateEarth(angleDiff);
-
-	      // Update camera position, rotate it and adjust its orbit length.
-	      this.rotateCam(angleDiff);
-	      var lenRatio = newPos.length() / oldPos.length();
-	      this.camera.position.x *= lenRatio;
-	      this.camera.position.z *= lenRatio;
-	      // Set orbit controls target to new position too.
-	      this.controls.target.copy(newPos);
-	      // Make sure that this call is at the very end, as otherwise 'camera.change' event can be fired before
-	      // earth position is updated. This causes problems when client code tries to call .getCameraEarthVec()
-	      // in handler (as earth position is still outdated).
-	      this.controls.update();
-	    }
-	  }, {
-	    key: '_updateLat',
-	    value: function _updateLat() {
-	      this.latLine.setLat(this.props.lat);
-	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
-	    }
-	  }, {
-	    key: '_updateLong',
-	    value: function _updateLong() {
-	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
-	      this.latLine = new _modelsLatitudeLineJs2['default']();
-	      this.latLongMarker = new _modelsLatLongMarkerJs2['default']();
-	      this.earth.add(this.latLine.rootObject);
-	      this.earth.add(this.latLongMarker.rootObject);
-	    }
-	  }, {
-	    key: '_setInitialCamPos',
-
-	    // Sets camera next to earth at day 0 position.
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = -129000000 / data.SCALE_FACTOR;
-	      this.camera.position.y = 5000000 / data.SCALE_FACTOR;
-	      this.camera.position.z = 25000000 / data.SCALE_FACTOR;
-	    }
-	  }, {
-	    key: '_animate',
-	    value: function _animate(timestamp) {
-	      if (!this.props.earthRotation) {
-	        this._prevFrame = null;
-	        return;
-	      }
-	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
-	      var angleDiff = progress * 0.0001 * Math.PI;
-	      this.rotateEarth(angleDiff);
-	      this._prevFrame = timestamp;
-	    }
-	  }, {
-	    key: '_enableMousePicking',
-	    value: function _enableMousePicking() {
-	      var _this2 = this;
-
-	      var onMouseMove = function onMouseMove(event) {
-	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.renderer.domElement);
-	        _this2.mouse.x = pos.x;
-	        _this2.mouse.y = pos.y;
-	      };
-	      (0, _jquery2['default'])(this.renderer.domElement).on('mousemove touchmove', onMouseMove);
-	    }
-	  }, {
-	    key: '_interactivityHandler',
-	    value: function _interactivityHandler() {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-
-	      if (this._isLatDragging) {
-	        var coords = this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          this.setProps({ lat: coords.lat });
-	          this.dispatch.emit('latitude.change', coords.lat);
-	        }
-	        return;
-	      } else if (this._isLatLongDragging) {
-	        var coords = this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          this.setProps({ lat: coords.lat, long: coords.long });
-	          this.dispatch.emit('latitude.change', coords.lat);
-	          this.dispatch.emit('longitude.change', coords.long);
-	        }
-	        return;
-	      }
-
-	      // Note that order of calls below is very important. First, we need to disable old interaction
-	      // and then enable new one (as they're both modifying camera controls).
-	      if (this._isUserPointing(this.latLongMarker.mesh)) {
-	        this._setLatDraggingEnabled(false);
-	        this._setLatLongDraggingEnabled(true);
-	      } else if (this._isUserPointing(this.latLine.mesh)) {
-	        this._setLatLongDraggingEnabled(false);
-	        this._setLatDraggingEnabled(true);
-	      } else {
-	        this._setLatLongDraggingEnabled(false);
-	        this._setLatDraggingEnabled(false);
-	      }
-	    }
-	  }, {
-	    key: '_isUserPointing',
-	    value: function _isUserPointing(mesh) {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-	      var intersects = this.raycaster.intersectObject(mesh);
-	      if (intersects.length > 0) {
-	        return intersects;
-	      } else {
-	        return false;
-	      }
-	    }
-	  }, {
-	    key: '_setLatDraggingEnabled',
-	    value: function _setLatDraggingEnabled(v) {
-	      var _this3 = this;
-
-	      if (this._isLatDraggingEnabled === v) return; // exit, nothing has changed
-	      this._isLatDraggingEnabled = v;
-	      this.latLongMarker.setHighlighted(v);
-	      this.latLine.setHighlighted(v);
-	      this.controls.noRotate = v;
-	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
-	      if (v) {
-	        var _$elem = (0, _jquery2['default'])(this.renderer.domElement);
-	        _$elem.on('mousedown.latDragging touchstart.latDragging', function () {
-	          _this3._isLatDragging = true;
-	        });
-	        _$elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
-	          _this3._isLatDragging = false;
-	        });
-	      } else {
-	        $elem.off('.latDragging');
-	      }
-	    }
-	  }, {
-	    key: '_setLatLongDraggingEnabled',
-	    value: function _setLatLongDraggingEnabled(v) {
-	      var _this4 = this;
-
-	      if (this._isLatLongDraggingEnabled === v) return; // exit, nothing has changed
-	      this._isLatLongDraggingEnabled = v;
-	      this.latLongMarker.setHighlighted(v);
-	      this.controls.noRotate = v;
-	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
-	      if (v) {
-	        $elem.on('mousedown.latLongDragging touchstart.latLongDragging', function () {
-	          _this4._isLatLongDragging = true;
-	        });
-	        $elem.on('mouseup.latLongDragging touchend.latLongDragging touchcancel.latLongDragging', function () {
-	          _this4._isLatLongDragging = false;
-	        });
-	      } else {
-	        $elem.off('.latLongDragging');
-	      }
-	    }
-	  }, {
-	    key: '_getPointerLatLong',
-
-	    // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
-	    value: function _getPointerLatLong() {
-	      var intersects = this._isUserPointing(this.earth);
-	      if (!intersects) {
-	        // Pointer does not intersect with earth, return null.
-	        return null;
-	      }
-	      // Calculate vector pointing from Earth center to intersection point.
-	      var intVec = intersects[0].point;
-	      intVec.sub(this.getEarthPosition());
-	      // Take into account earth tilt and rotation.
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
-
-	      // Latitude calculations.
-	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
-	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
-	      // .angleTo returns always positive number.
-	      if (intVec.y < 0) lat *= -1;
-	      // Longitude calculations.
-	      var xVec = new THREE.Vector3(1, 0, 0);
-	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
-	      if (intVec.z > 0) long *= -1;
-	      return { lat: lat, long: long };
-	    }
-	  }]);
-
-	  return _class;
-	})(_baseViewJs2['default']);
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 214 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _modelsCommonModelsJs = __webpack_require__(197);
-
-	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
-
-	var _modelsSunEarthLineJs = __webpack_require__(198);
-
-	var _modelsSunEarthLineJs2 = _interopRequireDefault(_modelsSunEarthLineJs);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true,
-	  sunEarthLine: true
-	};
-
-	var _default = (function () {
-	  var _class = function _default(parentEl, props, modelType) {
-	    if (props === undefined) props = DEF_PROPERTIES;
-
-	    _classCallCheck(this, _class);
-
-	    var width = parentEl.clientWidth;
-	    var height = parentEl.clientHeight;
-	    this.scene = new THREE.Scene();
-	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-	    this.renderer.setSize(width, height);
-	    parentEl.appendChild(this.renderer.domElement);
-
-	    // Type is passed to 3D models.
-	    this.type = modelType;
-	    this._initScene();
-	    this._setInitialCamPos();
-
-	    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-	    this.controls.noPan = true;
-	    this.controls.noZoom = true;
-	    this.controls.rotateSpeed = 0.5;
-
-	    this.props = {};
-	    this.setProps(props);
-	  };
-
-	  _createClass(_class, [{
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = _jquery2['default'].extend(this.props);
-	      this.props = _jquery2['default'].extend(this.props, newProps);
-
-	      // Iterate over all the properties and call update handles for ones that have been changed.
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = Object.keys(this.props)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var key = _step.value;
-
-	          if (this.props[key] !== oldProps[key]) {
-	            // Transform property name to name of the function that handles its update. For example:
-	            // earthTilt -> _updateEarthTilt.
-	            var funcName = '_update' + key[0].toUpperCase() + key.substr(1);
-	            if (typeof this[funcName] === 'function') {
-	              this[funcName]();
-	            }
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator['return']) {
-	            _iterator['return']();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'getEarthPosition',
-	    value: function getEarthPosition() {
-	      return this.earthPos.position;
-	    }
-	  }, {
-	    key: 'getEarthTilt',
-	    value: function getEarthTilt() {
-	      return this.earthTiltPivot.rotation.z;
-	    }
-	  }, {
-	    key: 'getEarthRotation',
-	    value: function getEarthRotation() {
-	      return this.earth.rotation.y;
-	    }
-	  }, {
-	    key: 'rotateEarth',
-
-	    // Rotates earth around its own axis.
-	    value: function rotateEarth(angleDiff) {
-	      this.earth.rotation.y += angleDiff;
-	    }
-	  }, {
-	    key: 'rotateCam',
-
-	    // Rotates camera around the sun.
-	    value: function rotateCam(angle) {
-	      this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
-	      this.controls.update();
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(timestamp) {
-	      this.renderer.render(this.scene, this.camera);
-	    }
-	  }, {
-	    key: 'resize',
-
-	    // Resizes canvas to fill its parent.
-	    value: function resize() {
-	      var $parent = (0, _jquery2['default'])(this.renderer.domElement).parent();
-	      var newWidth = $parent.width();
-	      var newHeight = $parent.height();
-	      this.camera.aspect = newWidth / newHeight;
-	      this.camera.updateProjectionMatrix();
-	      this.renderer.setSize(newWidth, newHeight);
-	    }
-	  }, {
-	    key: '_updateDay',
-
-	    // Called automatically when 'day' property is updated.
-	    value: function _updateDay() {
-	      var day = this.props.day;
-	      var pos = data.earthEllipseLocationByDay(day);
-	      this.earthPos.position.copy(pos);
-	      this.sunEarthLine.setEarthPos(pos);
-	    }
-	  }, {
-	    key: '_updateEarthTilt',
-
-	    // Called automatically when 'earthTilt' property is updated.
-	    value: function _updateEarthTilt() {
-	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
-	    }
-	  }, {
-	    key: '_updateSunEarthLine',
-	    value: function _updateSunEarthLine() {
-	      var mesh = this.sunEarthLine.rootObject;
-	      if (this.props.sunEarthLine && !mesh.parent) {
-	        this.scene.add(mesh);
-	      } else if (!this.props.sunEarthLine && mesh.parent) {
-	        this.scene.remove(mesh);
-	      }
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      var basicProps = { type: this.type };
-
-	      this.scene.add(_modelsCommonModelsJs2['default'].stars(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].ambientLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sunLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sunOnlyLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].grid(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
-
-	      this.earth = _modelsCommonModelsJs2['default'].earth(basicProps);
-	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
-	      this.earth.add(this.earthAxis);
-	      this.earthTiltPivot = new THREE.Object3D();
-	      this.earthTiltPivot.add(this.earth);
-	      this.earthPos = new THREE.Object3D();
-	      // Make sure that earth is at day 0 position.
-	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
-	      var pos = data.earthEllipseLocationByDay(0);
-	      this.earthPos.position.copy(pos);
-	      this.earthPos.add(this.earthTiltPivot);
-	      this.scene.add(this.earthPos);
-
-	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
-	      this.scene.add(this.sunEarthLine.rootObject);
-	    }
-	  }, {
-	    key: '_setInitialCamPos',
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = 0;
-	      this.camera.position.y = 0;
-	      this.camera.position.z = 0;
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 215 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _baseViewJs = __webpack_require__(214);
-
-	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
-
-	var _modelsCommonModelsJs = __webpack_require__(197);
-
-	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true,
-	  sunEarthLine: true
-	};
-
-	var _default = (function (_BaseView) {
-	  var _class = function _default(parentEl) {
-	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
-
-	    _classCallCheck(this, _class);
-
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'orbit-view');
-	  };
-
-	  _inherits(_class, _BaseView);
-
-	  _createClass(_class, [{
-	    key: 'setViewAxis',
-	    value: function setViewAxis(vec3) {
-	      this.viewAxis.lookAt(vec3);
-	      this.viewAxis.rotateX(Math.PI * 0.5);
-	    }
-	  }, {
-	    key: '_setInitialCamPos',
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = 0;
-	      this.camera.position.y = 245232773 / data.SCALE_FACTOR;
-	      this.camera.position.z = 228174616 / data.SCALE_FACTOR;
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
-	      this.viewAxis = _modelsCommonModelsJs2['default'].viewAxis();
-	      this.earthPos.add(this.viewAxis);
-	      this._addLabels();
-	    }
-	  }, {
-	    key: '_addLabels',
-	    value: function _addLabels() {
-	      var juneLbl = _modelsCommonModelsJs2['default'].label('Jun');
-	      juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
-	      juneLbl.rotateZ(-Math.PI * 0.5);
-
-	      var decLbl = _modelsCommonModelsJs2['default'].label('Dec');
-	      decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
-	      decLbl.rotateZ(Math.PI * 0.5);
-
-	      var sepLbl = _modelsCommonModelsJs2['default'].label('Sep');
-	      sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
-
-	      var marLbl = _modelsCommonModelsJs2['default'].label('Mar');
-	      marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
-	      marLbl.rotateZ(Math.PI);
-
-	      this.scene.add(juneLbl);
-	      this.scene.add(decLbl);
-	      this.scene.add(sepLbl);
-	      this.scene.add(marLbl);
-	    }
-	  }]);
-
-	  return _class;
-	})(_baseViewJs2['default']);
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 216 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var DARK_BLUE = '#6E9CEF';
-	var LIGHT_BLUE = '#99ADF1';
-	var LIGHT_GREEN = '#84A44A';
-	var DARK_GREEN = '#4C7F19';
-	var RAY_COLOR = '#D8D8AC';
-	var SKY_FRACTION = 0.8;
-
-	var DEFAULT_PROPS = {
-	  day: 0,
-	  lat: 0,
-	  earthTilt: true
-	};
-
-	var RAD_2_DEG = 180 / Math.PI;
-
-	var _default = (function () {
-	  var _class = function _default(parentEl) {
-	    var props = arguments[1] === undefined ? DEFAULT_PROPS : arguments[1];
-
-	    _classCallCheck(this, _class);
-
-	    this.canvas = document.createElement('canvas');
-	    parentEl.appendChild(this.canvas);
-	    this.ctx = this.canvas.getContext('2d');
-
-	    this.props = {};
-	    this.setProps(props);
-
-	    this.resize();
-	  };
-
-	  _createClass(_class, [{
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = _jquery2['default'].extend(this.props);
-	      this.props = _jquery2['default'].extend(this.props, newProps);
-
-	      if (this.props.day !== oldProps.day || this.props.earthTilt !== oldProps.earthTilt || this.props.lat !== oldProps.lat) {
-	        this._drawRaysView();
-	      }
-	    }
-	  }, {
-	    key: 'getNoonSolarAltitude',
-	    value: function getNoonSolarAltitude() {
-	      // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
-	      // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
-	      var tiltAxisZRadians = 2 * Math.PI * (this.props.day - _solarSystemDataJs.DAY_NUMBER_BY_MONTH.JUN) / 365;
-	      // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
-	      // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
-	      var orbitalTiltDegrees = this.props.earthTilt ? _solarSystemDataJs.EARTH_TILT * RAD_2_DEG : 0;
-	      var effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
-	      return 90 - (this.props.lat + effectiveTiltDegrees);
-	    }
-	  }, {
-	    key: 'resize',
-
-	    // Resizes canvas to fill its parent.
-	    value: function resize() {
-	      var $parent = (0, _jquery2['default'])(this.canvas).parent();
-	      this.width = $parent.width();
-	      this.height = $parent.height();
-	      // Update canvas attributes (they can be undefined if canvas size is set using CSS).
-	      this.canvas.width = this.width;
-	      this.canvas.height = this.height;
-	      this._drawRaysView();
-	    }
-	  }, {
-	    key: '_drawRaysView',
-	    value: function _drawRaysView() {
-	      var solarAngle = this.getNoonSolarAltitude();
-	      var width = this.width;
-	      var height = this.height;
-	      var skyHeight = SKY_FRACTION * height;
-	      var groundHeight = height - skyHeight;
-
-	      var skyGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
-	      skyGradient.addColorStop(0, DARK_BLUE);
-	      skyGradient.addColorStop(1, LIGHT_BLUE);
-
-	      this.ctx.fillStyle = skyGradient;
-	      this.ctx.fillRect(0, 0, width, skyHeight);
-
-	      var groundGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
-	      groundGradient.addColorStop(0, LIGHT_GREEN);
-	      groundGradient.addColorStop(1, DARK_GREEN);
-
-	      this.ctx.fillStyle = groundGradient;
-	      this.ctx.fillRect(0, skyHeight, width, groundHeight);
-
-	      if (solarAngle < 0 || solarAngle > 180) {
-	        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-	        this.ctx.fillRect(0, 0, width, height);
-	        return;
-	      }
-
-	      // Longest possible line.
-	      var maxLength = Math.sqrt(skyHeight * skyHeight + width * width);
-	      var NUM_BEAMS = 10;
-	      var x = undefined;
-	      var dx = width / (NUM_BEAMS + 1) / Math.sin(solarAngle * Math.PI / 180);
-	      var lineRotationRadians = (90 - solarAngle) * (Math.PI / 180);
-
-	      this.ctx.strokeStyle = RAY_COLOR;
-	      this.ctx.fillStyle = RAY_COLOR;
-
-	      // Could be +/- Infinity when solarAngle is 0
-	      if (isFinite(dx)) {
-	        for (x = dx / 2; x < width; x += dx) {
-	          this.ctx.save();
-	          this.ctx.translate(x, skyHeight);
-	          this._drawLine(lineRotationRadians, 5, maxLength);
-	          this._drawArrow(lineRotationRadians);
-	          this.ctx.restore();
-	        }
-	      }
-
-	      var dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle * Math.PI / 180));
-	      var yInitial = solarAngle < 90 ? dy / 2 : (x - width) / dx * dy;
-	      var xEdge = solarAngle < 90 ? 0 : width;
-	      if (isFinite(dy)) {
-	        for (var y = skyHeight - yInitial; y > 0; y -= dy) {
-	          this.ctx.save();
-	          this.ctx.translate(xEdge, y);
-	          this._drawLine(lineRotationRadians, 0, maxLength);
-	          this.ctx.restore();
-	        }
-	      }
-	    }
-	  }, {
-	    key: '_drawLine',
-	    value: function _drawLine(angle, lengthAdjustment, maxLength) {
-	      this.ctx.save();
-
-	      this.ctx.rotate(angle);
-	      this.ctx.lineWidth = 4;
-
-	      this.ctx.beginPath();
-	      this.ctx.moveTo(0, -lengthAdjustment);
-	      this.ctx.lineTo(0, -maxLength);
-	      this.ctx.stroke();
-
-	      this.ctx.restore();
-	    }
-	  }, {
-	    key: '_drawArrow',
-	    value: function _drawArrow(angle) {
-	      this.ctx.save();
-
-	      this.ctx.rotate(angle);
-	      this.ctx.lineWidth = 1;
-
-	      this.ctx.beginPath();
-	      this.ctx.moveTo(0, 0);
-	      this.ctx.lineTo(-10, -20);
-	      this.ctx.lineTo(0, -16);
-	      this.ctx.lineTo(10, -20);
-	      this.ctx.lineTo(0, 0);
-	      this.ctx.fill();
-
-	      this.ctx.restore();
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);
