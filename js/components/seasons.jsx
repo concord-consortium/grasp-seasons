@@ -109,43 +109,48 @@ export default class Seasons extends React.Component {
       <div>
         <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange}/>
         <div className='controls' >
-          <div className='form-group'>
-            <label>Main view:</label>
-            <select className='form-control' value={this.state.mainView} onChange={this.mainViewChange}>
-              <option value='earth'>Earth</option>
-              <option value='orbit'>Orbit</option>
-              <option value='rays'>Rays</option>
-            </select>
-            <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>Look at subsolar point</button>
-            <div className='pull-right'>
-              <span> </span>
-              <label><input type='checkbox' name='earthRotation' checked={this.state.sim.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>
-              <span> </span>
-              <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
-              <span> </span>
-              <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
+          <div className='pull-right right-col'>
+            <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
+            <span> </span>
+            <label><input type='checkbox' name='earthRotation' checked={this.state.sim.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>
+            <span> </span>
+            <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
+            <span> </span>
+            <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
+          </div>
+          <div className='left-col'>
+            <div className='form-group'>
+              <div className='pull-right'>
+                <label>Main view:</label>
+                <select className='form-control' value={this.state.mainView} onChange={this.mainViewChange}>
+                  <option value='earth'>Earth</option>
+                  <option value='orbit'>Orbit</option>
+                  <option value='rays'>Rays</option>
+                </select>
+              </div>
+              <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimStep}/>
+              <label className='day'>Day: {this.getFormattedDay()}</label>
+              <div className='day-slider'>
+                <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
+              </div>
             </div>
-          </div>
-          <div className='form-group'>
-            <div><label>Day: {this.getFormattedDay()}</label></div>
-            <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimStep}/>
-            <div className='day-slider'>
-              <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
+            <div className='form-group pull-left'>
+              <label>Select city:</label>
+              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.locationChange}/>
             </div>
-          </div>
-          <div className='form-group'>
-            <label>Select city:</label>
-            <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.locationChange}/>
-          </div>
-          <div className='form-group'>
-            <label>Latitude: {this.getFormattedLat()}</label>
-            <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange}/>
-          </div>
-          <div className='form-group'>
-            <label>Longitude: {this.getFormattedLong()}</label>
-            <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange}/>
+            <div className='long-lat-sliders pull-right'>
+              <div className='form-group'>
+                <label>Latitude: {this.getFormattedLat()}</label>
+                <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange}/>
+              </div>
+              <div className='form-group'>
+                <label>Longitude: {this.getFormattedLong()}</label>
+                <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange}/>
+              </div>
+            </div>
           </div>
         </div>
+        <br className='clear' />
       </div>
     );
   }
