@@ -20584,7 +20584,7 @@
 	  }, {
 	    key: 'dayAnimStep',
 	    value: function dayAnimStep(newDay) {
-	      this.setSimState({ day: newDay });
+	      this.setSimState({ day: newDay % 365 });
 	    }
 	  }, {
 	    key: 'simCheckboxChange',
@@ -22963,7 +22963,6 @@
 	        var camVec = _this.refs.earth.getCameraEarthVec();
 	        _this.refs.orbit.setViewAxis(camVec);
 	      };
-	      window.earth = this.refs.earth;
 	      // Initial sync.
 	      sync();
 	      // When earth view camera is changed, we need to update view axis in the orbit view.

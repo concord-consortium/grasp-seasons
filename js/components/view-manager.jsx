@@ -40,7 +40,6 @@ export default class ViewManager extends React.Component {
       let camVec = this.refs.earth.getCameraEarthVec();
       this.refs.orbit.setViewAxis(camVec);
     };
-    window.earth = this.refs.earth;
     // Initial sync.
     sync();
     // When earth view camera is changed, we need to update view axis in the orbit view.

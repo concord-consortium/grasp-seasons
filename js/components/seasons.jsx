@@ -79,7 +79,7 @@ export default class Seasons extends React.Component {
   }
 
   dayAnimStep(newDay) {
-    this.setSimState({day: newDay});
+    this.setSimState({day: newDay % 365});
   }
 
   simCheckboxChange(event) {
