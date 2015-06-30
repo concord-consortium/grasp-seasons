@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {EARTH_TILT, DAY_NUMBER_BY_MONTH} from './solar-system-data.js';
+import {EARTH_TILT, DAY_NUMBER_BY_MONTH} from '../solar-system-data.js';
 
 const DARK_BLUE = '#6E9CEF';
 const LIGHT_BLUE = '#99ADF1';

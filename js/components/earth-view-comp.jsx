@@ -1,6 +1,6 @@
 import React from 'react';
 import CanvasView from './canvas-view.jsx';
-import EarthView from '../earth-view.js';
+import EarthView from '../views/earth-view.js';
 
 export default class EarthViewComp extends CanvasView {
   constructor(props) {

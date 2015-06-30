@@ -2,11 +2,11 @@ import $ from 'jquery';
 import EventEmitter from 'eventemitter2';
 
 import BaseView from './base-view.js';
-import models from './models/common-models.js';
-import LatitudeLine from './models/latitude-line.js';
-import LatLongMarker from './models/lat-long-marker.js';
-import * as data from './solar-system-data.js';
-import {mousePosNormalized} from './utils.js';
+import models from '../models/common-models.js';
+import LatitudeLine from '../models/latitude-line.js';
+import LatLongMarker from '../models/lat-long-marker.js';
+import * as data from '../solar-system-data.js';
+import {mousePosNormalized} from '../utils.js';
 
 const DEG_2_RAD = Math.PI / 180;
 const RAD_2_DEG = 180 / Math.PI;

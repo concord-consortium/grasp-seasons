@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import models from './models/common-models.js';
-import SunEarthLine from './models/sun-earth-line.js';
-import * as data from './solar-system-data.js';
+import models from '../models/common-models.js';
+import SunEarthLine from '../models/sun-earth-line.js';
+import * as data from '../solar-system-data.js';
 
 const DEF_PROPERTIES = {
   day: 0,

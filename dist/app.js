@@ -34468,16 +34468,16 @@
 
 	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
 
-	var _earthViewJs = __webpack_require__(191);
+	var _viewsEarthViewJs = __webpack_require__(213);
 
-	var _earthViewJs2 = _interopRequireDefault(_earthViewJs);
+	var _viewsEarthViewJs2 = _interopRequireDefault(_viewsEarthViewJs);
 
 	var EarthViewComp = (function (_CanvasView) {
 	  function EarthViewComp(props) {
 	    _classCallCheck(this, EarthViewComp);
 
 	    _get(Object.getPrototypeOf(EarthViewComp.prototype), 'constructor', this).call(this, props);
-	    this.ExternalView = _earthViewJs2['default'];
+	    this.ExternalView = _viewsEarthViewJs2['default'];
 	  }
 
 	  _inherits(EarthViewComp, _CanvasView);
@@ -34590,323 +34590,7 @@
 	/* Canvas will be inserted here by the external view. */
 
 /***/ },
-/* 191 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _eventemitter2 = __webpack_require__(195);
-
-	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
-
-	var _baseViewJs = __webpack_require__(196);
-
-	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
-
-	var _modelsCommonModelsJs = __webpack_require__(197);
-
-	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
-
-	var _modelsLatitudeLineJs = __webpack_require__(192);
-
-	var _modelsLatitudeLineJs2 = _interopRequireDefault(_modelsLatitudeLineJs);
-
-	var _modelsLatLongMarkerJs = __webpack_require__(199);
-
-	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var _utilsJs = __webpack_require__(200);
-
-	var DEG_2_RAD = Math.PI / 180;
-	var RAD_2_DEG = 180 / Math.PI;
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true,
-	  sunEarthLine: true,
-	  earthRotation: false,
-	  lat: 0,
-	  long: 0
-	};
-
-	var _default = (function (_BaseView) {
-	  var _class = function _default(parentEl) {
-	    var _this = this;
-
-	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
-
-	    _classCallCheck(this, _class);
-
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'earth-view');
-
-	    // Rotate earth a bit so USA is visible.
-	    this.rotateEarth(2);
-
-	    // Support mouse interaction.
-	    this.raycaster = new THREE.Raycaster();
-	    this.mouse = new THREE.Vector2(-1, -1);
-	    this._enableMousePicking();
-
-	    // Emit events when camera is changed.
-	    this.dispatch = new _eventemitter22['default']();
-	    this.controls.addEventListener('change', function () {
-	      _this.dispatch.emit('camera.change');
-	    });
-	  };
-
-	  _inherits(_class, _BaseView);
-
-	  _createClass(_class, [{
-	    key: 'on',
-
-	    // Delegate #on to EventEmitter object.
-	    value: function on() {
-	      this.dispatch.on.apply(this.dispatch, arguments);
-	    }
-	  }, {
-	    key: 'getCameraEarthVec',
-
-	    // Normalized vector pointing from camera to earth.
-	    value: function getCameraEarthVec() {
-	      return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(timestamp) {
-	      this._animate(timestamp);
-	      this._interactivityHandler();
-	      this.controls.update();
-	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
-	    }
-	  }, {
-	    key: '_updateDay',
-	    value: function _updateDay() {
-	      var oldPos = this.getEarthPosition().clone();
-	      _get(Object.getPrototypeOf(_class.prototype), '_updateDay', this).call(this);
-	      var newPos = this.getEarthPosition().clone();
-
-	      var angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
-	      // Make sure that earth maintains its current rotation.
-	      this.rotateEarth(angleDiff);
-
-	      // Update camera position, rotate it and adjust its orbit length.
-	      this.rotateCam(angleDiff);
-	      var lenRatio = newPos.length() / oldPos.length();
-	      this.camera.position.x *= lenRatio;
-	      this.camera.position.z *= lenRatio;
-	      // Set orbit controls target to new position too.
-	      this.controls.target.copy(newPos);
-	      // Make sure that this call is at the very end, as otherwise 'camera.change' event can be fired before
-	      // earth position is updated. This causes problems when client code tries to call .getCameraEarthVec()
-	      // in handler (as earth position is still outdated).
-	      this.controls.update();
-	    }
-	  }, {
-	    key: '_updateLat',
-	    value: function _updateLat() {
-	      this.latLine.setLat(this.props.lat);
-	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
-	    }
-	  }, {
-	    key: '_updateLong',
-	    value: function _updateLong() {
-	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
-	      this.latLine = new _modelsLatitudeLineJs2['default']();
-	      this.latLongMarker = new _modelsLatLongMarkerJs2['default']();
-	      this.earth.add(this.latLine.rootObject);
-	      this.earth.add(this.latLongMarker.rootObject);
-	    }
-	  }, {
-	    key: '_setInitialCamPos',
-
-	    // Sets camera next to earth at day 0 position.
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = -129000000 / data.SCALE_FACTOR;
-	      this.camera.position.y = 5000000 / data.SCALE_FACTOR;
-	      this.camera.position.z = 25000000 / data.SCALE_FACTOR;
-	    }
-	  }, {
-	    key: '_animate',
-	    value: function _animate(timestamp) {
-	      if (!this.props.earthRotation) {
-	        this._prevFrame = null;
-	        return;
-	      }
-	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
-	      var angleDiff = progress * 0.0001 * Math.PI;
-	      this.rotateEarth(angleDiff);
-	      this._prevFrame = timestamp;
-	    }
-	  }, {
-	    key: '_enableMousePicking',
-	    value: function _enableMousePicking() {
-	      var _this2 = this;
-
-	      var onMouseMove = function onMouseMove(event) {
-	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.renderer.domElement);
-	        _this2.mouse.x = pos.x;
-	        _this2.mouse.y = pos.y;
-	      };
-	      (0, _jquery2['default'])(this.renderer.domElement).on('mousemove touchmove', onMouseMove);
-	    }
-	  }, {
-	    key: '_interactivityHandler',
-	    value: function _interactivityHandler() {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-
-	      if (this._isLatDragging) {
-	        var coords = this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          this.setProps({ lat: coords.lat });
-	          this.dispatch.emit('latitude.change', coords.lat);
-	        }
-	        return;
-	      } else if (this._isLatLongDragging) {
-	        var coords = this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          this.setProps({ lat: coords.lat, long: coords.long });
-	          this.dispatch.emit('latitude.change', coords.lat);
-	          this.dispatch.emit('longitude.change', coords.long);
-	        }
-	        return;
-	      }
-
-	      // Note that order of calls below is very important. First, we need to disable old interaction
-	      // and then enable new one (as they're both modifying camera controls).
-	      if (this._isUserPointing(this.latLongMarker.mesh)) {
-	        this._setLatDraggingEnabled(false);
-	        this._setLatLongDraggingEnabled(true);
-	      } else if (this._isUserPointing(this.latLine.mesh)) {
-	        this._setLatLongDraggingEnabled(false);
-	        this._setLatDraggingEnabled(true);
-	      } else {
-	        this._setLatLongDraggingEnabled(false);
-	        this._setLatDraggingEnabled(false);
-	      }
-	    }
-	  }, {
-	    key: '_isUserPointing',
-	    value: function _isUserPointing(mesh) {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-	      var intersects = this.raycaster.intersectObject(mesh);
-	      if (intersects.length > 0) {
-	        return intersects;
-	      } else {
-	        return false;
-	      }
-	    }
-	  }, {
-	    key: '_setLatDraggingEnabled',
-	    value: function _setLatDraggingEnabled(v) {
-	      var _this3 = this;
-
-	      if (this._isLatDraggingEnabled === v) return; // exit, nothing has changed
-	      this._isLatDraggingEnabled = v;
-	      this.latLongMarker.setHighlighted(v);
-	      this.latLine.setHighlighted(v);
-	      this.controls.noRotate = v;
-	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
-	      if (v) {
-	        var _$elem = (0, _jquery2['default'])(this.renderer.domElement);
-	        _$elem.on('mousedown.latDragging touchstart.latDragging', function () {
-	          _this3._isLatDragging = true;
-	        });
-	        _$elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
-	          _this3._isLatDragging = false;
-	        });
-	      } else {
-	        $elem.off('.latDragging');
-	      }
-	    }
-	  }, {
-	    key: '_setLatLongDraggingEnabled',
-	    value: function _setLatLongDraggingEnabled(v) {
-	      var _this4 = this;
-
-	      if (this._isLatLongDraggingEnabled === v) return; // exit, nothing has changed
-	      this._isLatLongDraggingEnabled = v;
-	      this.latLongMarker.setHighlighted(v);
-	      this.controls.noRotate = v;
-	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
-	      if (v) {
-	        $elem.on('mousedown.latLongDragging touchstart.latLongDragging', function () {
-	          _this4._isLatLongDragging = true;
-	        });
-	        $elem.on('mouseup.latLongDragging touchend.latLongDragging touchcancel.latLongDragging', function () {
-	          _this4._isLatLongDragging = false;
-	        });
-	      } else {
-	        $elem.off('.latLongDragging');
-	      }
-	    }
-	  }, {
-	    key: '_getPointerLatLong',
-
-	    // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
-	    value: function _getPointerLatLong() {
-	      var intersects = this._isUserPointing(this.earth);
-	      if (!intersects) {
-	        // Pointer does not intersect with earth, return null.
-	        return null;
-	      }
-	      // Calculate vector pointing from Earth center to intersection point.
-	      var intVec = intersects[0].point;
-	      intVec.sub(this.getEarthPosition());
-	      // Take into account earth tilt and rotation.
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
-
-	      // Latitude calculations.
-	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
-	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
-	      // .angleTo returns always positive number.
-	      if (intVec.y < 0) lat *= -1;
-	      // Longitude calculations.
-	      var xVec = new THREE.Vector3(1, 0, 0);
-	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
-	      if (intVec.z > 0) long *= -1;
-	      return { lat: lat, long: long };
-	    }
-	  }]);
-
-	  return _class;
-	})(_baseViewJs2['default']);
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
+/* 191 */,
 /* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -35634,231 +35318,7 @@
 
 
 /***/ },
-/* 196 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _modelsCommonModelsJs = __webpack_require__(197);
-
-	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
-
-	var _modelsSunEarthLineJs = __webpack_require__(198);
-
-	var _modelsSunEarthLineJs2 = _interopRequireDefault(_modelsSunEarthLineJs);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true,
-	  sunEarthLine: true
-	};
-
-	var _default = (function () {
-	  var _class = function _default(parentEl, props, modelType) {
-	    if (props === undefined) props = DEF_PROPERTIES;
-
-	    _classCallCheck(this, _class);
-
-	    var width = parentEl.clientWidth;
-	    var height = parentEl.clientHeight;
-	    this.scene = new THREE.Scene();
-	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-	    this.renderer.setSize(width, height);
-	    parentEl.appendChild(this.renderer.domElement);
-
-	    // Type is passed to 3D models.
-	    this.type = modelType;
-	    this._initScene();
-	    this._setInitialCamPos();
-
-	    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-	    this.controls.noPan = true;
-	    this.controls.noZoom = true;
-	    this.controls.rotateSpeed = 0.5;
-
-	    this.props = {};
-	    this.setProps(props);
-	  };
-
-	  _createClass(_class, [{
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = _jquery2['default'].extend(this.props);
-	      this.props = _jquery2['default'].extend(this.props, newProps);
-
-	      // Iterate over all the properties and call update handles for ones that have been changed.
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = Object.keys(this.props)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var key = _step.value;
-
-	          if (this.props[key] !== oldProps[key]) {
-	            // Transform property name to name of the function that handles its update. For example:
-	            // earthTilt -> _updateEarthTilt.
-	            var funcName = '_update' + key[0].toUpperCase() + key.substr(1);
-	            if (typeof this[funcName] === 'function') {
-	              this[funcName]();
-	            }
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator['return']) {
-	            _iterator['return']();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'getEarthPosition',
-	    value: function getEarthPosition() {
-	      return this.earthPos.position;
-	    }
-	  }, {
-	    key: 'getEarthTilt',
-	    value: function getEarthTilt() {
-	      return this.earthTiltPivot.rotation.z;
-	    }
-	  }, {
-	    key: 'getEarthRotation',
-	    value: function getEarthRotation() {
-	      return this.earth.rotation.y;
-	    }
-	  }, {
-	    key: 'rotateEarth',
-
-	    // Rotates earth around its own axis.
-	    value: function rotateEarth(angleDiff) {
-	      this.earth.rotation.y += angleDiff;
-	    }
-	  }, {
-	    key: 'rotateCam',
-
-	    // Rotates camera around the sun.
-	    value: function rotateCam(angle) {
-	      this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
-	      this.controls.update();
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render(timestamp) {
-	      this.renderer.render(this.scene, this.camera);
-	    }
-	  }, {
-	    key: 'resize',
-
-	    // Resizes canvas to fill its parent.
-	    value: function resize() {
-	      var $parent = (0, _jquery2['default'])(this.renderer.domElement).parent();
-	      var newWidth = $parent.width();
-	      var newHeight = $parent.height();
-	      this.camera.aspect = newWidth / newHeight;
-	      this.camera.updateProjectionMatrix();
-	      this.renderer.setSize(newWidth, newHeight);
-	    }
-	  }, {
-	    key: '_updateDay',
-
-	    // Called automatically when 'day' property is updated.
-	    value: function _updateDay() {
-	      var day = this.props.day;
-	      var pos = data.earthEllipseLocationByDay(day);
-	      this.earthPos.position.copy(pos);
-	      this.sunEarthLine.setEarthPos(pos);
-	    }
-	  }, {
-	    key: '_updateEarthTilt',
-
-	    // Called automatically when 'earthTilt' property is updated.
-	    value: function _updateEarthTilt() {
-	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
-	    }
-	  }, {
-	    key: '_updateSunEarthLine',
-	    value: function _updateSunEarthLine() {
-	      var mesh = this.sunEarthLine.rootObject;
-	      if (this.props.sunEarthLine && !mesh.parent) {
-	        this.scene.add(mesh);
-	      } else if (!this.props.sunEarthLine && mesh.parent) {
-	        this.scene.remove(mesh);
-	      }
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      var basicProps = { type: this.type };
-
-	      this.scene.add(_modelsCommonModelsJs2['default'].stars(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].ambientLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sunLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sunOnlyLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].grid(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
-
-	      this.earth = _modelsCommonModelsJs2['default'].earth(basicProps);
-	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
-	      this.earth.add(this.earthAxis);
-	      this.earthTiltPivot = new THREE.Object3D();
-	      this.earthTiltPivot.add(this.earth);
-	      this.earthPos = new THREE.Object3D();
-	      // Make sure that earth is at day 0 position.
-	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
-	      var pos = data.earthEllipseLocationByDay(0);
-	      this.earthPos.position.copy(pos);
-	      this.earthPos.add(this.earthTiltPivot);
-	      this.scene.add(this.earthPos);
-
-	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
-	      this.scene.add(this.sunEarthLine.rootObject);
-	    }
-	  }, {
-	    key: '_setInitialCamPos',
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = 0;
-	      this.camera.position.y = 0;
-	      this.camera.position.z = 0;
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
+/* 196 */,
 /* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -36249,16 +35709,16 @@
 
 	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
 
-	var _orbitViewJs = __webpack_require__(202);
+	var _viewsOrbitViewJs = __webpack_require__(215);
 
-	var _orbitViewJs2 = _interopRequireDefault(_orbitViewJs);
+	var _viewsOrbitViewJs2 = _interopRequireDefault(_viewsOrbitViewJs);
 
 	var OrbitViewComp = (function (_CanvasView) {
 	  function OrbitViewComp(props) {
 	    _classCallCheck(this, OrbitViewComp);
 
 	    _get(Object.getPrototypeOf(OrbitViewComp.prototype), 'constructor', this).call(this, props);
-	    this.ExternalView = _orbitViewJs2['default'];
+	    this.ExternalView = _viewsOrbitViewJs2['default'];
 	  }
 
 	  _inherits(OrbitViewComp, _CanvasView);
@@ -36277,113 +35737,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 202 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _baseViewJs = __webpack_require__(196);
-
-	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
-
-	var _modelsCommonModelsJs = __webpack_require__(197);
-
-	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true,
-	  sunEarthLine: true
-	};
-
-	var _default = (function (_BaseView) {
-	  var _class = function _default(parentEl) {
-	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
-
-	    _classCallCheck(this, _class);
-
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'orbit-view');
-	  };
-
-	  _inherits(_class, _BaseView);
-
-	  _createClass(_class, [{
-	    key: 'setViewAxis',
-	    value: function setViewAxis(vec3) {
-	      this.viewAxis.lookAt(vec3);
-	      this.viewAxis.rotateX(Math.PI * 0.5);
-	    }
-	  }, {
-	    key: '_setInitialCamPos',
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = 0;
-	      this.camera.position.y = 245232773 / data.SCALE_FACTOR;
-	      this.camera.position.z = 228174616 / data.SCALE_FACTOR;
-	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
-	      this.viewAxis = _modelsCommonModelsJs2['default'].viewAxis();
-	      this.earthPos.add(this.viewAxis);
-	      this._addLabels();
-	    }
-	  }, {
-	    key: '_addLabels',
-	    value: function _addLabels() {
-	      var juneLbl = _modelsCommonModelsJs2['default'].label('Jun');
-	      juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
-	      juneLbl.rotateZ(-Math.PI * 0.5);
-
-	      var decLbl = _modelsCommonModelsJs2['default'].label('Dec');
-	      decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
-	      decLbl.rotateZ(Math.PI * 0.5);
-
-	      var sepLbl = _modelsCommonModelsJs2['default'].label('Sep');
-	      sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
-
-	      var marLbl = _modelsCommonModelsJs2['default'].label('Mar');
-	      marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
-	      marLbl.rotateZ(Math.PI);
-
-	      this.scene.add(juneLbl);
-	      this.scene.add(decLbl);
-	      this.scene.add(sepLbl);
-	      this.scene.add(marLbl);
-	    }
-	  }]);
-
-	  return _class;
-	})(_baseViewJs2['default']);
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
+/* 202 */,
 /* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -36409,16 +35763,16 @@
 
 	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
 
-	var _raysViewJs = __webpack_require__(204);
+	var _viewsRaysViewJs = __webpack_require__(216);
 
-	var _raysViewJs2 = _interopRequireDefault(_raysViewJs);
+	var _viewsRaysViewJs2 = _interopRequireDefault(_viewsRaysViewJs);
 
 	var RaysViewComp = (function (_CanvasView) {
 	  function RaysViewComp(props) {
 	    _classCallCheck(this, RaysViewComp);
 
 	    _get(Object.getPrototypeOf(RaysViewComp.prototype), 'constructor', this).call(this, props);
-	    this.ExternalView = _raysViewJs2['default'];
+	    this.ExternalView = _viewsRaysViewJs2['default'];
 	  }
 
 	  _inherits(RaysViewComp, _CanvasView);
@@ -36430,197 +35784,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 204 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var _jquery = __webpack_require__(159);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _solarSystemDataJs = __webpack_require__(194);
-
-	var DARK_BLUE = '#6E9CEF';
-	var LIGHT_BLUE = '#99ADF1';
-	var LIGHT_GREEN = '#84A44A';
-	var DARK_GREEN = '#4C7F19';
-	var RAY_COLOR = '#D8D8AC';
-	var SKY_FRACTION = 0.8;
-
-	var DEFAULT_PROPS = {
-	  day: 0,
-	  lat: 0,
-	  earthTilt: true
-	};
-
-	var RAD_2_DEG = 180 / Math.PI;
-
-	var _default = (function () {
-	  var _class = function _default(parentEl) {
-	    var props = arguments[1] === undefined ? DEFAULT_PROPS : arguments[1];
-
-	    _classCallCheck(this, _class);
-
-	    this.canvas = document.createElement('canvas');
-	    parentEl.appendChild(this.canvas);
-	    this.ctx = this.canvas.getContext('2d');
-
-	    this.props = {};
-	    this.setProps(props);
-
-	    this.resize();
-	  };
-
-	  _createClass(_class, [{
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = _jquery2['default'].extend(this.props);
-	      this.props = _jquery2['default'].extend(this.props, newProps);
-
-	      if (this.props.day !== oldProps.day || this.props.earthTilt !== oldProps.earthTilt || this.props.lat !== oldProps.lat) {
-	        this._drawRaysView();
-	      }
-	    }
-	  }, {
-	    key: 'getNoonSolarAltitude',
-	    value: function getNoonSolarAltitude() {
-	      // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
-	      // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
-	      var tiltAxisZRadians = 2 * Math.PI * (this.props.day - _solarSystemDataJs.DAY_NUMBER_BY_MONTH.JUN) / 365;
-	      // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
-	      // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
-	      var orbitalTiltDegrees = this.props.earthTilt ? _solarSystemDataJs.EARTH_TILT * RAD_2_DEG : 0;
-	      var effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
-	      return 90 - (this.props.lat + effectiveTiltDegrees);
-	    }
-	  }, {
-	    key: 'resize',
-
-	    // Resizes canvas to fill its parent.
-	    value: function resize() {
-	      var $parent = (0, _jquery2['default'])(this.canvas).parent();
-	      this.width = $parent.width();
-	      this.height = $parent.height();
-	      // Update canvas attributes (they can be undefined if canvas size is set using CSS).
-	      this.canvas.width = this.width;
-	      this.canvas.height = this.height;
-	      this._drawRaysView();
-	    }
-	  }, {
-	    key: '_drawRaysView',
-	    value: function _drawRaysView() {
-	      var solarAngle = this.getNoonSolarAltitude();
-	      var width = this.width;
-	      var height = this.height;
-	      var skyHeight = SKY_FRACTION * height;
-	      var groundHeight = height - skyHeight;
-
-	      var skyGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
-	      skyGradient.addColorStop(0, DARK_BLUE);
-	      skyGradient.addColorStop(1, LIGHT_BLUE);
-
-	      this.ctx.fillStyle = skyGradient;
-	      this.ctx.fillRect(0, 0, width, skyHeight);
-
-	      var groundGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
-	      groundGradient.addColorStop(0, LIGHT_GREEN);
-	      groundGradient.addColorStop(1, DARK_GREEN);
-
-	      this.ctx.fillStyle = groundGradient;
-	      this.ctx.fillRect(0, skyHeight, width, groundHeight);
-
-	      if (solarAngle < 0 || solarAngle > 180) {
-	        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-	        this.ctx.fillRect(0, 0, width, height);
-	        return;
-	      }
-
-	      // Longest possible line.
-	      var maxLength = Math.sqrt(skyHeight * skyHeight + width * width);
-	      var NUM_BEAMS = 10;
-	      var x = undefined;
-	      var dx = width / (NUM_BEAMS + 1) / Math.sin(solarAngle * Math.PI / 180);
-	      var lineRotationRadians = (90 - solarAngle) * (Math.PI / 180);
-
-	      this.ctx.strokeStyle = RAY_COLOR;
-	      this.ctx.fillStyle = RAY_COLOR;
-
-	      // Could be +/- Infinity when solarAngle is 0
-	      if (isFinite(dx)) {
-	        for (x = dx / 2; x < width; x += dx) {
-	          this.ctx.save();
-	          this.ctx.translate(x, skyHeight);
-	          this._drawLine(lineRotationRadians, 5, maxLength);
-	          this._drawArrow(lineRotationRadians);
-	          this.ctx.restore();
-	        }
-	      }
-
-	      var dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle * Math.PI / 180));
-	      var yInitial = solarAngle < 90 ? dy / 2 : (x - width) / dx * dy;
-	      var xEdge = solarAngle < 90 ? 0 : width;
-	      if (isFinite(dy)) {
-	        for (var y = skyHeight - yInitial; y > 0; y -= dy) {
-	          this.ctx.save();
-	          this.ctx.translate(xEdge, y);
-	          this._drawLine(lineRotationRadians, 0, maxLength);
-	          this.ctx.restore();
-	        }
-	      }
-	    }
-	  }, {
-	    key: '_drawLine',
-	    value: function _drawLine(angle, lengthAdjustment, maxLength) {
-	      this.ctx.save();
-
-	      this.ctx.rotate(angle);
-	      this.ctx.lineWidth = 4;
-
-	      this.ctx.beginPath();
-	      this.ctx.moveTo(0, -lengthAdjustment);
-	      this.ctx.lineTo(0, -maxLength);
-	      this.ctx.stroke();
-
-	      this.ctx.restore();
-	    }
-	  }, {
-	    key: '_drawArrow',
-	    value: function _drawArrow(angle) {
-	      this.ctx.save();
-
-	      this.ctx.rotate(angle);
-	      this.ctx.lineWidth = 1;
-
-	      this.ctx.beginPath();
-	      this.ctx.moveTo(0, 0);
-	      this.ctx.lineTo(-10, -20);
-	      this.ctx.lineTo(0, -16);
-	      this.ctx.lineTo(10, -20);
-	      this.ctx.lineTo(0, 0);
-	      this.ctx.fill();
-
-	      this.ctx.restore();
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
+/* 204 */,
 /* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -36859,6 +36023,846 @@
 
 	// exports
 
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _jquery = __webpack_require__(159);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _eventemitter2 = __webpack_require__(195);
+
+	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
+
+	var _baseViewJs = __webpack_require__(214);
+
+	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
+
+	var _modelsCommonModelsJs = __webpack_require__(197);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _modelsLatitudeLineJs = __webpack_require__(192);
+
+	var _modelsLatitudeLineJs2 = _interopRequireDefault(_modelsLatitudeLineJs);
+
+	var _modelsLatLongMarkerJs = __webpack_require__(199);
+
+	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
+
+	var _solarSystemDataJs = __webpack_require__(194);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var _utilsJs = __webpack_require__(200);
+
+	var DEG_2_RAD = Math.PI / 180;
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  sunEarthLine: true,
+	  earthRotation: false,
+	  lat: 0,
+	  long: 0
+	};
+
+	var _default = (function (_BaseView) {
+	  var _class = function _default(parentEl) {
+	    var _this = this;
+
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'earth-view');
+
+	    // Rotate earth a bit so USA is visible.
+	    this.rotateEarth(2);
+
+	    // Support mouse interaction.
+	    this.raycaster = new THREE.Raycaster();
+	    this.mouse = new THREE.Vector2(-1, -1);
+	    this._enableMousePicking();
+
+	    // Emit events when camera is changed.
+	    this.dispatch = new _eventemitter22['default']();
+	    this.controls.addEventListener('change', function () {
+	      _this.dispatch.emit('camera.change');
+	    });
+	  };
+
+	  _inherits(_class, _BaseView);
+
+	  _createClass(_class, [{
+	    key: 'on',
+
+	    // Delegate #on to EventEmitter object.
+	    value: function on() {
+	      this.dispatch.on.apply(this.dispatch, arguments);
+	    }
+	  }, {
+	    key: 'getCameraEarthVec',
+
+	    // Normalized vector pointing from camera to earth.
+	    value: function getCameraEarthVec() {
+	      return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(timestamp) {
+	      this._animate(timestamp);
+	      this._interactivityHandler();
+	      this.controls.update();
+	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
+	    }
+	  }, {
+	    key: '_updateDay',
+	    value: function _updateDay() {
+	      var oldPos = this.getEarthPosition().clone();
+	      _get(Object.getPrototypeOf(_class.prototype), '_updateDay', this).call(this);
+	      var newPos = this.getEarthPosition().clone();
+
+	      var angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
+	      // Make sure that earth maintains its current rotation.
+	      this.rotateEarth(angleDiff);
+
+	      // Update camera position, rotate it and adjust its orbit length.
+	      this.rotateCam(angleDiff);
+	      var lenRatio = newPos.length() / oldPos.length();
+	      this.camera.position.x *= lenRatio;
+	      this.camera.position.z *= lenRatio;
+	      // Set orbit controls target to new position too.
+	      this.controls.target.copy(newPos);
+	      // Make sure that this call is at the very end, as otherwise 'camera.change' event can be fired before
+	      // earth position is updated. This causes problems when client code tries to call .getCameraEarthVec()
+	      // in handler (as earth position is still outdated).
+	      this.controls.update();
+	    }
+	  }, {
+	    key: '_updateLat',
+	    value: function _updateLat() {
+	      this.latLine.setLat(this.props.lat);
+	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+	    }
+	  }, {
+	    key: '_updateLong',
+	    value: function _updateLong() {
+	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
+	      this.latLine = new _modelsLatitudeLineJs2['default']();
+	      this.latLongMarker = new _modelsLatLongMarkerJs2['default']();
+	      this.earth.add(this.latLine.rootObject);
+	      this.earth.add(this.latLongMarker.rootObject);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+
+	    // Sets camera next to earth at day 0 position.
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = -129000000 / data.SCALE_FACTOR;
+	      this.camera.position.y = 5000000 / data.SCALE_FACTOR;
+	      this.camera.position.z = 25000000 / data.SCALE_FACTOR;
+	    }
+	  }, {
+	    key: '_animate',
+	    value: function _animate(timestamp) {
+	      if (!this.props.earthRotation) {
+	        this._prevFrame = null;
+	        return;
+	      }
+	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
+	      var angleDiff = progress * 0.0001 * Math.PI;
+	      this.rotateEarth(angleDiff);
+	      this._prevFrame = timestamp;
+	    }
+	  }, {
+	    key: '_enableMousePicking',
+	    value: function _enableMousePicking() {
+	      var _this2 = this;
+
+	      var onMouseMove = function onMouseMove(event) {
+	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.renderer.domElement);
+	        _this2.mouse.x = pos.x;
+	        _this2.mouse.y = pos.y;
+	      };
+	      (0, _jquery2['default'])(this.renderer.domElement).on('mousemove touchmove', onMouseMove);
+	    }
+	  }, {
+	    key: '_interactivityHandler',
+	    value: function _interactivityHandler() {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+	      if (this._isLatDragging) {
+	        var coords = this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          this.setProps({ lat: coords.lat });
+	          this.dispatch.emit('latitude.change', coords.lat);
+	        }
+	        return;
+	      } else if (this._isLatLongDragging) {
+	        var coords = this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          this.setProps({ lat: coords.lat, long: coords.long });
+	          this.dispatch.emit('latitude.change', coords.lat);
+	          this.dispatch.emit('longitude.change', coords.long);
+	        }
+	        return;
+	      }
+
+	      // Note that order of calls below is very important. First, we need to disable old interaction
+	      // and then enable new one (as they're both modifying camera controls).
+	      if (this._isUserPointing(this.latLongMarker.mesh)) {
+	        this._setLatDraggingEnabled(false);
+	        this._setLatLongDraggingEnabled(true);
+	      } else if (this._isUserPointing(this.latLine.mesh)) {
+	        this._setLatLongDraggingEnabled(false);
+	        this._setLatDraggingEnabled(true);
+	      } else {
+	        this._setLatLongDraggingEnabled(false);
+	        this._setLatDraggingEnabled(false);
+	      }
+	    }
+	  }, {
+	    key: '_isUserPointing',
+	    value: function _isUserPointing(mesh) {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+	      var intersects = this.raycaster.intersectObject(mesh);
+	      if (intersects.length > 0) {
+	        return intersects;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: '_setLatDraggingEnabled',
+	    value: function _setLatDraggingEnabled(v) {
+	      var _this3 = this;
+
+	      if (this._isLatDraggingEnabled === v) return; // exit, nothing has changed
+	      this._isLatDraggingEnabled = v;
+	      this.latLongMarker.setHighlighted(v);
+	      this.latLine.setHighlighted(v);
+	      this.controls.noRotate = v;
+	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
+	      if (v) {
+	        var _$elem = (0, _jquery2['default'])(this.renderer.domElement);
+	        _$elem.on('mousedown.latDragging touchstart.latDragging', function () {
+	          _this3._isLatDragging = true;
+	        });
+	        _$elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
+	          _this3._isLatDragging = false;
+	        });
+	      } else {
+	        $elem.off('.latDragging');
+	      }
+	    }
+	  }, {
+	    key: '_setLatLongDraggingEnabled',
+	    value: function _setLatLongDraggingEnabled(v) {
+	      var _this4 = this;
+
+	      if (this._isLatLongDraggingEnabled === v) return; // exit, nothing has changed
+	      this._isLatLongDraggingEnabled = v;
+	      this.latLongMarker.setHighlighted(v);
+	      this.controls.noRotate = v;
+	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
+	      if (v) {
+	        $elem.on('mousedown.latLongDragging touchstart.latLongDragging', function () {
+	          _this4._isLatLongDragging = true;
+	        });
+	        $elem.on('mouseup.latLongDragging touchend.latLongDragging touchcancel.latLongDragging', function () {
+	          _this4._isLatLongDragging = false;
+	        });
+	      } else {
+	        $elem.off('.latLongDragging');
+	      }
+	    }
+	  }, {
+	    key: '_getPointerLatLong',
+
+	    // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
+	    value: function _getPointerLatLong() {
+	      var intersects = this._isUserPointing(this.earth);
+	      if (!intersects) {
+	        // Pointer does not intersect with earth, return null.
+	        return null;
+	      }
+	      // Calculate vector pointing from Earth center to intersection point.
+	      var intVec = intersects[0].point;
+	      intVec.sub(this.getEarthPosition());
+	      // Take into account earth tilt and rotation.
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
+
+	      // Latitude calculations.
+	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
+	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
+	      // .angleTo returns always positive number.
+	      if (intVec.y < 0) lat *= -1;
+	      // Longitude calculations.
+	      var xVec = new THREE.Vector3(1, 0, 0);
+	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
+	      if (intVec.z > 0) long *= -1;
+	      return { lat: lat, long: long };
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseViewJs2['default']);
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 214 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _jquery = __webpack_require__(159);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _modelsCommonModelsJs = __webpack_require__(197);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _modelsSunEarthLineJs = __webpack_require__(198);
+
+	var _modelsSunEarthLineJs2 = _interopRequireDefault(_modelsSunEarthLineJs);
+
+	var _solarSystemDataJs = __webpack_require__(194);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  sunEarthLine: true
+	};
+
+	var _default = (function () {
+	  var _class = function _default(parentEl, props, modelType) {
+	    if (props === undefined) props = DEF_PROPERTIES;
+
+	    _classCallCheck(this, _class);
+
+	    var width = parentEl.clientWidth;
+	    var height = parentEl.clientHeight;
+	    this.scene = new THREE.Scene();
+	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
+	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+	    this.renderer.setSize(width, height);
+	    parentEl.appendChild(this.renderer.domElement);
+
+	    // Type is passed to 3D models.
+	    this.type = modelType;
+	    this._initScene();
+	    this._setInitialCamPos();
+
+	    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+	    this.controls.noPan = true;
+	    this.controls.noZoom = true;
+	    this.controls.rotateSpeed = 0.5;
+
+	    this.props = {};
+	    this.setProps(props);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = _jquery2['default'].extend(this.props);
+	      this.props = _jquery2['default'].extend(this.props, newProps);
+
+	      // Iterate over all the properties and call update handles for ones that have been changed.
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+
+	      try {
+	        for (var _iterator = Object.keys(this.props)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var key = _step.value;
+
+	          if (this.props[key] !== oldProps[key]) {
+	            // Transform property name to name of the function that handles its update. For example:
+	            // earthTilt -> _updateEarthTilt.
+	            var funcName = '_update' + key[0].toUpperCase() + key.substr(1);
+	            if (typeof this[funcName] === 'function') {
+	              this[funcName]();
+	            }
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator['return']) {
+	            _iterator['return']();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'getEarthPosition',
+	    value: function getEarthPosition() {
+	      return this.earthPos.position;
+	    }
+	  }, {
+	    key: 'getEarthTilt',
+	    value: function getEarthTilt() {
+	      return this.earthTiltPivot.rotation.z;
+	    }
+	  }, {
+	    key: 'getEarthRotation',
+	    value: function getEarthRotation() {
+	      return this.earth.rotation.y;
+	    }
+	  }, {
+	    key: 'rotateEarth',
+
+	    // Rotates earth around its own axis.
+	    value: function rotateEarth(angleDiff) {
+	      this.earth.rotation.y += angleDiff;
+	    }
+	  }, {
+	    key: 'rotateCam',
+
+	    // Rotates camera around the sun.
+	    value: function rotateCam(angle) {
+	      this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+	      this.controls.update();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(timestamp) {
+	      this.renderer.render(this.scene, this.camera);
+	    }
+	  }, {
+	    key: 'resize',
+
+	    // Resizes canvas to fill its parent.
+	    value: function resize() {
+	      var $parent = (0, _jquery2['default'])(this.renderer.domElement).parent();
+	      var newWidth = $parent.width();
+	      var newHeight = $parent.height();
+	      this.camera.aspect = newWidth / newHeight;
+	      this.camera.updateProjectionMatrix();
+	      this.renderer.setSize(newWidth, newHeight);
+	    }
+	  }, {
+	    key: '_updateDay',
+
+	    // Called automatically when 'day' property is updated.
+	    value: function _updateDay() {
+	      var day = this.props.day;
+	      var pos = data.earthEllipseLocationByDay(day);
+	      this.earthPos.position.copy(pos);
+	      this.sunEarthLine.setEarthPos(pos);
+	    }
+	  }, {
+	    key: '_updateEarthTilt',
+
+	    // Called automatically when 'earthTilt' property is updated.
+	    value: function _updateEarthTilt() {
+	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
+	    }
+	  }, {
+	    key: '_updateSunEarthLine',
+	    value: function _updateSunEarthLine() {
+	      var mesh = this.sunEarthLine.rootObject;
+	      if (this.props.sunEarthLine && !mesh.parent) {
+	        this.scene.add(mesh);
+	      } else if (!this.props.sunEarthLine && mesh.parent) {
+	        this.scene.remove(mesh);
+	      }
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      var basicProps = { type: this.type };
+
+	      this.scene.add(_modelsCommonModelsJs2['default'].stars(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].ambientLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunOnlyLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].grid(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
+
+	      this.earth = _modelsCommonModelsJs2['default'].earth(basicProps);
+	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
+	      this.earth.add(this.earthAxis);
+	      this.earthTiltPivot = new THREE.Object3D();
+	      this.earthTiltPivot.add(this.earth);
+	      this.earthPos = new THREE.Object3D();
+	      // Make sure that earth is at day 0 position.
+	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
+	      var pos = data.earthEllipseLocationByDay(0);
+	      this.earthPos.position.copy(pos);
+	      this.earthPos.add(this.earthTiltPivot);
+	      this.scene.add(this.earthPos);
+
+	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
+	      this.scene.add(this.sunEarthLine.rootObject);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = 0;
+	      this.camera.position.y = 0;
+	      this.camera.position.z = 0;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 215 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+	var _jquery = __webpack_require__(159);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _baseViewJs = __webpack_require__(214);
+
+	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
+
+	var _modelsCommonModelsJs = __webpack_require__(197);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _solarSystemDataJs = __webpack_require__(194);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  sunEarthLine: true
+	};
+
+	var _default = (function (_BaseView) {
+	  var _class = function _default(parentEl) {
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'orbit-view');
+	  };
+
+	  _inherits(_class, _BaseView);
+
+	  _createClass(_class, [{
+	    key: 'setViewAxis',
+	    value: function setViewAxis(vec3) {
+	      this.viewAxis.lookAt(vec3);
+	      this.viewAxis.rotateX(Math.PI * 0.5);
+	    }
+	  }, {
+	    key: '_setInitialCamPos',
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = 0;
+	      this.camera.position.y = 245232773 / data.SCALE_FACTOR;
+	      this.camera.position.z = 228174616 / data.SCALE_FACTOR;
+	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
+	      this.viewAxis = _modelsCommonModelsJs2['default'].viewAxis();
+	      this.earthPos.add(this.viewAxis);
+	      this._addLabels();
+	    }
+	  }, {
+	    key: '_addLabels',
+	    value: function _addLabels() {
+	      var juneLbl = _modelsCommonModelsJs2['default'].label('Jun');
+	      juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
+	      juneLbl.rotateZ(-Math.PI * 0.5);
+
+	      var decLbl = _modelsCommonModelsJs2['default'].label('Dec');
+	      decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
+	      decLbl.rotateZ(Math.PI * 0.5);
+
+	      var sepLbl = _modelsCommonModelsJs2['default'].label('Sep');
+	      sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
+
+	      var marLbl = _modelsCommonModelsJs2['default'].label('Mar');
+	      marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
+	      marLbl.rotateZ(Math.PI);
+
+	      this.scene.add(juneLbl);
+	      this.scene.add(decLbl);
+	      this.scene.add(sepLbl);
+	      this.scene.add(marLbl);
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseViewJs2['default']);
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _jquery = __webpack_require__(159);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _solarSystemDataJs = __webpack_require__(194);
+
+	var DARK_BLUE = '#6E9CEF';
+	var LIGHT_BLUE = '#99ADF1';
+	var LIGHT_GREEN = '#84A44A';
+	var DARK_GREEN = '#4C7F19';
+	var RAY_COLOR = '#D8D8AC';
+	var SKY_FRACTION = 0.8;
+
+	var DEFAULT_PROPS = {
+	  day: 0,
+	  lat: 0,
+	  earthTilt: true
+	};
+
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var _default = (function () {
+	  var _class = function _default(parentEl) {
+	    var props = arguments[1] === undefined ? DEFAULT_PROPS : arguments[1];
+
+	    _classCallCheck(this, _class);
+
+	    this.canvas = document.createElement('canvas');
+	    parentEl.appendChild(this.canvas);
+	    this.ctx = this.canvas.getContext('2d');
+
+	    this.props = {};
+	    this.setProps(props);
+
+	    this.resize();
+	  };
+
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = _jquery2['default'].extend(this.props);
+	      this.props = _jquery2['default'].extend(this.props, newProps);
+
+	      if (this.props.day !== oldProps.day || this.props.earthTilt !== oldProps.earthTilt || this.props.lat !== oldProps.lat) {
+	        this._drawRaysView();
+	      }
+	    }
+	  }, {
+	    key: 'getNoonSolarAltitude',
+	    value: function getNoonSolarAltitude() {
+	      // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
+	      // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
+	      var tiltAxisZRadians = 2 * Math.PI * (this.props.day - _solarSystemDataJs.DAY_NUMBER_BY_MONTH.JUN) / 365;
+	      // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
+	      // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
+	      var orbitalTiltDegrees = this.props.earthTilt ? _solarSystemDataJs.EARTH_TILT * RAD_2_DEG : 0;
+	      var effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
+	      return 90 - (this.props.lat + effectiveTiltDegrees);
+	    }
+	  }, {
+	    key: 'resize',
+
+	    // Resizes canvas to fill its parent.
+	    value: function resize() {
+	      var $parent = (0, _jquery2['default'])(this.canvas).parent();
+	      this.width = $parent.width();
+	      this.height = $parent.height();
+	      // Update canvas attributes (they can be undefined if canvas size is set using CSS).
+	      this.canvas.width = this.width;
+	      this.canvas.height = this.height;
+	      this._drawRaysView();
+	    }
+	  }, {
+	    key: '_drawRaysView',
+	    value: function _drawRaysView() {
+	      var solarAngle = this.getNoonSolarAltitude();
+	      var width = this.width;
+	      var height = this.height;
+	      var skyHeight = SKY_FRACTION * height;
+	      var groundHeight = height - skyHeight;
+
+	      var skyGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
+	      skyGradient.addColorStop(0, DARK_BLUE);
+	      skyGradient.addColorStop(1, LIGHT_BLUE);
+
+	      this.ctx.fillStyle = skyGradient;
+	      this.ctx.fillRect(0, 0, width, skyHeight);
+
+	      var groundGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
+	      groundGradient.addColorStop(0, LIGHT_GREEN);
+	      groundGradient.addColorStop(1, DARK_GREEN);
+
+	      this.ctx.fillStyle = groundGradient;
+	      this.ctx.fillRect(0, skyHeight, width, groundHeight);
+
+	      if (solarAngle < 0 || solarAngle > 180) {
+	        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+	        this.ctx.fillRect(0, 0, width, height);
+	        return;
+	      }
+
+	      // Longest possible line.
+	      var maxLength = Math.sqrt(skyHeight * skyHeight + width * width);
+	      var NUM_BEAMS = 10;
+	      var x = undefined;
+	      var dx = width / (NUM_BEAMS + 1) / Math.sin(solarAngle * Math.PI / 180);
+	      var lineRotationRadians = (90 - solarAngle) * (Math.PI / 180);
+
+	      this.ctx.strokeStyle = RAY_COLOR;
+	      this.ctx.fillStyle = RAY_COLOR;
+
+	      // Could be +/- Infinity when solarAngle is 0
+	      if (isFinite(dx)) {
+	        for (x = dx / 2; x < width; x += dx) {
+	          this.ctx.save();
+	          this.ctx.translate(x, skyHeight);
+	          this._drawLine(lineRotationRadians, 5, maxLength);
+	          this._drawArrow(lineRotationRadians);
+	          this.ctx.restore();
+	        }
+	      }
+
+	      var dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle * Math.PI / 180));
+	      var yInitial = solarAngle < 90 ? dy / 2 : (x - width) / dx * dy;
+	      var xEdge = solarAngle < 90 ? 0 : width;
+	      if (isFinite(dy)) {
+	        for (var y = skyHeight - yInitial; y > 0; y -= dy) {
+	          this.ctx.save();
+	          this.ctx.translate(xEdge, y);
+	          this._drawLine(lineRotationRadians, 0, maxLength);
+	          this.ctx.restore();
+	        }
+	      }
+	    }
+	  }, {
+	    key: '_drawLine',
+	    value: function _drawLine(angle, lengthAdjustment, maxLength) {
+	      this.ctx.save();
+
+	      this.ctx.rotate(angle);
+	      this.ctx.lineWidth = 4;
+
+	      this.ctx.beginPath();
+	      this.ctx.moveTo(0, -lengthAdjustment);
+	      this.ctx.lineTo(0, -maxLength);
+	      this.ctx.stroke();
+
+	      this.ctx.restore();
+	    }
+	  }, {
+	    key: '_drawArrow',
+	    value: function _drawArrow(angle) {
+	      this.ctx.save();
+
+	      this.ctx.rotate(angle);
+	      this.ctx.lineWidth = 1;
+
+	      this.ctx.beginPath();
+	      this.ctx.moveTo(0, 0);
+	      this.ctx.lineTo(-10, -20);
+	      this.ctx.lineTo(0, -16);
+	      this.ctx.lineTo(10, -20);
+	      this.ctx.lineTo(0, 0);
+	      this.ctx.fill();
+
+	      this.ctx.restore();
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

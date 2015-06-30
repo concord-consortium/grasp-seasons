@@ -1,6 +1,6 @@
 import React from 'react';
 import CanvasView from './canvas-view.jsx';
-import OrbitView from '../orbit-view.js';
+import OrbitView from '../views/orbit-view.js';
 
 export default class OrbitViewComp extends CanvasView {
   constructor(props) {

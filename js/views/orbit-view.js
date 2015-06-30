@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import BaseView from './base-view.js';
-import models from './models/common-models.js';
-import * as data from './solar-system-data.js';
+import models from '../models/common-models.js';
+import * as data from '../solar-system-data.js';
 
 const DEF_PROPERTIES = {
   day: 0,
