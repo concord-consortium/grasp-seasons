@@ -34308,6 +34308,8 @@
 	          this.ctx.restore();
 	        }
 	      }
+
+	      this._drawLabels(groundHeight * 0.3, width, skyHeight + groundHeight * 0.5);
 	    }
 	  }, {
 	    key: '_drawLine',
@@ -34340,6 +34342,16 @@
 	      this.ctx.lineTo(0, 0);
 	      this.ctx.fill();
 
+	      this.ctx.restore();
+	    }
+	  }, {
+	    key: '_drawLabels',
+	    value: function _drawLabels(fontSize, width, y) {
+	      this.ctx.save();
+	      this.ctx.font = fontSize + 'px sans-serif';
+	      this.ctx.fillText('North', 10, y + fontSize * 0.3);
+	      var labelWidth = this.ctx.measureText('South').width;
+	      this.ctx.fillText('South', width - labelWidth - 10, y + fontSize * 0.3);
 	      this.ctx.restore();
 	    }
 	  }]);
