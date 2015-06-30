@@ -1,6 +1,6 @@
 var path = require('path');
 module.exports = {
-  entry: './js/main-react.jsx',
+  entry: './js/main.jsx',
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'app.js'

@@ -1,0 +1,9 @@
+.controls {
+  width: 800px;
+  margin: 20px auto;
+}
+
+.controls label {
+  display: block;
+  margin: 5px 0;
+}

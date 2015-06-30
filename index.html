@@ -7,29 +7,7 @@
 </head>
 <body>
 
-<div class="view-container">
-  <div id="earth-view" class="view"></div>
-  <div id="orbit-view" class="view"></div>
-  <div id="rays-view" class="view"></div>
-</div>
-
-<div class="controls">
-  Main view:
-  <label class="inline"><input type="radio" name="main-view" class="main-view" value="earth-view"> Earth</label>
-  <label class="inline"><input type="radio" name="main-view" class="main-view" value="orbit-view"> Orbit</label>
-  <label class="inline"><input type="radio" name="main-view" class="main-view" value="rays-view"> Sun rays</label>
-
-  <label>Day: <span id="day-value"></span>
-  <div id="day-slider"></div></label>
-  <label><input type="checkbox" id="earth-rotation">Rotating</label>
-  <label><input type="checkbox" id="earth-tilt">Tilted</label>
-  <label><input type="checkbox" id="sun-earth-line">Sun-earth line</label>
-  <label>Select city: <select id="city-pulldown"></select></label>
-  <label>Latitude: <span id="lat-value"></span>
-  <div id="latitude-slider"></div></label>
-  <label>Longitude: <span id="long-value"></span>
-  <div id="longitude-slider"></div></label>
-</div>
+<div id="app"></div>
 
 <!--THREE.js doesn't work well with NPM modules, so import it manually.-->
 <!--vendor/threejs-r71 is a simple copy of git repository, but only necessary files are left.-->

@@ -3,6 +3,8 @@ import EarthViewComp from './earth-view-comp.jsx';
 import OrbitViewComp from './orbit-view-comp.jsx';
 import RaysViewComp from './rays-view-comp.jsx';
 
+import '../../css/view-manager.css';
+
 export default class ViewManager extends React.Component {
   constructor(props) {
     super(props);
@@ -58,9 +60,9 @@ export default class ViewManager extends React.Component {
   render() {
     let layout = this.getLayout();
     return (
-      <div className='view-container'>
+      <div className='view-manager'>
         <div className={`view ${layout.earth}`}>
-          <EarthViewComp ref='earth' simulation={this.props.simulation}/>
+          <EarthViewComp ref='earth' simulation={this.props.simulation} onLocationChange={this.props.onLocationChange}/>
         </div>
         <div className={`view ${layout.orbit}`}>
           <OrbitViewComp ref='orbit' simulation={this.props.simulation}/>
