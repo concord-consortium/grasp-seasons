@@ -34361,7 +34361,7 @@
 	  },
 
 	  ambientLight: function ambientLight() {
-	    return new THREE.AmbientLight(0x444444);
+	    return new THREE.AmbientLight(0x202020);
 	  },
 
 	  sunLight: function sunLight() {
