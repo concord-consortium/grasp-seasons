@@ -12,7 +12,7 @@ const DEF_PROPERTIES = {
 };
 
 export default class {
-  constructor(parentEl, props = DEF_PROPERTIES, modelType) {
+  constructor(parentEl, props = DEF_PROPERTIES, modelType = 'unknown') {
     let width = parentEl.clientWidth;
     let height = parentEl.clientHeight;
     this.scene = new THREE.Scene();
@@ -32,10 +32,11 @@ export default class {
     this.controls.rotateSpeed = 0.5;
 
     this.dispatch = new EventEmitter();
-    this._interactionHandlers = [];
 
     this.props = {};
     this.setProps(props);
+
+    this._interactionHandler = null;
   }
 
   setProps(newProps) {
@@ -68,8 +69,8 @@ export default class {
 
   render(timestamp) {
     this.controls.update();
-    for (let i = 0; i < this._interactionHandlers.length; i++) {
-      this._interactionHandlers[i].checkInteraction();
+    if (this._interactionHandler) {
+      this._interactionHandler.checkInteraction();
     }
     this.renderer.render(this.scene, this.camera);
   }
@@ -85,7 +86,7 @@ export default class {
   }
 
   registerInteractionHandler(handler) {
-    this._interactionHandlers.push(handler);
+    this._interactionHandler = handler;
   }
 
   // Called automatically when 'day' property is updated.

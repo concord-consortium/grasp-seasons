@@ -23985,6 +23985,10 @@
 
 	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
 
+	var _earthViewInteractionJs = __webpack_require__(253);
+
+	var _earthViewInteractionJs2 = _interopRequireDefault(_earthViewInteractionJs);
+
 	var _solarSystemDataJs = __webpack_require__(219);
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
@@ -23992,7 +23996,6 @@
 	var _utilsJs = __webpack_require__(224);
 
 	var DEG_2_RAD = Math.PI / 180;
-	var RAD_2_DEG = 180 / Math.PI;
 
 	var DEF_PROPERTIES = {
 	  day: 0,
@@ -24016,15 +24019,12 @@
 	    // Rotate earth a bit so USA is visible.
 	    this.earth.rotate(2);
 
-	    // Support mouse interaction.
-	    this.raycaster = new THREE.Raycaster();
-	    this.mouse = new THREE.Vector2(-1, -1);
-	    this._enableMousePicking();
-
 	    // Emit events when camera is changed.
 	    this.controls.addEventListener('change', function () {
 	      _this.dispatch.emit('camera.change');
 	    });
+
+	    this.registerInteractionHandler(new _earthViewInteractionJs2['default'](this));
 	  };
 
 	  _inherits(_class, _BaseView);
@@ -24050,7 +24050,6 @@
 	    key: 'render',
 	    value: function render(timestamp) {
 	      this._animate(timestamp);
-	      this._interactivityHandler();
 	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
 	    }
 	  }, {
@@ -24116,139 +24115,6 @@
 	      var angleDiff = progress * 0.0001 * Math.PI;
 	      this.earth.rotate(angleDiff);
 	      this._prevFrame = timestamp;
-	    }
-	  }, {
-	    key: '_enableMousePicking',
-	    value: function _enableMousePicking() {
-	      var _this2 = this;
-
-	      var onMouseMove = function onMouseMove(event) {
-	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.renderer.domElement);
-	        _this2.mouse.x = pos.x;
-	        _this2.mouse.y = pos.y;
-	      };
-	      (0, _jquery2['default'])(this.renderer.domElement).on('mousemove touchmove', onMouseMove);
-	    }
-	  }, {
-	    key: '_interactivityHandler',
-	    value: function _interactivityHandler() {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-
-	      if (this._isLatDragging) {
-	        var coords = this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          this.setProps({ lat: coords.lat });
-	          this.dispatch.emit('latitude.change', coords.lat);
-	        }
-	        return;
-	      } else if (this._isLatLongDragging) {
-	        var coords = this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          this.setProps({ lat: coords.lat, long: coords.long });
-	          this.dispatch.emit('latitude.change', coords.lat);
-	          this.dispatch.emit('longitude.change', coords.long);
-	        }
-	        return;
-	      }
-
-	      // Note that order of calls below is very important. First, we need to disable old interaction
-	      // and then enable new one (as they're both modifying camera controls).
-	      if (this._isUserPointing(this.latLongMarker.mesh)) {
-	        this._setLatDraggingEnabled(false);
-	        this._setLatLongDraggingEnabled(true);
-	      } else if (this._isUserPointing(this.latLine.mesh)) {
-	        this._setLatLongDraggingEnabled(false);
-	        this._setLatDraggingEnabled(true);
-	      } else {
-	        this._setLatLongDraggingEnabled(false);
-	        this._setLatDraggingEnabled(false);
-	      }
-	    }
-	  }, {
-	    key: '_isUserPointing',
-	    value: function _isUserPointing(mesh) {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-	      var intersects = this.raycaster.intersectObject(mesh);
-	      if (intersects.length > 0) {
-	        return intersects;
-	      } else {
-	        return false;
-	      }
-	    }
-	  }, {
-	    key: '_setLatDraggingEnabled',
-	    value: function _setLatDraggingEnabled(v) {
-	      var _this3 = this;
-
-	      if (this._isLatDraggingEnabled === v) return; // exit, nothing has changed
-	      this._isLatDraggingEnabled = v;
-	      this.latLongMarker.setHighlighted(v);
-	      this.latLine.setHighlighted(v);
-	      this.controls.noRotate = v;
-	      document.body.style.cursor = v ? 'move' : '';
-	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
-	      if (v) {
-	        $elem.on('mousedown.latDragging touchstart.latDragging', function () {
-	          _this3._isLatDragging = true;
-	        });
-	        $elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
-	          _this3._isLatDragging = false;
-	        });
-	      } else {
-	        $elem.off('.latDragging');
-	      }
-	    }
-	  }, {
-	    key: '_setLatLongDraggingEnabled',
-	    value: function _setLatLongDraggingEnabled(v) {
-	      var _this4 = this;
-
-	      if (this._isLatLongDraggingEnabled === v) return; // exit, nothing has changed
-	      this._isLatLongDraggingEnabled = v;
-	      this.latLongMarker.setHighlighted(v);
-	      this.controls.noRotate = v;
-	      document.body.style.cursor = v ? 'move' : '';
-	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
-	      if (v) {
-	        $elem.on('mousedown.latLongDragging touchstart.latLongDragging', function () {
-	          _this4._isLatLongDragging = true;
-	        });
-	        $elem.on('mouseup.latLongDragging touchend.latLongDragging touchcancel.latLongDragging', function () {
-	          _this4._isLatLongDragging = false;
-	        });
-	      } else {
-	        $elem.off('.latLongDragging');
-	      }
-	    }
-	  }, {
-	    key: '_getPointerLatLong',
-
-	    // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
-	    value: function _getPointerLatLong() {
-	      var intersects = this._isUserPointing(this.earth.earthObject);
-	      if (!intersects) {
-	        // Pointer does not intersect with earth, return null.
-	        return null;
-	      }
-	      // Calculate vector pointing from Earth center to intersection point.
-	      var intVec = intersects[0].point;
-	      intVec.sub(this.earth.position);
-	      // Take into account earth tilt and rotation.
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation);
-
-	      // Latitude calculations.
-	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
-	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
-	      // .angleTo returns always positive number.
-	      if (intVec.y < 0) lat *= -1;
-	      // Longitude calculations.
-	      var xVec = new THREE.Vector3(1, 0, 0);
-	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
-	      if (intVec.z > 0) long *= -1;
-	      return { lat: lat, long: long };
 	    }
 	  }]);
 
@@ -34112,7 +33978,7 @@
 
 	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
 
-	var _modelsEarthJs = __webpack_require__(250);
+	var _modelsEarthJs = __webpack_require__(249);
 
 	var _modelsEarthJs2 = _interopRequireDefault(_modelsEarthJs);
 
@@ -34131,8 +33997,9 @@
 	};
 
 	var _default = (function () {
-	  var _class = function _default(parentEl, props, modelType) {
-	    if (props === undefined) props = DEF_PROPERTIES;
+	  var _class = function _default(parentEl) {
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+	    var modelType = arguments[2] === undefined ? 'unknown' : arguments[2];
 
 	    _classCallCheck(this, _class);
 
@@ -34155,10 +34022,11 @@
 	    this.controls.rotateSpeed = 0.5;
 
 	    this.dispatch = new _eventemitter22['default']();
-	    this._interactionHandlers = [];
 
 	    this.props = {};
 	    this.setProps(props);
+
+	    this._interactionHandler = null;
 	  };
 
 	  _createClass(_class, [{
@@ -34219,8 +34087,8 @@
 	    key: 'render',
 	    value: function render(timestamp) {
 	      this.controls.update();
-	      for (var i = 0; i < this._interactionHandlers.length; i++) {
-	        this._interactionHandlers[i].checkInteraction();
+	      if (this._interactionHandler) {
+	        this._interactionHandler.checkInteraction();
 	      }
 	      this.renderer.render(this.scene, this.camera);
 	    }
@@ -34239,7 +34107,7 @@
 	  }, {
 	    key: 'registerInteractionHandler',
 	    value: function registerInteractionHandler(handler) {
-	      this._interactionHandlers.push(handler);
+	      this._interactionHandler = handler;
 	    }
 	  }, {
 	    key: '_updateDay',
@@ -34894,9 +34762,9 @@
 
 	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
 
-	var _earthDraggingInteractionJs = __webpack_require__(249);
+	var _orbitViewInteractionJs = __webpack_require__(254);
 
-	var _earthDraggingInteractionJs2 = _interopRequireDefault(_earthDraggingInteractionJs);
+	var _orbitViewInteractionJs2 = _interopRequireDefault(_orbitViewInteractionJs);
 
 	var _modelsCommonModelsJs = __webpack_require__(218);
 
@@ -34919,7 +34787,7 @@
 	    _classCallCheck(this, _class);
 
 	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'orbit-view');
-	    this.registerInteractionHandler(new _earthDraggingInteractionJs2['default'](this));
+	    this.registerInteractionHandler(new _orbitViewInteractionJs2['default'](this));
 	  };
 
 	  _inherits(_class, _BaseView);
@@ -37849,139 +37717,6 @@
 
 	var _classCallCheck = __webpack_require__(191)['default'];
 
-	var _interopRequireDefault = __webpack_require__(1)['default'];
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _jquery = __webpack_require__(216);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _utilsJs = __webpack_require__(224);
-
-	var _solarSystemDataJs = __webpack_require__(219);
-
-	var _default = (function () {
-	  var _class = function _default(view) {
-	    _classCallCheck(this, _class);
-
-	    this.view = view;
-	    this.domElement = view.renderer.domElement;
-	    this.camera = view.camera;
-	    this.earth = view.earth;
-	    this.controls = view.controls;
-	    this.dispatch = view.dispatch;
-
-	    var day0Pos = (0, _solarSystemDataJs.earthEllipseLocationByDay)(0); // reference for further calculations
-	    this._atan2Day0Pos = Math.atan2(day0Pos.z, day0Pos.x);
-
-	    this.raycaster = new THREE.Raycaster();
-	    this.mouse = new THREE.Vector2(-2, -2); // intentionally out of view, which is limited to [-1, 1] x [-1, 1]
-	    this._followMousePosition();
-	  };
-
-	  _createClass(_class, [{
-	    key: 'checkInteraction',
-	    value: function checkInteraction() {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-
-	      if (this._isEarthDragging) {
-	        var coords = this._getXZPlanPos();
-	        var angleDiff = this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
-	        var newDay = angleDiff / (Math.PI * 2) * 364;
-	        if (newDay < 0) newDay += 364;
-	        this.dispatch.emit('day.change', newDay);
-	        return;
-	      }
-
-	      // Note that order of calls below is very important. First, we need to disable old interaction
-	      // and then enable new one (as they're both modifying camera controls).
-	      if (this._isUserPointing(this.earth.earthObject)) {
-	        this._setEarthDraggingEnabled(true);
-	      } else {
-	        this._setEarthDraggingEnabled(false);
-	      }
-	    }
-	  }, {
-	    key: '_setEarthDraggingEnabled',
-	    value: function _setEarthDraggingEnabled(v) {
-	      var _this = this;
-
-	      if (this._isEarthDraggingEnabled === v) return; // exit, nothing has changed
-	      this._isEarthDraggingEnabled = v;
-	      this.earth.setHighlighted(v);
-	      document.body.style.cursor = v ? 'move' : '';
-	      this.controls.noRotate = v;
-	      var $elem = (0, _jquery2['default'])(this.domElement);
-	      if (v) {
-	        $elem.on('mousedown.earthDragging touchstart.earthDragging', function () {
-	          _this._isEarthDragging = true;
-	        });
-	        $elem.on('mouseup.earthDragging touchend.earthDragging touchcancel.earthDragging', function () {
-	          _this._isEarthDragging = false;
-	        });
-	      } else {
-	        $elem.off('.earthDragging');
-	      }
-	    }
-	  }, {
-	    key: '_followMousePosition',
-	    value: function _followMousePosition() {
-	      var _this2 = this;
-
-	      var onMouseMove = function onMouseMove(event) {
-	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.domElement);
-	        _this2.mouse.x = pos.x;
-	        _this2.mouse.y = pos.y;
-	      };
-	      (0, _jquery2['default'])(this.domElement).on('mousemove touchmove', onMouseMove);
-	    }
-	  }, {
-	    key: '_isUserPointing',
-	    value: function _isUserPointing(mesh) {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-	      var intersects = this.raycaster.intersectObject(mesh);
-	      if (intersects.length > 0) {
-	        return intersects;
-	      } else {
-	        return false;
-	      }
-	    }
-	  }, {
-	    key: '_getXZPlanPos',
-
-	    // Projects mouse position on XZ plane.
-	    value: function _getXZPlanPos() {
-	      var v = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
-	      v.unproject(this.camera);
-	      v.sub(this.camera.position);
-	      v.normalize();
-	      var distance = -this.camera.position.y / v.y;
-	      v.multiplyScalar(distance);
-	      var result = this.camera.position.clone();
-	      result.add(v);
-	      return result;
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 250 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = __webpack_require__(188)['default'];
-
-	var _classCallCheck = __webpack_require__(191)['default'];
-
 	var _interopRequireWildcard = __webpack_require__(215)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
@@ -38089,6 +37824,333 @@
 
 	  return _class;
 	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 250 */,
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(216);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _utilsJs = __webpack_require__(224);
+
+	var _default = (function () {
+	  var _class = function _default(view) {
+	    _classCallCheck(this, _class);
+
+	    this.view = view;
+	    this.domElement = view.renderer.domElement;
+	    this.camera = view.camera;
+	    this.controls = view.controls;
+	    this.dispatch = view.dispatch;
+
+	    this.raycaster = new THREE.Raycaster();
+	    this.mouse = new THREE.Vector2(-2, -2); // intentionally out of view, which is limited to [-1, 1] x [-1, 1]
+	    this._followMousePosition();
+
+	    this._interactions = [];
+	  };
+
+	  _createClass(_class, [{
+	    key: 'registerInteraction',
+	    value: function registerInteraction(int) {
+	      this._interactions.push(int);
+	    }
+	  }, {
+	    key: 'checkInteraction',
+	    value: function checkInteraction() {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+	      for (var i = 0; i < this._interactions.length; i++) {
+	        var int = this._interactions[i];
+	        if (int._started) {
+	          int.stepHandler();
+	          return;
+	        }
+	      }
+
+	      var anyInteractionActive = false;
+	      for (var i = 0; i < this._interactions.length; i++) {
+	        var int = this._interactions[i];
+	        if (!anyInteractionActive && int.test()) {
+	          this._setInteractionActive(int, i, true);
+	          anyInteractionActive = true;
+	        } else {
+	          if (int._active) {
+	            this._setInteractionActive(int, i, false);
+	          }
+	        }
+	      }
+
+	      if (anyInteractionActive) {
+	        this.controls.noRotate = true;
+	      } else {
+	        this.controls.noRotate = false;
+	      }
+	    }
+	  }, {
+	    key: 'isUserPointing',
+	    value: function isUserPointing(mesh) {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+	      var intersects = this.raycaster.intersectObject(mesh);
+	      if (intersects.length > 0) {
+	        return intersects;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: '_setInteractionActive',
+	    value: function _setInteractionActive(int, idx, v) {
+	      int._active = v;
+	      int.activationChangeHandler(v);
+	      var $elem = (0, _jquery2['default'])(this.domElement);
+	      var namespace = 'interaction-' + idx;
+	      if (v) {
+	        $elem.on('mousedown.' + namespace + ' touchstart.' + namespace, function () {
+	          int._started = true;
+	        });
+	        $elem.on('mouseup.' + namespace + ' touchend.' + namespace + ' touchcancel.' + namespace, function () {
+	          int._started = false;
+	        });
+	      } else {
+	        $elem.off('.' + namespace);
+	      }
+	    }
+	  }, {
+	    key: '_followMousePosition',
+	    value: function _followMousePosition() {
+	      var _this = this;
+
+	      var onMouseMove = function onMouseMove(event) {
+	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this.domElement);
+	        _this.mouse.x = pos.x;
+	        _this.mouse.y = pos.y;
+	      };
+	      (0, _jquery2['default'])(this.domElement).on('mousemove touchmove', onMouseMove);
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 252 */,
+/* 253 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(177)['default'];
+
+	var _get = __webpack_require__(182)['default'];
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(216);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _baseInteractionJs = __webpack_require__(251);
+
+	var _baseInteractionJs2 = _interopRequireDefault(_baseInteractionJs);
+
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var _default = (function (_BaseInteraction) {
+	  var _class = function _default(view) {
+	    var _this = this;
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, view);
+
+	    this.latLongMarker = view.latLongMarker;
+	    this.latLine = view.latLine;
+	    this.earth = view.earth;
+
+	    this.registerInteraction({
+	      test: function test() {
+	        return _this.isUserPointing(_this.latLongMarker.mesh);
+	      },
+	      activationChangeHandler: function activationChangeHandler(isActive) {
+	        _this.latLongMarker.setHighlighted(isActive);
+	        document.body.style.cursor = isActive ? 'move' : '';
+	      },
+	      stepHandler: function stepHandler() {
+	        var coords = _this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          _this.dispatch.emit('latitude.change', coords.lat);
+	          _this.dispatch.emit('longitude.change', coords.long);
+	        }
+	      }
+	    });
+	    this.registerInteraction({
+	      test: function test() {
+	        return _this.isUserPointing(_this.latLine.mesh);
+	      },
+	      activationChangeHandler: function activationChangeHandler(isActive) {
+	        _this.latLine.setHighlighted(isActive);
+	        _this.latLongMarker.setHighlighted(isActive);
+	        document.body.style.cursor = isActive ? 'move' : '';
+	      },
+	      stepHandler: function stepHandler() {
+	        var coords = _this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          _this.dispatch.emit('latitude.change', coords.lat);
+	        }
+	      }
+	    });
+	  };
+
+	  _inherits(_class, _BaseInteraction);
+
+	  _createClass(_class, [{
+	    key: '_getPointerLatLong',
+	    value: function _getPointerLatLong() {
+	      var intersects = this.isUserPointing(this.earth.earthObject);
+	      if (!intersects) {
+	        // Pointer does not intersect with earth, return null.
+	        return null;
+	      }
+	      // Calculate vector pointing from Earth center to intersection point.
+	      var intVec = intersects[0].point;
+	      intVec.sub(this.earth.position);
+	      // Take into account earth tilt and rotation.
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation);
+
+	      // Latitude calculations.
+	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
+	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
+	      // .angleTo returns always positive number.
+	      if (intVec.y < 0) lat *= -1;
+	      // Longitude calculations.
+	      var xVec = new THREE.Vector3(1, 0, 0);
+	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
+	      if (intVec.z > 0) long *= -1;
+	      return { lat: lat, long: long };
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseInteractionJs2['default']);
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 254 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(177)['default'];
+
+	var _get = __webpack_require__(182)['default'];
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(216);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _baseInteractionJs = __webpack_require__(251);
+
+	var _baseInteractionJs2 = _interopRequireDefault(_baseInteractionJs);
+
+	var _solarSystemDataJs = __webpack_require__(219);
+
+	var _default = (function (_BaseInteraction) {
+	  var _class = function _default(view) {
+	    var _this = this;
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, view);
+
+	    this.earth = view.earth;
+	    var day0Pos = (0, _solarSystemDataJs.earthEllipseLocationByDay)(0);
+	    // Base angle for further calculations in _getXZPlanPos.
+	    this._atan2Day0Pos = Math.atan2(day0Pos.z, day0Pos.x);
+
+	    this.registerInteraction({
+	      test: function test() {
+	        return _this.isUserPointing(_this.earth.earthObject);
+	      },
+	      activationChangeHandler: function activationChangeHandler(isActive) {
+	        _this.earth.setHighlighted(isActive);
+	        document.body.style.cursor = isActive ? 'move' : '';
+	      },
+	      stepHandler: function stepHandler() {
+	        var coords = _this._getXZPlanPos();
+	        var angleDiff = _this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
+	        var newDay = angleDiff / (Math.PI * 2) * 364;
+	        if (newDay < 0) newDay += 364;
+	        _this.dispatch.emit('day.change', newDay);
+	      }
+	    });
+	  };
+
+	  _inherits(_class, _BaseInteraction);
+
+	  _createClass(_class, [{
+	    key: '_getXZPlanPos',
+
+	    // Projects mouse position on XZ plane.
+	    value: function _getXZPlanPos() {
+	      var v = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
+	      v.unproject(this.camera);
+	      v.sub(this.camera.position);
+	      v.normalize();
+	      var distance = -this.camera.position.y / v.y;
+	      v.multiplyScalar(distance);
+	      var result = this.camera.position.clone();
+	      result.add(v);
+	      return result;
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseInteractionJs2['default']);
 
 	exports['default'] = _default;
 	module.exports = exports['default'];

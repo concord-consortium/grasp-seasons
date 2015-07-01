@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import BaseView from './base-view.js';
-import EarthDraggingInteraction from './earth-dragging-interaction.js';
+import EarthDraggingInteraction from './orbit-view-interaction.js';
 import models from '../models/common-models.js';
 import * as data from '../solar-system-data.js';
 
