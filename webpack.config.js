@@ -9,7 +9,7 @@ module.exports = {
     loaders: [
       {
         test: path.join(__dirname, 'js'),
-        loader: 'babel-loader'
+        loader: 'babel-loader?optional=runtime'
       },
       {
         test: path.join(__dirname, 'css'),
