@@ -10,8 +10,8 @@ export default class OrbitViewComp extends CanvasView {
 
   componentDidMount() {
     super.componentDidMount();
-    this.externalView.on('day.change', (newDay) => {
-      this.props.onDayChange(newDay);
+    this.externalView.on('props.change', (newProps) => {
+      this.props.onSimStateChange(newProps);
     });
   }
 

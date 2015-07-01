@@ -23,8 +23,7 @@ export default class extends BaseInteraction {
         let coords = this._getPointerLatLong();
         if (coords != null) {
           // coords can be equal to null if user isn't pointing earth anymore.
-          this.dispatch.emit('latitude.change', coords.lat);
-          this.dispatch.emit('longitude.change', coords.long);
+          this.dispatch.emit('props.change', {lat: coords.lat, long: coords.long});
         }
       }
     });
@@ -41,7 +40,7 @@ export default class extends BaseInteraction {
         let coords = this._getPointerLatLong();
         if (coords != null) {
           // coords can be equal to null if user isn't pointing earth anymore.
-          this.dispatch.emit('latitude.change', coords.lat);
+          this.dispatch.emit('props.change', {lat: coords.lat});
         }
       }
     });
@@ -58,7 +57,7 @@ export default class extends BaseInteraction {
     intVec.sub(this.earth.position);
     // Take into account earth tilt and rotation.
     intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
-    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation - this.earth.orbitRotation);
+    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.overallRotation);
 
     // Latitude calculations.
     let xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);

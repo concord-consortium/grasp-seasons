@@ -26,12 +26,12 @@ export default class Seasons extends React.Component {
       }
     };
 
+    this.simStateChange = this.simStateChange.bind(this);
     this.mainViewChange = this.mainViewChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
-    this.dayChange = this.dayChange.bind(this);
-    this.earthRotationChange = this.earthRotationChange.bind(this);
+    this.dayAnimFrame = this.dayAnimFrame.bind(this);
+    this.earthRotationAnimFrame = this.earthRotationAnimFrame.bind(this);
     this.simCheckboxChange = this.simCheckboxChange.bind(this);
-    this.locationChange = this.locationChange.bind(this);
     this.latSliderChange = this.latSliderChange.bind(this);
     this.longSliderChange = this.longSliderChange.bind(this);
     this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
@@ -72,6 +72,10 @@ export default class Seasons extends React.Component {
     this.setState(newState);
   }
 
+  simStateChange(newState) {
+    this.setSimState(newState);
+  }
+
   mainViewChange(event) {
     this.setState({mainView: event.target.value});
   }
@@ -80,12 +84,12 @@ export default class Seasons extends React.Component {
     this.setSimState({day: ui.value});
   }
 
-  dayChange(newDay) {
+  dayAnimFrame(newDay) {
     // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
     this.setSimState({day: newDay % 365});
   }
 
-  earthRotationChange(newAngle) {
+  earthRotationAnimFrame(newAngle) {
     this.setSimState({earthRotation: newAngle % (2 * Math.PI)});
   }
 
@@ -103,10 +107,6 @@ export default class Seasons extends React.Component {
     this.setSimState({long: ui.value});
   }
 
-  locationChange(loc) {
-    this.setSimState(loc);
-  }
-
   lookAtSubsolarPoint() {
     this.refs.view.lookAtSubsolarPoint();
   }
@@ -114,12 +114,12 @@ export default class Seasons extends React.Component {
   render() {
     return (
       <div>
-        <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange} onDayChange={this.dayChange}/>
+        <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onSimStateChange={this.simStateChange}/>
         <div className='controls' >
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
             <span> </span>
-            <label><AnimationCheckbox speed={0.0003} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationChange}/> Rotating</label>
+            <label><AnimationCheckbox speed={0.0003} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}/> Rotating</label>
             <span> </span>
             <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
             <span> </span>
@@ -135,7 +135,7 @@ export default class Seasons extends React.Component {
                   <option value='rays'>Rays</option>
                 </select>
               </div>
-              <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayChange}/>
+              <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}/>
               <label className='day'>Day: {this.getFormattedDay()}</label>
               <div className='day-slider'>
                 <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
@@ -143,7 +143,7 @@ export default class Seasons extends React.Component {
             </div>
             <div className='form-group pull-left'>
               <label>Select city:</label>
-              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.locationChange}/>
+              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.simStateChange}/>
             </div>
             <div className='long-lat-sliders pull-right'>
               <div className='form-group'>

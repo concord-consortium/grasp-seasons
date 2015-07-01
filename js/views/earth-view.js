@@ -29,6 +29,8 @@ export default class extends BaseView {
     });
 
     this.registerInteractionHandler(new LatLongDraggingInteraction(this));
+
+    window.earth = this;
   }
 
   // Normalized vector pointing from camera to earth.

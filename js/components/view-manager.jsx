@@ -9,6 +9,7 @@ export default class ViewManager extends React.Component {
   constructor(props) {
     super(props);
     this.rafCallback = this.rafCallback.bind(this);
+    this.syncCameraAndViewAxis = this.syncCameraAndViewAxis.bind(this);
   }
 
   componentDidMount() {
@@ -36,14 +37,8 @@ export default class ViewManager extends React.Component {
 
   // When earth view camera is changed, we need to update view axis in the orbit view.
   syncCameraAndViewAxis() {
-    let sync = () => {
-      let camVec = this.refs.earth.getCameraEarthVec();
-      this.refs.orbit.setViewAxis(camVec);
-    };
-    // Initial sync.
-    sync();
-    // When earth view camera is changed, we need to update view axis in the orbit view.
-    this.refs.earth.onCameraChange(sync);
+    let camVec = this.refs.earth.getCameraEarthVec();
+    this.refs.orbit.setViewAxis(camVec);
   }
 
   lookAtSubsolarPoint() {
@@ -67,11 +62,11 @@ export default class ViewManager extends React.Component {
       <div className='view-manager'>
         <div className={`view ${layout.earth}`}>
           <div className='view-label'>Earth</div>
-          <EarthViewComp ref='earth' simulation={this.props.simulation} onLocationChange={this.props.onLocationChange}/>
+          <EarthViewComp ref='earth' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} onCameraChange={this.syncCameraAndViewAxis}/>
         </div>
         <div className={`view ${layout.orbit}`}>
           <div className='view-label'>Orbit</div>
-          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onDayChange={this.props.onDayChange}/>
+          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
         </div>
         <div className={`view ${layout.rays}`}>
           <div className='view-label'>Rays</div>

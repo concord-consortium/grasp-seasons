@@ -24,7 +24,7 @@ export default class extends BaseInteraction {
         let angleDiff = this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
         let newDay = angleDiff / (Math.PI * 2) * 364;
         if (newDay < 0) newDay += 364;
-        this.dispatch.emit('day.change', newDay);
+        this.dispatch.emit('props.change', {day: newDay});
       }
     });
   }

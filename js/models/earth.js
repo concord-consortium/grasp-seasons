@@ -67,6 +67,10 @@ export default class {
     return this._orbitRotObject.rotation.y;
   }
 
+  get overallRotation() {
+    return this.rotation + this.orbitRotation;
+  }
+
   // Rotates earth around its own axis.
   rotate(angleDiff) {
     this._earthObject.rotation.y += angleDiff;

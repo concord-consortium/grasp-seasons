@@ -20522,12 +20522,12 @@
 	      }
 	    };
 
+	    this.simStateChange = this.simStateChange.bind(this);
 	    this.mainViewChange = this.mainViewChange.bind(this);
 	    this.daySliderChange = this.daySliderChange.bind(this);
-	    this.dayChange = this.dayChange.bind(this);
-	    this.earthRotationChange = this.earthRotationChange.bind(this);
+	    this.dayAnimFrame = this.dayAnimFrame.bind(this);
+	    this.earthRotationAnimFrame = this.earthRotationAnimFrame.bind(this);
 	    this.simCheckboxChange = this.simCheckboxChange.bind(this);
-	    this.locationChange = this.locationChange.bind(this);
 	    this.latSliderChange = this.latSliderChange.bind(this);
 	    this.longSliderChange = this.longSliderChange.bind(this);
 	    this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
@@ -20595,6 +20595,11 @@
 	      this.setState(newState);
 	    }
 	  }, {
+	    key: 'simStateChange',
+	    value: function simStateChange(newState) {
+	      this.setSimState(newState);
+	    }
+	  }, {
 	    key: 'mainViewChange',
 	    value: function mainViewChange(event) {
 	      this.setState({ mainView: event.target.value });
@@ -20605,14 +20610,14 @@
 	      this.setSimState({ day: ui.value });
 	    }
 	  }, {
-	    key: 'dayChange',
-	    value: function dayChange(newDay) {
+	    key: 'dayAnimFrame',
+	    value: function dayAnimFrame(newDay) {
 	      // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
 	      this.setSimState({ day: newDay % 365 });
 	    }
 	  }, {
-	    key: 'earthRotationChange',
-	    value: function earthRotationChange(newAngle) {
+	    key: 'earthRotationAnimFrame',
+	    value: function earthRotationAnimFrame(newAngle) {
 	      this.setSimState({ earthRotation: newAngle % (2 * Math.PI) });
 	    }
 	  }, {
@@ -20633,11 +20638,6 @@
 	      this.setSimState({ long: ui.value });
 	    }
 	  }, {
-	    key: 'locationChange',
-	    value: function locationChange(loc) {
-	      this.setSimState(loc);
-	    }
-	  }, {
 	    key: 'lookAtSubsolarPoint',
 	    value: function lookAtSubsolarPoint() {
 	      this.refs.view.lookAtSubsolarPoint();
@@ -20648,7 +20648,7 @@
 	      return _reactAddons2['default'].createElement(
 	        'div',
 	        null,
-	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { ref: 'view', mainView: this.state.mainView, simulation: this.state.sim, onLocationChange: this.locationChange, onDayChange: this.dayChange }),
+	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { ref: 'view', mainView: this.state.mainView, simulation: this.state.sim, onSimStateChange: this.simStateChange }),
 	        _reactAddons2['default'].createElement(
 	          'div',
 	          { className: 'controls' },
@@ -20668,7 +20668,7 @@
 	            _reactAddons2['default'].createElement(
 	              'label',
 	              null,
-	              _reactAddons2['default'].createElement(_animationCheckboxJsx2['default'], { speed: 0.0003, currentValue: this.state.sim.earthRotation, onAnimationStep: this.earthRotationChange }),
+	              _reactAddons2['default'].createElement(_animationCheckboxJsx2['default'], { speed: 0.0003, currentValue: this.state.sim.earthRotation, onAnimationStep: this.earthRotationAnimFrame }),
 	              ' Rotating'
 	            ),
 	            _reactAddons2['default'].createElement(
@@ -20728,7 +20728,7 @@
 	                  )
 	                )
 	              ),
-	              _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayChange }),
+	              _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayAnimFrame }),
 	              _reactAddons2['default'].createElement(
 	                'label',
 	                { className: 'day' },
@@ -20749,7 +20749,7 @@
 	                null,
 	                'Select city:'
 	              ),
-	              _reactAddons2['default'].createElement(_citySelectJsx2['default'], { lat: this.state.sim.lat, long: this.state.sim.long, onLocationChange: this.locationChange })
+	              _reactAddons2['default'].createElement(_citySelectJsx2['default'], { lat: this.state.sim.lat, long: this.state.sim.long, onLocationChange: this.simStateChange })
 	            ),
 	            _reactAddons2['default'].createElement(
 	              'div',
@@ -23688,6 +23688,7 @@
 
 	    _get(Object.getPrototypeOf(ViewManager.prototype), 'constructor', this).call(this, props);
 	    this.rafCallback = this.rafCallback.bind(this);
+	    this.syncCameraAndViewAxis = this.syncCameraAndViewAxis.bind(this);
 	  }
 
 	  _inherits(ViewManager, _React$Component);
@@ -23724,16 +23725,8 @@
 
 	    // When earth view camera is changed, we need to update view axis in the orbit view.
 	    value: function syncCameraAndViewAxis() {
-	      var _this = this;
-
-	      var sync = function sync() {
-	        var camVec = _this.refs.earth.getCameraEarthVec();
-	        _this.refs.orbit.setViewAxis(camVec);
-	      };
-	      // Initial sync.
-	      sync();
-	      // When earth view camera is changed, we need to update view axis in the orbit view.
-	      this.refs.earth.onCameraChange(sync);
+	      var camVec = this.refs.earth.getCameraEarthVec();
+	      this.refs.orbit.setViewAxis(camVec);
 	    }
 	  }, {
 	    key: 'lookAtSubsolarPoint',
@@ -23767,7 +23760,7 @@
 	            { className: 'view-label' },
 	            'Earth'
 	          ),
-	          _react2['default'].createElement(_earthViewCompJsx2['default'], { ref: 'earth', simulation: this.props.simulation, onLocationChange: this.props.onLocationChange })
+	          _react2['default'].createElement(_earthViewCompJsx2['default'], { ref: 'earth', simulation: this.props.simulation, onSimStateChange: this.props.onSimStateChange, onCameraChange: this.syncCameraAndViewAxis })
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -23777,7 +23770,7 @@
 	            { className: 'view-label' },
 	            'Orbit'
 	          ),
-	          _react2['default'].createElement(_orbitViewCompJsx2['default'], { ref: 'orbit', simulation: this.props.simulation, onDayChange: this.props.onDayChange })
+	          _react2['default'].createElement(_orbitViewCompJsx2['default'], { ref: 'orbit', simulation: this.props.simulation, onSimStateChange: this.props.onSimStateChange })
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -23847,17 +23840,12 @@
 	      var _this = this;
 
 	      _get(Object.getPrototypeOf(EarthViewComp.prototype), 'componentDidMount', this).call(this);
-	      this.externalView.on('latitude.change', function (newLat) {
-	        _this.props.onLocationChange({ lat: newLat });
+	      this.externalView.on('props.change', function (newProps) {
+	        _this.props.onSimStateChange(newProps);
 	      });
-	      this.externalView.on('longitude.change', function (newLong) {
-	        _this.props.onLocationChange({ long: newLong });
+	      this.externalView.on('camera.change', function () {
+	        _this.props.onCameraChange();
 	      });
-	    }
-	  }, {
-	    key: 'onCameraChange',
-	    value: function onCameraChange(callback) {
-	      this.externalView.on('camera.change', callback);
 	    }
 	  }, {
 	    key: 'getCameraEarthVec',
@@ -24032,6 +24020,8 @@
 	    });
 
 	    this.registerInteractionHandler(new _earthViewInteractionJs2['default'](this));
+
+	    window.earth = this;
 	  };
 
 	  _inherits(_class, _BaseView);
@@ -34529,6 +34519,11 @@
 	    get: function get() {
 	      return this._orbitRotObject.rotation.y;
 	    }
+	  }, {
+	    key: 'overallRotation',
+	    get: function get() {
+	      return this.rotation + this.orbitRotation;
+	    }
 	  }]);
 
 	  return _class;
@@ -34849,8 +34844,7 @@
 	        var coords = _this._getPointerLatLong();
 	        if (coords != null) {
 	          // coords can be equal to null if user isn't pointing earth anymore.
-	          _this.dispatch.emit('latitude.change', coords.lat);
-	          _this.dispatch.emit('longitude.change', coords.long);
+	          _this.dispatch.emit('props.change', { lat: coords.lat, long: coords.long });
 	        }
 	      }
 	    });
@@ -34867,7 +34861,7 @@
 	        var coords = _this._getPointerLatLong();
 	        if (coords != null) {
 	          // coords can be equal to null if user isn't pointing earth anymore.
-	          _this.dispatch.emit('latitude.change', coords.lat);
+	          _this.dispatch.emit('props.change', { lat: coords.lat });
 	        }
 	      }
 	    });
@@ -34888,7 +34882,7 @@
 	      intVec.sub(this.earth.position);
 	      // Take into account earth tilt and rotation.
 	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation - this.earth.orbitRotation);
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.overallRotation);
 
 	      // Latitude calculations.
 	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
@@ -35082,8 +35076,8 @@
 	      var _this = this;
 
 	      _get(Object.getPrototypeOf(OrbitViewComp.prototype), 'componentDidMount', this).call(this);
-	      this.externalView.on('day.change', function (newDay) {
-	        _this.props.onDayChange(newDay);
+	      this.externalView.on('props.change', function (newProps) {
+	        _this.props.onSimStateChange(newProps);
 	      });
 	    }
 	  }, {
@@ -35267,7 +35261,7 @@
 	        var angleDiff = _this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
 	        var newDay = angleDiff / (Math.PI * 2) * 364;
 	        if (newDay < 0) newDay += 364;
-	        _this.dispatch.emit('day.change', newDay);
+	        _this.dispatch.emit('props.change', { day: newDay });
 	      }
 	    });
 	  };

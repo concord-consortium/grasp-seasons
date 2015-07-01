@@ -10,16 +10,12 @@ export default class EarthViewComp extends CanvasView {
 
   componentDidMount() {
     super.componentDidMount();
-    this.externalView.on('latitude.change', (newLat) => {
-      this.props.onLocationChange({lat: newLat});
+    this.externalView.on('props.change', (newProps) => {
+      this.props.onSimStateChange(newProps);
     });
-    this.externalView.on('longitude.change', (newLong) => {
-      this.props.onLocationChange({long: newLong});
+    this.externalView.on('camera.change', () => {
+      this.props.onCameraChange();
     });
-  }
-
-  onCameraChange(callback) {
-    this.externalView.on('camera.change', callback);
   }
 
   getCameraEarthVec() {
