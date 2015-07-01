@@ -58,7 +58,7 @@ export default class extends BaseInteraction {
     intVec.sub(this.earth.position);
     // Take into account earth tilt and rotation.
     intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
-    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation);
+    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation - this.earth.orbitRotation);
 
     // Latitude calculations.
     let xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
