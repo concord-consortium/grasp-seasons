@@ -19,8 +19,10 @@ export default class {
     }
     
     this._earthObject = new THREE.Mesh(geometry, this._material);
+    this._orbitRotObject = new THREE.Object3D();
+    this._orbitRotObject.add(this._earthObject);
     this._tiltObject = new THREE.Object3D();
-    this._tiltObject.add(this._earthObject);
+    this._tiltObject.add(this._orbitRotObject);
     this._posObject = new THREE.Object3D();
     // Make sure that earth is at day 0 position.
     // This is necessary so angle diff is calculated correctly in _updateDay() method.
@@ -57,14 +59,27 @@ export default class {
     return this._earthObject.rotation.y;
   }
 
+  set rotation(angle) {
+    this._earthObject.rotation.y = angle;
+  }
+
+  get orbitRotation() {
+    return this._orbitRotObject.rotation.y;
+  }
+
   // Rotates earth around its own axis.
   rotate(angleDiff) {
     this._earthObject.rotation.y += angleDiff;
   }
 
   setPositionFromDay(day) {
-    let pos = data.earthEllipseLocationByDay(day);
-    this.position.copy(pos);
+    let newPos = data.earthEllipseLocationByDay(day);
+
+    let angleDiff = Math.atan2(this.position.z, this.position.x) - Math.atan2(newPos.z, newPos.x);
+    // Make sure that earth maintains its current rotation.
+    this._orbitRotObject.rotation.y += angleDiff;
+
+    this.position.copy(newPos);
   }
 
   setTilted(v) {

@@ -3,6 +3,7 @@ import ViewManager from './view-manager.jsx';
 import Slider from './slider.jsx';
 import DaySlider from './day-slider.jsx';
 import CitySelect from './city-select.jsx';
+import AnimationCheckbox from './animation-checkbox.jsx';
 import AnimationButton from './animation-button.jsx';
 
 import '../../css/seasons.css';
@@ -18,7 +19,7 @@ export default class Seasons extends React.Component {
       sim: {
         day: 171,
         earthTilt: true,
-        earthRotation: false,
+        earthRotation: 1.539,
         sunEarthLine: true,
         lat: 40.11,
         long: -88.2
@@ -28,6 +29,7 @@ export default class Seasons extends React.Component {
     this.mainViewChange = this.mainViewChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
     this.dayChange = this.dayChange.bind(this);
+    this.earthRotationChange = this.earthRotationChange.bind(this);
     this.simCheckboxChange = this.simCheckboxChange.bind(this);
     this.locationChange = this.locationChange.bind(this);
     this.latSliderChange = this.latSliderChange.bind(this);
@@ -83,6 +85,10 @@ export default class Seasons extends React.Component {
     this.setSimState({day: newDay % 365});
   }
 
+  earthRotationChange(newAngle) {
+    this.setSimState({earthRotation: newAngle % (2 * Math.PI)});
+  }
+
   simCheckboxChange(event) {
     let newSimState = {};
     newSimState[event.target.name] = event.target.checked;
@@ -113,7 +119,7 @@ export default class Seasons extends React.Component {
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
             <span> </span>
-            <label><input type='checkbox' name='earthRotation' checked={this.state.sim.earthRotation} onChange={this.simCheckboxChange}/> Rotating</label>
+            <label><AnimationCheckbox speed={0.0003} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationChange}/> Rotating</label>
             <span> </span>
             <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
             <span> </span>

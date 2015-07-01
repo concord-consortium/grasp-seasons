@@ -14,7 +14,7 @@ const DEF_PROPERTIES = {
   day: 0,
   earthTilt: true,
   sunEarthLine: true,
-  earthRotation: false,
+  earthRotation: 4.94,
   lat: 0,
   long: 0
 };
@@ -22,9 +22,6 @@ const DEF_PROPERTIES = {
 export default class extends BaseView {
   constructor(parentEl, props = DEF_PROPERTIES) {
     super(parentEl, props, 'earth-view');
-
-    // Rotate earth a bit so USA is visible.
-    this.earth.rotate(2);
 
     // Emit events when camera is changed.
     this.controls.addEventListener('change', () => {
@@ -48,22 +45,15 @@ export default class extends BaseView {
     this.controls.update();
   }
 
-  render(timestamp) {
-    this._animate(timestamp);
-    super.render(timestamp);
-  }
-
   _updateDay() {
+    let oldOrbitRot = this.earth.orbitRotation;
     let oldPos = this.earth.position.clone();
     super._updateDay();
+    let newOrbitRot = this.earth.orbitRotation;
     let newPos = this.earth.position.clone();
 
-    let angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
-    // Make sure that earth maintains its current rotation.
-    this.earth.rotate(angleDiff);
-
     // Update camera position, rotate it and adjust its orbit length.
-    this.rotateCam(angleDiff);
+    this.rotateCam(newOrbitRot - oldOrbitRot);
     let lenRatio = newPos.length() / oldPos.length();
     this.camera.position.x *= lenRatio;
     this.camera.position.z *= lenRatio;
@@ -84,6 +74,10 @@ export default class extends BaseView {
     this.latLongMarker.setLatLong(this.props.lat, this.props.long)
   }
 
+  _updateEarthRotation() {
+    this.earth.rotation = this.props.earthRotation;
+  }
+
   _initScene() {
     super._initScene();
     this.latLine = new LatitudeLine();
@@ -97,16 +91,5 @@ export default class extends BaseView {
     this.camera.position.x = -129000000 / data.SCALE_FACTOR;
     this.camera.position.y = 5000000 / data.SCALE_FACTOR;
     this.camera.position.z = 25000000 / data.SCALE_FACTOR;
-  }
-
-  _animate(timestamp) {
-    if (!this.props.earthRotation) {
-      this._prevFrame = null;
-      return;
-    }
-    let progress = this._prevFrame ? timestamp - this._prevFrame : 0;
-    let angleDiff = progress * 0.0001 * Math.PI;
-    this.earth.rotate(angleDiff);
-    this._prevFrame = timestamp;
   }
 }

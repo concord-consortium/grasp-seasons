@@ -56,7 +56,7 @@
 
 	var _componentsSeasonsJsx2 = _interopRequireDefault(_componentsSeasonsJsx);
 
-	__webpack_require__(247);
+	__webpack_require__(254);
 
 	_react2['default'].render(_react2['default'].createElement(_componentsSeasonsJsx2['default'], null), document.getElementById('app'));
 
@@ -20481,23 +20481,27 @@
 
 	var _viewManagerJsx2 = _interopRequireDefault(_viewManagerJsx);
 
-	var _sliderJsx = __webpack_require__(233);
+	var _sliderJsx = __webpack_require__(237);
 
 	var _sliderJsx2 = _interopRequireDefault(_sliderJsx);
 
-	var _daySliderJsx = __webpack_require__(240);
+	var _daySliderJsx = __webpack_require__(244);
 
 	var _daySliderJsx2 = _interopRequireDefault(_daySliderJsx);
 
-	var _citySelectJsx = __webpack_require__(242);
+	var _citySelectJsx = __webpack_require__(246);
 
 	var _citySelectJsx2 = _interopRequireDefault(_citySelectJsx);
 
-	var _animationButtonJsx = __webpack_require__(244);
+	var _animationCheckboxJsx = __webpack_require__(257);
+
+	var _animationCheckboxJsx2 = _interopRequireDefault(_animationCheckboxJsx);
+
+	var _animationButtonJsx = __webpack_require__(248);
 
 	var _animationButtonJsx2 = _interopRequireDefault(_animationButtonJsx);
 
-	__webpack_require__(245);
+	__webpack_require__(252);
 
 	var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -20511,7 +20515,7 @@
 	      sim: {
 	        day: 171,
 	        earthTilt: true,
-	        earthRotation: false,
+	        earthRotation: 1.539,
 	        sunEarthLine: true,
 	        lat: 40.11,
 	        long: -88.2
@@ -20521,6 +20525,7 @@
 	    this.mainViewChange = this.mainViewChange.bind(this);
 	    this.daySliderChange = this.daySliderChange.bind(this);
 	    this.dayChange = this.dayChange.bind(this);
+	    this.earthRotationChange = this.earthRotationChange.bind(this);
 	    this.simCheckboxChange = this.simCheckboxChange.bind(this);
 	    this.locationChange = this.locationChange.bind(this);
 	    this.latSliderChange = this.latSliderChange.bind(this);
@@ -20606,6 +20611,11 @@
 	      this.setSimState({ day: newDay % 365 });
 	    }
 	  }, {
+	    key: 'earthRotationChange',
+	    value: function earthRotationChange(newAngle) {
+	      this.setSimState({ earthRotation: newAngle % (2 * Math.PI) });
+	    }
+	  }, {
 	    key: 'simCheckboxChange',
 	    value: function simCheckboxChange(event) {
 	      var newSimState = {};
@@ -20658,7 +20668,7 @@
 	            _reactAddons2['default'].createElement(
 	              'label',
 	              null,
-	              _reactAddons2['default'].createElement('input', { type: 'checkbox', name: 'earthRotation', checked: this.state.sim.earthRotation, onChange: this.simCheckboxChange }),
+	              _reactAddons2['default'].createElement(_animationCheckboxJsx2['default'], { speed: 0.0003, currentValue: this.state.sim.earthRotation, onAnimationStep: this.earthRotationChange }),
 	              ' Rotating'
 	            ),
 	            _reactAddons2['default'].createElement(
@@ -23662,15 +23672,15 @@
 
 	var _earthViewCompJsx2 = _interopRequireDefault(_earthViewCompJsx);
 
-	var _orbitViewCompJsx = __webpack_require__(225);
+	var _orbitViewCompJsx = __webpack_require__(228);
 
 	var _orbitViewCompJsx2 = _interopRequireDefault(_orbitViewCompJsx);
 
-	var _raysViewCompJsx = __webpack_require__(227);
+	var _raysViewCompJsx = __webpack_require__(231);
 
 	var _raysViewCompJsx2 = _interopRequireDefault(_raysViewCompJsx);
 
-	__webpack_require__(229);
+	__webpack_require__(233);
 
 	var ViewManager = (function (_React$Component) {
 	  function ViewManager(props) {
@@ -23959,17 +23969,17 @@
 
 	var _interopRequireDefault = __webpack_require__(1)['default'];
 
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 
-	var _jquery = __webpack_require__(216);
+	var _jquery = __webpack_require__(215);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _baseViewJs = __webpack_require__(217);
+	var _baseViewJs = __webpack_require__(214);
 
 	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
 
@@ -23977,15 +23987,15 @@
 
 	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
 
-	var _modelsLatitudeLineJs = __webpack_require__(222);
+	var _modelsLatitudeLineJs = __webpack_require__(223);
 
 	var _modelsLatitudeLineJs2 = _interopRequireDefault(_modelsLatitudeLineJs);
 
-	var _modelsLatLongMarkerJs = __webpack_require__(223);
+	var _modelsLatLongMarkerJs = __webpack_require__(224);
 
 	var _modelsLatLongMarkerJs2 = _interopRequireDefault(_modelsLatLongMarkerJs);
 
-	var _earthViewInteractionJs = __webpack_require__(253);
+	var _earthViewInteractionJs = __webpack_require__(226);
 
 	var _earthViewInteractionJs2 = _interopRequireDefault(_earthViewInteractionJs);
 
@@ -23993,7 +24003,7 @@
 
 	var data = _interopRequireWildcard(_solarSystemDataJs);
 
-	var _utilsJs = __webpack_require__(224);
+	var _utilsJs = __webpack_require__(225);
 
 	var DEG_2_RAD = Math.PI / 180;
 
@@ -24001,7 +24011,7 @@
 	  day: 0,
 	  earthTilt: true,
 	  sunEarthLine: true,
-	  earthRotation: false,
+	  earthRotation: 4.94,
 	  lat: 0,
 	  long: 0
 	};
@@ -24015,9 +24025,6 @@
 	    _classCallCheck(this, _class);
 
 	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'earth-view');
-
-	    // Rotate earth a bit so USA is visible.
-	    this.earth.rotate(2);
 
 	    // Emit events when camera is changed.
 	    this.controls.addEventListener('change', function () {
@@ -24047,24 +24054,16 @@
 	      this.controls.update();
 	    }
 	  }, {
-	    key: 'render',
-	    value: function render(timestamp) {
-	      this._animate(timestamp);
-	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
-	    }
-	  }, {
 	    key: '_updateDay',
 	    value: function _updateDay() {
+	      var oldOrbitRot = this.earth.orbitRotation;
 	      var oldPos = this.earth.position.clone();
 	      _get(Object.getPrototypeOf(_class.prototype), '_updateDay', this).call(this);
+	      var newOrbitRot = this.earth.orbitRotation;
 	      var newPos = this.earth.position.clone();
 
-	      var angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
-	      // Make sure that earth maintains its current rotation.
-	      this.earth.rotate(angleDiff);
-
 	      // Update camera position, rotate it and adjust its orbit length.
-	      this.rotateCam(angleDiff);
+	      this.rotateCam(newOrbitRot - oldOrbitRot);
 	      var lenRatio = newPos.length() / oldPos.length();
 	      this.camera.position.x *= lenRatio;
 	      this.camera.position.z *= lenRatio;
@@ -24087,6 +24086,11 @@
 	      this.latLongMarker.setLatLong(this.props.lat, this.props.long);
 	    }
 	  }, {
+	    key: '_updateEarthRotation',
+	    value: function _updateEarthRotation() {
+	      this.earth.rotation = this.props.earthRotation;
+	    }
+	  }, {
 	    key: '_initScene',
 	    value: function _initScene() {
 	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
@@ -24104,18 +24108,6 @@
 	      this.camera.position.y = 5000000 / data.SCALE_FACTOR;
 	      this.camera.position.z = 25000000 / data.SCALE_FACTOR;
 	    }
-	  }, {
-	    key: '_animate',
-	    value: function _animate(timestamp) {
-	      if (!this.props.earthRotation) {
-	        this._prevFrame = null;
-	        return;
-	      }
-	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
-	      var angleDiff = progress * 0.0001 * Math.PI;
-	      this.earth.rotate(angleDiff);
-	      this._prevFrame = timestamp;
-	    }
 	  }]);
 
 	  return _class;
@@ -24128,608 +24120,230 @@
 /* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * EventEmitter2
-	 * https://github.com/hij1nx/EventEmitter2
-	 *
-	 * Copyright (c) 2013 hij1nx
-	 * Licensed under the MIT license.
-	 */
-	;!function(undefined) {
+	'use strict';
 
-	  var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
-	    return Object.prototype.toString.call(obj) === "[object Array]";
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _getIterator = __webpack_require__(192)['default'];
+
+	var _Object$keys = __webpack_require__(208)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(215);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _eventemitter2 = __webpack_require__(217);
+
+	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
+
+	var _modelsCommonModelsJs = __webpack_require__(218);
+
+	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _modelsEarthJs = __webpack_require__(221);
+
+	var _modelsEarthJs2 = _interopRequireDefault(_modelsEarthJs);
+
+	var _modelsSunEarthLineJs = __webpack_require__(222);
+
+	var _modelsSunEarthLineJs2 = _interopRequireDefault(_modelsSunEarthLineJs);
+
+	var _solarSystemDataJs = __webpack_require__(219);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var DEF_PROPERTIES = {
+	  day: 0,
+	  earthTilt: true,
+	  sunEarthLine: true
+	};
+
+	var _default = (function () {
+	  var _class = function _default(parentEl) {
+	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
+	    var modelType = arguments[2] === undefined ? 'unknown' : arguments[2];
+
+	    _classCallCheck(this, _class);
+
+	    var width = parentEl.clientWidth;
+	    var height = parentEl.clientHeight;
+	    this.scene = new THREE.Scene();
+	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
+	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+	    this.renderer.setSize(width, height);
+	    parentEl.appendChild(this.renderer.domElement);
+
+	    // Type is passed to 3D models.
+	    this.type = modelType;
+	    this._initScene();
+	    this._setInitialCamPos();
+
+	    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+	    this.controls.noPan = true;
+	    this.controls.noZoom = true;
+	    this.controls.rotateSpeed = 0.5;
+
+	    this.dispatch = new _eventemitter22['default']();
+
+	    this.props = {};
+	    this.setProps(props);
+
+	    this._interactionHandler = null;
 	  };
-	  var defaultMaxListeners = 10;
 
-	  function init() {
-	    this._events = {};
-	    if (this._conf) {
-	      configure.call(this, this._conf);
-	    }
-	  }
+	  _createClass(_class, [{
+	    key: 'setProps',
+	    value: function setProps(newProps) {
+	      var oldProps = _jquery2['default'].extend(this.props);
+	      this.props = _jquery2['default'].extend(this.props, newProps);
 
-	  function configure(conf) {
-	    if (conf) {
+	      // Iterate over all the properties and call update handles for ones that have been changed.
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
 
-	      this._conf = conf;
+	      try {
+	        for (var _iterator = _getIterator(_Object$keys(this.props)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var key = _step.value;
 
-	      conf.delimiter && (this.delimiter = conf.delimiter);
-	      conf.maxListeners && (this._events.maxListeners = conf.maxListeners);
-	      conf.wildcard && (this.wildcard = conf.wildcard);
-	      conf.newListener && (this.newListener = conf.newListener);
-
-	      if (this.wildcard) {
-	        this.listenerTree = {};
-	      }
-	    }
-	  }
-
-	  function EventEmitter(conf) {
-	    this._events = {};
-	    this.newListener = false;
-	    configure.call(this, conf);
-	  }
-
-	  //
-	  // Attention, function return type now is array, always !
-	  // It has zero elements if no any matches found and one or more
-	  // elements (leafs) if there are matches
-	  //
-	  function searchListenerTree(handlers, type, tree, i) {
-	    if (!tree) {
-	      return [];
-	    }
-	    var listeners=[], leaf, len, branch, xTree, xxTree, isolatedBranch, endReached,
-	        typeLength = type.length, currentType = type[i], nextType = type[i+1];
-	    if (i === typeLength && tree._listeners) {
-	      //
-	      // If at the end of the event(s) list and the tree has listeners
-	      // invoke those listeners.
-	      //
-	      if (typeof tree._listeners === 'function') {
-	        handlers && handlers.push(tree._listeners);
-	        return [tree];
-	      } else {
-	        for (leaf = 0, len = tree._listeners.length; leaf < len; leaf++) {
-	          handlers && handlers.push(tree._listeners[leaf]);
-	        }
-	        return [tree];
-	      }
-	    }
-
-	    if ((currentType === '*' || currentType === '**') || tree[currentType]) {
-	      //
-	      // If the event emitted is '*' at this part
-	      // or there is a concrete match at this patch
-	      //
-	      if (currentType === '*') {
-	        for (branch in tree) {
-	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-	            listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+1));
-	          }
-	        }
-	        return listeners;
-	      } else if(currentType === '**') {
-	        endReached = (i+1 === typeLength || (i+2 === typeLength && nextType === '*'));
-	        if(endReached && tree._listeners) {
-	          // The next element has a _listeners, add it to the handlers.
-	          listeners = listeners.concat(searchListenerTree(handlers, type, tree, typeLength));
-	        }
-
-	        for (branch in tree) {
-	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-	            if(branch === '*' || branch === '**') {
-	              if(tree[branch]._listeners && !endReached) {
-	                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], typeLength));
-	              }
-	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
-	            } else if(branch === nextType) {
-	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+2));
-	            } else {
-	              // No match on this one, shift into the tree but not in the type array.
-	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
+	          if (this.props[key] !== oldProps[key]) {
+	            // Transform property name to name of the function that handles its update. For example:
+	            // earthTilt -> _updateEarthTilt.
+	            var funcName = '_update' + key[0].toUpperCase() + key.substr(1);
+	            if (typeof this[funcName] === 'function') {
+	              this[funcName]();
 	            }
 	          }
 	        }
-	        return listeners;
-	      }
-
-	      listeners = listeners.concat(searchListenerTree(handlers, type, tree[currentType], i+1));
-	    }
-
-	    xTree = tree['*'];
-	    if (xTree) {
-	      //
-	      // If the listener tree will allow any match for this part,
-	      // then recursively explore all branches of the tree
-	      //
-	      searchListenerTree(handlers, type, xTree, i+1);
-	    }
-
-	    xxTree = tree['**'];
-	    if(xxTree) {
-	      if(i < typeLength) {
-	        if(xxTree._listeners) {
-	          // If we have a listener on a '**', it will catch all, so add its handler.
-	          searchListenerTree(handlers, type, xxTree, typeLength);
-	        }
-
-	        // Build arrays of matching next branches and others.
-	        for(branch in xxTree) {
-	          if(branch !== '_listeners' && xxTree.hasOwnProperty(branch)) {
-	            if(branch === nextType) {
-	              // We know the next element will match, so jump twice.
-	              searchListenerTree(handlers, type, xxTree[branch], i+2);
-	            } else if(branch === currentType) {
-	              // Current node matches, move into the tree.
-	              searchListenerTree(handlers, type, xxTree[branch], i+1);
-	            } else {
-	              isolatedBranch = {};
-	              isolatedBranch[branch] = xxTree[branch];
-	              searchListenerTree(handlers, type, { '**': isolatedBranch }, i+1);
-	            }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator['return']) {
+	            _iterator['return']();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
 	          }
 	        }
-	      } else if(xxTree._listeners) {
-	        // We have reached the end and still on a '**'
-	        searchListenerTree(handlers, type, xxTree, typeLength);
-	      } else if(xxTree['*'] && xxTree['*']._listeners) {
-	        searchListenerTree(handlers, type, xxTree['*'], typeLength);
 	      }
 	    }
+	  }, {
+	    key: 'on',
 
-	    return listeners;
-	  }
+	    // Delegate #on to EventEmitter object.
+	    value: function on() {
+	      this.dispatch.on.apply(this.dispatch, arguments);
+	    }
+	  }, {
+	    key: 'rotateCam',
 
-	  function growListenerTree(type, listener) {
+	    // Rotates camera around the sun.
+	    value: function rotateCam(angle) {
+	      this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+	      this.controls.update();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render(timestamp) {
+	      this.controls.update();
+	      if (this._interactionHandler) {
+	        this._interactionHandler.checkInteraction();
+	      }
+	      this.renderer.render(this.scene, this.camera);
+	    }
+	  }, {
+	    key: 'resize',
 
-	    type = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	    // Resizes canvas to fill its parent.
+	    value: function resize() {
+	      var $parent = (0, _jquery2['default'])(this.renderer.domElement).parent();
+	      var newWidth = $parent.width();
+	      var newHeight = $parent.height();
+	      this.camera.aspect = newWidth / newHeight;
+	      this.camera.updateProjectionMatrix();
+	      this.renderer.setSize(newWidth, newHeight);
+	    }
+	  }, {
+	    key: 'registerInteractionHandler',
+	    value: function registerInteractionHandler(handler) {
+	      this._interactionHandler = handler;
+	    }
+	  }, {
+	    key: '_updateDay',
 
-	    //
-	    // Looks for two consecutive '**', if so, don't add the event at all.
-	    //
-	    for(var i = 0, len = type.length; i+1 < len; i++) {
-	      if(type[i] === '**' && type[i+1] === '**') {
-	        return;
+	    // Called automatically when 'day' property is updated.
+	    value: function _updateDay() {
+	      this.earth.setPositionFromDay(this.props.day);
+	      this.sunEarthLine.setEarthPos(this.earth.position);
+	    }
+	  }, {
+	    key: '_updateEarthTilt',
+
+	    // Called automatically when 'earthTilt' property is updated.
+	    value: function _updateEarthTilt() {
+	      this.earth.setTilted(this.props.earthTilt);
+	    }
+	  }, {
+	    key: '_updateSunEarthLine',
+	    value: function _updateSunEarthLine() {
+	      var mesh = this.sunEarthLine.rootObject;
+	      if (this.props.sunEarthLine && !mesh.parent) {
+	        this.scene.add(mesh);
+	      } else if (!this.props.sunEarthLine && mesh.parent) {
+	        this.scene.remove(mesh);
 	      }
 	    }
+	  }, {
+	    key: '_initScene',
+	    value: function _initScene() {
+	      var basicProps = { type: this.type };
 
-	    var tree = this.listenerTree;
-	    var name = type.shift();
+	      this.scene.add(_modelsCommonModelsJs2['default'].stars(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].ambientLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sunOnlyLight(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].grid(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
+	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
 
-	    while (name) {
+	      this.earth = new _modelsEarthJs2['default'](basicProps);
+	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
+	      this.earth.earthObject.add(this.earthAxis);
+	      this.scene.add(this.earth.rootObject);
 
-	      if (!tree[name]) {
-	        tree[name] = {};
-	      }
-
-	      tree = tree[name];
-
-	      if (type.length === 0) {
-
-	        if (!tree._listeners) {
-	          tree._listeners = listener;
-	        }
-	        else if(typeof tree._listeners === 'function') {
-	          tree._listeners = [tree._listeners, listener];
-	        }
-	        else if (isArray(tree._listeners)) {
-
-	          tree._listeners.push(listener);
-
-	          if (!tree._listeners.warned) {
-
-	            var m = defaultMaxListeners;
-
-	            if (typeof this._events.maxListeners !== 'undefined') {
-	              m = this._events.maxListeners;
-	            }
-
-	            if (m > 0 && tree._listeners.length > m) {
-
-	              tree._listeners.warned = true;
-	              console.error('(node) warning: possible EventEmitter memory ' +
-	                            'leak detected. %d listeners added. ' +
-	                            'Use emitter.setMaxListeners() to increase limit.',
-	                            tree._listeners.length);
-	              console.trace();
-	            }
-	          }
-	        }
-	        return true;
-	      }
-	      name = type.shift();
+	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
+	      this.scene.add(this.sunEarthLine.rootObject);
 	    }
-	    return true;
-	  }
-
-	  // By default EventEmitters will print a warning if more than
-	  // 10 listeners are added to it. This is a useful default which
-	  // helps finding memory leaks.
-	  //
-	  // Obviously not all Emitters should be limited to 10. This function allows
-	  // that to be increased. Set to zero for unlimited.
-
-	  EventEmitter.prototype.delimiter = '.';
-
-	  EventEmitter.prototype.setMaxListeners = function(n) {
-	    this._events || init.call(this);
-	    this._events.maxListeners = n;
-	    if (!this._conf) this._conf = {};
-	    this._conf.maxListeners = n;
-	  };
-
-	  EventEmitter.prototype.event = '';
-
-	  EventEmitter.prototype.once = function(event, fn) {
-	    this.many(event, 1, fn);
-	    return this;
-	  };
-
-	  EventEmitter.prototype.many = function(event, ttl, fn) {
-	    var self = this;
-
-	    if (typeof fn !== 'function') {
-	      throw new Error('many only accepts instances of Function');
+	  }, {
+	    key: '_setInitialCamPos',
+	    value: function _setInitialCamPos() {
+	      this.camera.position.x = 0;
+	      this.camera.position.y = 0;
+	      this.camera.position.z = 0;
 	    }
+	  }]);
 
-	    function listener() {
-	      if (--ttl === 0) {
-	        self.off(event, listener);
-	      }
-	      fn.apply(this, arguments);
-	    }
+	  return _class;
+	})();
 
-	    listener._origin = fn;
-
-	    this.on(event, listener);
-
-	    return self;
-	  };
-
-	  EventEmitter.prototype.emit = function() {
-
-	    this._events || init.call(this);
-
-	    var type = arguments[0];
-
-	    if (type === 'newListener' && !this.newListener) {
-	      if (!this._events.newListener) { return false; }
-	    }
-
-	    // Loop through the *_all* functions and invoke them.
-	    if (this._all) {
-	      var l = arguments.length;
-	      var args = new Array(l - 1);
-	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-	      for (i = 0, l = this._all.length; i < l; i++) {
-	        this.event = type;
-	        this._all[i].apply(this, args);
-	      }
-	    }
-
-	    // If there is no 'error' event listener then throw.
-	    if (type === 'error') {
-
-	      if (!this._all &&
-	        !this._events.error &&
-	        !(this.wildcard && this.listenerTree.error)) {
-
-	        if (arguments[1] instanceof Error) {
-	          throw arguments[1]; // Unhandled 'error' event
-	        } else {
-	          throw new Error("Uncaught, unspecified 'error' event.");
-	        }
-	        return false;
-	      }
-	    }
-
-	    var handler;
-
-	    if(this.wildcard) {
-	      handler = [];
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
-	    }
-	    else {
-	      handler = this._events[type];
-	    }
-
-	    if (typeof handler === 'function') {
-	      this.event = type;
-	      if (arguments.length === 1) {
-	        handler.call(this);
-	      }
-	      else if (arguments.length > 1)
-	        switch (arguments.length) {
-	          case 2:
-	            handler.call(this, arguments[1]);
-	            break;
-	          case 3:
-	            handler.call(this, arguments[1], arguments[2]);
-	            break;
-	          // slower
-	          default:
-	            var l = arguments.length;
-	            var args = new Array(l - 1);
-	            for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-	            handler.apply(this, args);
-	        }
-	      return true;
-	    }
-	    else if (handler) {
-	      var l = arguments.length;
-	      var args = new Array(l - 1);
-	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-
-	      var listeners = handler.slice();
-	      for (var i = 0, l = listeners.length; i < l; i++) {
-	        this.event = type;
-	        listeners[i].apply(this, args);
-	      }
-	      return (listeners.length > 0) || !!this._all;
-	    }
-	    else {
-	      return !!this._all;
-	    }
-
-	  };
-
-	  EventEmitter.prototype.on = function(type, listener) {
-
-	    if (typeof type === 'function') {
-	      this.onAny(type);
-	      return this;
-	    }
-
-	    if (typeof listener !== 'function') {
-	      throw new Error('on only accepts instances of Function');
-	    }
-	    this._events || init.call(this);
-
-	    // To avoid recursion in the case that type == "newListeners"! Before
-	    // adding it to the listeners, first emit "newListeners".
-	    this.emit('newListener', type, listener);
-
-	    if(this.wildcard) {
-	      growListenerTree.call(this, type, listener);
-	      return this;
-	    }
-
-	    if (!this._events[type]) {
-	      // Optimize the case of one listener. Don't need the extra array object.
-	      this._events[type] = listener;
-	    }
-	    else if(typeof this._events[type] === 'function') {
-	      // Adding the second element, need to change to array.
-	      this._events[type] = [this._events[type], listener];
-	    }
-	    else if (isArray(this._events[type])) {
-	      // If we've already got an array, just append.
-	      this._events[type].push(listener);
-
-	      // Check for listener leak
-	      if (!this._events[type].warned) {
-
-	        var m = defaultMaxListeners;
-
-	        if (typeof this._events.maxListeners !== 'undefined') {
-	          m = this._events.maxListeners;
-	        }
-
-	        if (m > 0 && this._events[type].length > m) {
-
-	          this._events[type].warned = true;
-	          console.error('(node) warning: possible EventEmitter memory ' +
-	                        'leak detected. %d listeners added. ' +
-	                        'Use emitter.setMaxListeners() to increase limit.',
-	                        this._events[type].length);
-	          console.trace();
-	        }
-	      }
-	    }
-	    return this;
-	  };
-
-	  EventEmitter.prototype.onAny = function(fn) {
-
-	    if (typeof fn !== 'function') {
-	      throw new Error('onAny only accepts instances of Function');
-	    }
-
-	    if(!this._all) {
-	      this._all = [];
-	    }
-
-	    // Add the function to the event listener collection.
-	    this._all.push(fn);
-	    return this;
-	  };
-
-	  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-	  EventEmitter.prototype.off = function(type, listener) {
-	    if (typeof listener !== 'function') {
-	      throw new Error('removeListener only takes instances of Function');
-	    }
-
-	    var handlers,leafs=[];
-
-	    if(this.wildcard) {
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-	    }
-	    else {
-	      // does not use listeners(), so no side effect of creating _events[type]
-	      if (!this._events[type]) return this;
-	      handlers = this._events[type];
-	      leafs.push({_listeners:handlers});
-	    }
-
-	    for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
-	      var leaf = leafs[iLeaf];
-	      handlers = leaf._listeners;
-	      if (isArray(handlers)) {
-
-	        var position = -1;
-
-	        for (var i = 0, length = handlers.length; i < length; i++) {
-	          if (handlers[i] === listener ||
-	            (handlers[i].listener && handlers[i].listener === listener) ||
-	            (handlers[i]._origin && handlers[i]._origin === listener)) {
-	            position = i;
-	            break;
-	          }
-	        }
-
-	        if (position < 0) {
-	          continue;
-	        }
-
-	        if(this.wildcard) {
-	          leaf._listeners.splice(position, 1);
-	        }
-	        else {
-	          this._events[type].splice(position, 1);
-	        }
-
-	        if (handlers.length === 0) {
-	          if(this.wildcard) {
-	            delete leaf._listeners;
-	          }
-	          else {
-	            delete this._events[type];
-	          }
-	        }
-	        return this;
-	      }
-	      else if (handlers === listener ||
-	        (handlers.listener && handlers.listener === listener) ||
-	        (handlers._origin && handlers._origin === listener)) {
-	        if(this.wildcard) {
-	          delete leaf._listeners;
-	        }
-	        else {
-	          delete this._events[type];
-	        }
-	      }
-	    }
-
-	    return this;
-	  };
-
-	  EventEmitter.prototype.offAny = function(fn) {
-	    var i = 0, l = 0, fns;
-	    if (fn && this._all && this._all.length > 0) {
-	      fns = this._all;
-	      for(i = 0, l = fns.length; i < l; i++) {
-	        if(fn === fns[i]) {
-	          fns.splice(i, 1);
-	          return this;
-	        }
-	      }
-	    } else {
-	      this._all = [];
-	    }
-	    return this;
-	  };
-
-	  EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
-
-	  EventEmitter.prototype.removeAllListeners = function(type) {
-	    if (arguments.length === 0) {
-	      !this._events || init.call(this);
-	      return this;
-	    }
-
-	    if(this.wildcard) {
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      var leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-
-	      for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
-	        var leaf = leafs[iLeaf];
-	        leaf._listeners = null;
-	      }
-	    }
-	    else {
-	      if (!this._events[type]) return this;
-	      this._events[type] = null;
-	    }
-	    return this;
-	  };
-
-	  EventEmitter.prototype.listeners = function(type) {
-	    if(this.wildcard) {
-	      var handlers = [];
-	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-	      searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
-	      return handlers;
-	    }
-
-	    this._events || init.call(this);
-
-	    if (!this._events[type]) this._events[type] = [];
-	    if (!isArray(this._events[type])) {
-	      this._events[type] = [this._events[type]];
-	    }
-	    return this._events[type];
-	  };
-
-	  EventEmitter.prototype.listenersAny = function() {
-
-	    if(this._all) {
-	      return this._all;
-	    }
-	    else {
-	      return [];
-	    }
-
-	  };
-
-	  if (true) {
-	     // AMD. Register as an anonymous module.
-	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
-	      return EventEmitter;
-	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	  } else if (typeof exports === 'object') {
-	    // CommonJS
-	    exports.EventEmitter2 = EventEmitter;
-	  }
-	  else {
-	    // Browser global.
-	    window.EventEmitter2 = EventEmitter;
-	  }
-	}();
-
+	exports['default'] = _default;
+	module.exports = exports['default'];
 
 /***/ },
 /* 215 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	exports["default"] = function (obj) {
-	  if (obj && obj.__esModule) {
-	    return obj;
-	  } else {
-	    var newObj = {};
-
-	    if (obj != null) {
-	      for (var key in obj) {
-	        if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
-	      }
-	    }
-
-	    newObj["default"] = obj;
-	    return newObj;
-	  }
-	};
-
-	exports.__esModule = true;
-
-/***/ },
-/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -33945,230 +33559,608 @@
 
 
 /***/ },
+/* 216 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	exports["default"] = function (obj) {
+	  if (obj && obj.__esModule) {
+	    return obj;
+	  } else {
+	    var newObj = {};
+
+	    if (obj != null) {
+	      for (var key in obj) {
+	        if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+	      }
+	    }
+
+	    newObj["default"] = obj;
+	    return newObj;
+	  }
+	};
+
+	exports.__esModule = true;
+
+/***/ },
 /* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * EventEmitter2
+	 * https://github.com/hij1nx/EventEmitter2
+	 *
+	 * Copyright (c) 2013 hij1nx
+	 * Licensed under the MIT license.
+	 */
+	;!function(undefined) {
 
-	var _createClass = __webpack_require__(188)['default'];
-
-	var _classCallCheck = __webpack_require__(191)['default'];
-
-	var _getIterator = __webpack_require__(192)['default'];
-
-	var _Object$keys = __webpack_require__(208)['default'];
-
-	var _interopRequireDefault = __webpack_require__(1)['default'];
-
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _jquery = __webpack_require__(216);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _eventemitter2 = __webpack_require__(214);
-
-	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
-
-	var _modelsCommonModelsJs = __webpack_require__(218);
-
-	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
-
-	var _modelsEarthJs = __webpack_require__(249);
-
-	var _modelsEarthJs2 = _interopRequireDefault(_modelsEarthJs);
-
-	var _modelsSunEarthLineJs = __webpack_require__(221);
-
-	var _modelsSunEarthLineJs2 = _interopRequireDefault(_modelsSunEarthLineJs);
-
-	var _solarSystemDataJs = __webpack_require__(219);
-
-	var data = _interopRequireWildcard(_solarSystemDataJs);
-
-	var DEF_PROPERTIES = {
-	  day: 0,
-	  earthTilt: true,
-	  sunEarthLine: true
-	};
-
-	var _default = (function () {
-	  var _class = function _default(parentEl) {
-	    var props = arguments[1] === undefined ? DEF_PROPERTIES : arguments[1];
-	    var modelType = arguments[2] === undefined ? 'unknown' : arguments[2];
-
-	    _classCallCheck(this, _class);
-
-	    var width = parentEl.clientWidth;
-	    var height = parentEl.clientHeight;
-	    this.scene = new THREE.Scene();
-	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-	    this.renderer.setSize(width, height);
-	    parentEl.appendChild(this.renderer.domElement);
-
-	    // Type is passed to 3D models.
-	    this.type = modelType;
-	    this._initScene();
-	    this._setInitialCamPos();
-
-	    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-	    this.controls.noPan = true;
-	    this.controls.noZoom = true;
-	    this.controls.rotateSpeed = 0.5;
-
-	    this.dispatch = new _eventemitter22['default']();
-
-	    this.props = {};
-	    this.setProps(props);
-
-	    this._interactionHandler = null;
+	  var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
+	    return Object.prototype.toString.call(obj) === "[object Array]";
 	  };
+	  var defaultMaxListeners = 10;
 
-	  _createClass(_class, [{
-	    key: 'setProps',
-	    value: function setProps(newProps) {
-	      var oldProps = _jquery2['default'].extend(this.props);
-	      this.props = _jquery2['default'].extend(this.props, newProps);
+	  function init() {
+	    this._events = {};
+	    if (this._conf) {
+	      configure.call(this, this._conf);
+	    }
+	  }
 
-	      // Iterate over all the properties and call update handles for ones that have been changed.
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
+	  function configure(conf) {
+	    if (conf) {
 
-	      try {
-	        for (var _iterator = _getIterator(_Object$keys(this.props)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var key = _step.value;
+	      this._conf = conf;
 
-	          if (this.props[key] !== oldProps[key]) {
-	            // Transform property name to name of the function that handles its update. For example:
-	            // earthTilt -> _updateEarthTilt.
-	            var funcName = '_update' + key[0].toUpperCase() + key.substr(1);
-	            if (typeof this[funcName] === 'function') {
-	              this[funcName]();
+	      conf.delimiter && (this.delimiter = conf.delimiter);
+	      conf.maxListeners && (this._events.maxListeners = conf.maxListeners);
+	      conf.wildcard && (this.wildcard = conf.wildcard);
+	      conf.newListener && (this.newListener = conf.newListener);
+
+	      if (this.wildcard) {
+	        this.listenerTree = {};
+	      }
+	    }
+	  }
+
+	  function EventEmitter(conf) {
+	    this._events = {};
+	    this.newListener = false;
+	    configure.call(this, conf);
+	  }
+
+	  //
+	  // Attention, function return type now is array, always !
+	  // It has zero elements if no any matches found and one or more
+	  // elements (leafs) if there are matches
+	  //
+	  function searchListenerTree(handlers, type, tree, i) {
+	    if (!tree) {
+	      return [];
+	    }
+	    var listeners=[], leaf, len, branch, xTree, xxTree, isolatedBranch, endReached,
+	        typeLength = type.length, currentType = type[i], nextType = type[i+1];
+	    if (i === typeLength && tree._listeners) {
+	      //
+	      // If at the end of the event(s) list and the tree has listeners
+	      // invoke those listeners.
+	      //
+	      if (typeof tree._listeners === 'function') {
+	        handlers && handlers.push(tree._listeners);
+	        return [tree];
+	      } else {
+	        for (leaf = 0, len = tree._listeners.length; leaf < len; leaf++) {
+	          handlers && handlers.push(tree._listeners[leaf]);
+	        }
+	        return [tree];
+	      }
+	    }
+
+	    if ((currentType === '*' || currentType === '**') || tree[currentType]) {
+	      //
+	      // If the event emitted is '*' at this part
+	      // or there is a concrete match at this patch
+	      //
+	      if (currentType === '*') {
+	        for (branch in tree) {
+	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
+	            listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+1));
+	          }
+	        }
+	        return listeners;
+	      } else if(currentType === '**') {
+	        endReached = (i+1 === typeLength || (i+2 === typeLength && nextType === '*'));
+	        if(endReached && tree._listeners) {
+	          // The next element has a _listeners, add it to the handlers.
+	          listeners = listeners.concat(searchListenerTree(handlers, type, tree, typeLength));
+	        }
+
+	        for (branch in tree) {
+	          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
+	            if(branch === '*' || branch === '**') {
+	              if(tree[branch]._listeners && !endReached) {
+	                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], typeLength));
+	              }
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
+	            } else if(branch === nextType) {
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+2));
+	            } else {
+	              // No match on this one, shift into the tree but not in the type array.
+	              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
 	            }
 	          }
 	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator['return']) {
-	            _iterator['return']();
+	        return listeners;
+	      }
+
+	      listeners = listeners.concat(searchListenerTree(handlers, type, tree[currentType], i+1));
+	    }
+
+	    xTree = tree['*'];
+	    if (xTree) {
+	      //
+	      // If the listener tree will allow any match for this part,
+	      // then recursively explore all branches of the tree
+	      //
+	      searchListenerTree(handlers, type, xTree, i+1);
+	    }
+
+	    xxTree = tree['**'];
+	    if(xxTree) {
+	      if(i < typeLength) {
+	        if(xxTree._listeners) {
+	          // If we have a listener on a '**', it will catch all, so add its handler.
+	          searchListenerTree(handlers, type, xxTree, typeLength);
+	        }
+
+	        // Build arrays of matching next branches and others.
+	        for(branch in xxTree) {
+	          if(branch !== '_listeners' && xxTree.hasOwnProperty(branch)) {
+	            if(branch === nextType) {
+	              // We know the next element will match, so jump twice.
+	              searchListenerTree(handlers, type, xxTree[branch], i+2);
+	            } else if(branch === currentType) {
+	              // Current node matches, move into the tree.
+	              searchListenerTree(handlers, type, xxTree[branch], i+1);
+	            } else {
+	              isolatedBranch = {};
+	              isolatedBranch[branch] = xxTree[branch];
+	              searchListenerTree(handlers, type, { '**': isolatedBranch }, i+1);
+	            }
 	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
+	        }
+	      } else if(xxTree._listeners) {
+	        // We have reached the end and still on a '**'
+	        searchListenerTree(handlers, type, xxTree, typeLength);
+	      } else if(xxTree['*'] && xxTree['*']._listeners) {
+	        searchListenerTree(handlers, type, xxTree['*'], typeLength);
+	      }
+	    }
+
+	    return listeners;
+	  }
+
+	  function growListenerTree(type, listener) {
+
+	    type = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+
+	    //
+	    // Looks for two consecutive '**', if so, don't add the event at all.
+	    //
+	    for(var i = 0, len = type.length; i+1 < len; i++) {
+	      if(type[i] === '**' && type[i+1] === '**') {
+	        return;
+	      }
+	    }
+
+	    var tree = this.listenerTree;
+	    var name = type.shift();
+
+	    while (name) {
+
+	      if (!tree[name]) {
+	        tree[name] = {};
+	      }
+
+	      tree = tree[name];
+
+	      if (type.length === 0) {
+
+	        if (!tree._listeners) {
+	          tree._listeners = listener;
+	        }
+	        else if(typeof tree._listeners === 'function') {
+	          tree._listeners = [tree._listeners, listener];
+	        }
+	        else if (isArray(tree._listeners)) {
+
+	          tree._listeners.push(listener);
+
+	          if (!tree._listeners.warned) {
+
+	            var m = defaultMaxListeners;
+
+	            if (typeof this._events.maxListeners !== 'undefined') {
+	              m = this._events.maxListeners;
+	            }
+
+	            if (m > 0 && tree._listeners.length > m) {
+
+	              tree._listeners.warned = true;
+	              console.error('(node) warning: possible EventEmitter memory ' +
+	                            'leak detected. %d listeners added. ' +
+	                            'Use emitter.setMaxListeners() to increase limit.',
+	                            tree._listeners.length);
+	              console.trace();
+	            }
 	          }
+	        }
+	        return true;
+	      }
+	      name = type.shift();
+	    }
+	    return true;
+	  }
+
+	  // By default EventEmitters will print a warning if more than
+	  // 10 listeners are added to it. This is a useful default which
+	  // helps finding memory leaks.
+	  //
+	  // Obviously not all Emitters should be limited to 10. This function allows
+	  // that to be increased. Set to zero for unlimited.
+
+	  EventEmitter.prototype.delimiter = '.';
+
+	  EventEmitter.prototype.setMaxListeners = function(n) {
+	    this._events || init.call(this);
+	    this._events.maxListeners = n;
+	    if (!this._conf) this._conf = {};
+	    this._conf.maxListeners = n;
+	  };
+
+	  EventEmitter.prototype.event = '';
+
+	  EventEmitter.prototype.once = function(event, fn) {
+	    this.many(event, 1, fn);
+	    return this;
+	  };
+
+	  EventEmitter.prototype.many = function(event, ttl, fn) {
+	    var self = this;
+
+	    if (typeof fn !== 'function') {
+	      throw new Error('many only accepts instances of Function');
+	    }
+
+	    function listener() {
+	      if (--ttl === 0) {
+	        self.off(event, listener);
+	      }
+	      fn.apply(this, arguments);
+	    }
+
+	    listener._origin = fn;
+
+	    this.on(event, listener);
+
+	    return self;
+	  };
+
+	  EventEmitter.prototype.emit = function() {
+
+	    this._events || init.call(this);
+
+	    var type = arguments[0];
+
+	    if (type === 'newListener' && !this.newListener) {
+	      if (!this._events.newListener) { return false; }
+	    }
+
+	    // Loop through the *_all* functions and invoke them.
+	    if (this._all) {
+	      var l = arguments.length;
+	      var args = new Array(l - 1);
+	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+	      for (i = 0, l = this._all.length; i < l; i++) {
+	        this.event = type;
+	        this._all[i].apply(this, args);
+	      }
+	    }
+
+	    // If there is no 'error' event listener then throw.
+	    if (type === 'error') {
+
+	      if (!this._all &&
+	        !this._events.error &&
+	        !(this.wildcard && this.listenerTree.error)) {
+
+	        if (arguments[1] instanceof Error) {
+	          throw arguments[1]; // Unhandled 'error' event
+	        } else {
+	          throw new Error("Uncaught, unspecified 'error' event.");
+	        }
+	        return false;
+	      }
+	    }
+
+	    var handler;
+
+	    if(this.wildcard) {
+	      handler = [];
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
+	    }
+	    else {
+	      handler = this._events[type];
+	    }
+
+	    if (typeof handler === 'function') {
+	      this.event = type;
+	      if (arguments.length === 1) {
+	        handler.call(this);
+	      }
+	      else if (arguments.length > 1)
+	        switch (arguments.length) {
+	          case 2:
+	            handler.call(this, arguments[1]);
+	            break;
+	          case 3:
+	            handler.call(this, arguments[1], arguments[2]);
+	            break;
+	          // slower
+	          default:
+	            var l = arguments.length;
+	            var args = new Array(l - 1);
+	            for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+	            handler.apply(this, args);
+	        }
+	      return true;
+	    }
+	    else if (handler) {
+	      var l = arguments.length;
+	      var args = new Array(l - 1);
+	      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
+
+	      var listeners = handler.slice();
+	      for (var i = 0, l = listeners.length; i < l; i++) {
+	        this.event = type;
+	        listeners[i].apply(this, args);
+	      }
+	      return (listeners.length > 0) || !!this._all;
+	    }
+	    else {
+	      return !!this._all;
+	    }
+
+	  };
+
+	  EventEmitter.prototype.on = function(type, listener) {
+
+	    if (typeof type === 'function') {
+	      this.onAny(type);
+	      return this;
+	    }
+
+	    if (typeof listener !== 'function') {
+	      throw new Error('on only accepts instances of Function');
+	    }
+	    this._events || init.call(this);
+
+	    // To avoid recursion in the case that type == "newListeners"! Before
+	    // adding it to the listeners, first emit "newListeners".
+	    this.emit('newListener', type, listener);
+
+	    if(this.wildcard) {
+	      growListenerTree.call(this, type, listener);
+	      return this;
+	    }
+
+	    if (!this._events[type]) {
+	      // Optimize the case of one listener. Don't need the extra array object.
+	      this._events[type] = listener;
+	    }
+	    else if(typeof this._events[type] === 'function') {
+	      // Adding the second element, need to change to array.
+	      this._events[type] = [this._events[type], listener];
+	    }
+	    else if (isArray(this._events[type])) {
+	      // If we've already got an array, just append.
+	      this._events[type].push(listener);
+
+	      // Check for listener leak
+	      if (!this._events[type].warned) {
+
+	        var m = defaultMaxListeners;
+
+	        if (typeof this._events.maxListeners !== 'undefined') {
+	          m = this._events.maxListeners;
+	        }
+
+	        if (m > 0 && this._events[type].length > m) {
+
+	          this._events[type].warned = true;
+	          console.error('(node) warning: possible EventEmitter memory ' +
+	                        'leak detected. %d listeners added. ' +
+	                        'Use emitter.setMaxListeners() to increase limit.',
+	                        this._events[type].length);
+	          console.trace();
 	        }
 	      }
 	    }
-	  }, {
-	    key: 'on',
+	    return this;
+	  };
 
-	    // Delegate #on to EventEmitter object.
-	    value: function on() {
-	      this.dispatch.on.apply(this.dispatch, arguments);
-	    }
-	  }, {
-	    key: 'rotateCam',
+	  EventEmitter.prototype.onAny = function(fn) {
 
-	    // Rotates camera around the sun.
-	    value: function rotateCam(angle) {
-	      this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
-	      this.controls.update();
+	    if (typeof fn !== 'function') {
+	      throw new Error('onAny only accepts instances of Function');
 	    }
-	  }, {
-	    key: 'render',
-	    value: function render(timestamp) {
-	      this.controls.update();
-	      if (this._interactionHandler) {
-	        this._interactionHandler.checkInteraction();
+
+	    if(!this._all) {
+	      this._all = [];
+	    }
+
+	    // Add the function to the event listener collection.
+	    this._all.push(fn);
+	    return this;
+	  };
+
+	  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+	  EventEmitter.prototype.off = function(type, listener) {
+	    if (typeof listener !== 'function') {
+	      throw new Error('removeListener only takes instances of Function');
+	    }
+
+	    var handlers,leafs=[];
+
+	    if(this.wildcard) {
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
+	    }
+	    else {
+	      // does not use listeners(), so no side effect of creating _events[type]
+	      if (!this._events[type]) return this;
+	      handlers = this._events[type];
+	      leafs.push({_listeners:handlers});
+	    }
+
+	    for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
+	      var leaf = leafs[iLeaf];
+	      handlers = leaf._listeners;
+	      if (isArray(handlers)) {
+
+	        var position = -1;
+
+	        for (var i = 0, length = handlers.length; i < length; i++) {
+	          if (handlers[i] === listener ||
+	            (handlers[i].listener && handlers[i].listener === listener) ||
+	            (handlers[i]._origin && handlers[i]._origin === listener)) {
+	            position = i;
+	            break;
+	          }
+	        }
+
+	        if (position < 0) {
+	          continue;
+	        }
+
+	        if(this.wildcard) {
+	          leaf._listeners.splice(position, 1);
+	        }
+	        else {
+	          this._events[type].splice(position, 1);
+	        }
+
+	        if (handlers.length === 0) {
+	          if(this.wildcard) {
+	            delete leaf._listeners;
+	          }
+	          else {
+	            delete this._events[type];
+	          }
+	        }
+	        return this;
 	      }
-	      this.renderer.render(this.scene, this.camera);
-	    }
-	  }, {
-	    key: 'resize',
-
-	    // Resizes canvas to fill its parent.
-	    value: function resize() {
-	      var $parent = (0, _jquery2['default'])(this.renderer.domElement).parent();
-	      var newWidth = $parent.width();
-	      var newHeight = $parent.height();
-	      this.camera.aspect = newWidth / newHeight;
-	      this.camera.updateProjectionMatrix();
-	      this.renderer.setSize(newWidth, newHeight);
-	    }
-	  }, {
-	    key: 'registerInteractionHandler',
-	    value: function registerInteractionHandler(handler) {
-	      this._interactionHandler = handler;
-	    }
-	  }, {
-	    key: '_updateDay',
-
-	    // Called automatically when 'day' property is updated.
-	    value: function _updateDay() {
-	      this.earth.setPositionFromDay(this.props.day);
-	      this.sunEarthLine.setEarthPos(this.earth.position);
-	    }
-	  }, {
-	    key: '_updateEarthTilt',
-
-	    // Called automatically when 'earthTilt' property is updated.
-	    value: function _updateEarthTilt() {
-	      this.earth.setTilted(this.props.earthTilt);
-	    }
-	  }, {
-	    key: '_updateSunEarthLine',
-	    value: function _updateSunEarthLine() {
-	      var mesh = this.sunEarthLine.rootObject;
-	      if (this.props.sunEarthLine && !mesh.parent) {
-	        this.scene.add(mesh);
-	      } else if (!this.props.sunEarthLine && mesh.parent) {
-	        this.scene.remove(mesh);
+	      else if (handlers === listener ||
+	        (handlers.listener && handlers.listener === listener) ||
+	        (handlers._origin && handlers._origin === listener)) {
+	        if(this.wildcard) {
+	          delete leaf._listeners;
+	        }
+	        else {
+	          delete this._events[type];
+	        }
 	      }
 	    }
-	  }, {
-	    key: '_initScene',
-	    value: function _initScene() {
-	      var basicProps = { type: this.type };
 
-	      this.scene.add(_modelsCommonModelsJs2['default'].stars(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].ambientLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sunLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sunOnlyLight(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].grid(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
-	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
+	    return this;
+	  };
 
-	      this.earth = new _modelsEarthJs2['default'](basicProps);
-	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
-	      this.earth.earthObject.add(this.earthAxis);
-	      this.scene.add(this.earth.rootObject);
-
-	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
-	      this.scene.add(this.sunEarthLine.rootObject);
+	  EventEmitter.prototype.offAny = function(fn) {
+	    var i = 0, l = 0, fns;
+	    if (fn && this._all && this._all.length > 0) {
+	      fns = this._all;
+	      for(i = 0, l = fns.length; i < l; i++) {
+	        if(fn === fns[i]) {
+	          fns.splice(i, 1);
+	          return this;
+	        }
+	      }
+	    } else {
+	      this._all = [];
 	    }
-	  }, {
-	    key: '_setInitialCamPos',
-	    value: function _setInitialCamPos() {
-	      this.camera.position.x = 0;
-	      this.camera.position.y = 0;
-	      this.camera.position.z = 0;
+	    return this;
+	  };
+
+	  EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
+
+	  EventEmitter.prototype.removeAllListeners = function(type) {
+	    if (arguments.length === 0) {
+	      !this._events || init.call(this);
+	      return this;
 	    }
-	  }]);
 
-	  return _class;
-	})();
+	    if(this.wildcard) {
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      var leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
 
-	exports['default'] = _default;
-	module.exports = exports['default'];
+	      for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
+	        var leaf = leafs[iLeaf];
+	        leaf._listeners = null;
+	      }
+	    }
+	    else {
+	      if (!this._events[type]) return this;
+	      this._events[type] = null;
+	    }
+	    return this;
+	  };
+
+	  EventEmitter.prototype.listeners = function(type) {
+	    if(this.wildcard) {
+	      var handlers = [];
+	      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+	      searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
+	      return handlers;
+	    }
+
+	    this._events || init.call(this);
+
+	    if (!this._events[type]) this._events[type] = [];
+	    if (!isArray(this._events[type])) {
+	      this._events[type] = [this._events[type]];
+	    }
+	    return this._events[type];
+	  };
+
+	  EventEmitter.prototype.listenersAny = function() {
+
+	    if(this._all) {
+	      return this._all;
+	    }
+	    else {
+	      return [];
+	    }
+
+	  };
+
+	  if (true) {
+	     // AMD. Register as an anonymous module.
+	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	      return EventEmitter;
+	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports === 'object') {
+	    // CommonJS
+	    exports.EventEmitter2 = EventEmitter;
+	  }
+	  else {
+	    // Browser global.
+	    window.EventEmitter2 = EventEmitter;
+	  }
+	}();
+
 
 /***/ },
 /* 218 */
@@ -34176,7 +34168,7 @@
 
 	'use strict';
 
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -34378,7 +34370,7 @@
 
 	'use strict';
 
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -34419,7 +34411,143 @@
 
 	var _classCallCheck = __webpack_require__(191)['default'];
 
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _solarSystemDataJs = __webpack_require__(219);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var _constantsJs = __webpack_require__(220);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var DEF_COLOR = 0x1286CD;
+	var DEF_EMISSIVE = 0x002135;
+
+	var _default = (function () {
+	  var _class = function _default(params) {
+	    _classCallCheck(this, _class);
+
+	    var simple = params.type === 'orbit-view';
+	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+	    var COLORS = simple ? { color: DEF_COLOR, emissive: DEF_EMISSIVE } : { specular: 0x252525 };
+	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
+	    this._material = new THREE.MeshPhongMaterial(COLORS);
+	    if (!simple) {
+	      this._material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
+	      this._material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
+	      this._material.bumpScale = 100000 * c.SF;
+	      this._material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
+	    }
+
+	    this._earthObject = new THREE.Mesh(geometry, this._material);
+	    this._orbitRotObject = new THREE.Object3D();
+	    this._orbitRotObject.add(this._earthObject);
+	    this._tiltObject = new THREE.Object3D();
+	    this._tiltObject.add(this._orbitRotObject);
+	    this._posObject = new THREE.Object3D();
+	    // Make sure that earth is at day 0 position.
+	    // This is necessary so angle diff is calculated correctly in _updateDay() method.
+	    var pos = data.earthEllipseLocationByDay(0);
+	    this._posObject.position.copy(pos);
+	    this._posObject.add(this._tiltObject);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'rotate',
+
+	    // Rotates earth around its own axis.
+	    value: function rotate(angleDiff) {
+	      this._earthObject.rotation.y += angleDiff;
+	    }
+	  }, {
+	    key: 'setPositionFromDay',
+	    value: function setPositionFromDay(day) {
+	      var newPos = data.earthEllipseLocationByDay(day);
+
+	      var angleDiff = Math.atan2(this.position.z, this.position.x) - Math.atan2(newPos.z, newPos.x);
+	      // Make sure that earth maintains its current rotation.
+	      this._orbitRotObject.rotation.y += angleDiff;
+
+	      this.position.copy(newPos);
+	    }
+	  }, {
+	    key: 'setTilted',
+	    value: function setTilted(v) {
+	      this._tiltObject.rotation.z = v ? data.EARTH_TILT : 0;
+	    }
+	  }, {
+	    key: 'setHighlighted',
+	    value: function setHighlighted(v) {
+	      this._material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
+	      this._material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+	    }
+	  }, {
+	    key: 'rootObject',
+	    get: function get() {
+	      return this._posObject;
+	    }
+	  }, {
+	    key: 'posObject',
+	    get: function get() {
+	      return this._posObject;
+	    }
+	  }, {
+	    key: 'tiltObject',
+	    get: function get() {
+	      return this._tiltObject;
+	    }
+	  }, {
+	    key: 'earthObject',
+	    get: function get() {
+	      return this._earthObject;
+	    }
+	  }, {
+	    key: 'position',
+	    get: function get() {
+	      return this._posObject.position;
+	    }
+	  }, {
+	    key: 'tilt',
+	    get: function get() {
+	      return this._tiltObject.rotation.z;
+	    }
+	  }, {
+	    key: 'rotation',
+	    get: function get() {
+	      return this._earthObject.rotation.y;
+	    },
+	    set: function set(angle) {
+	      this._earthObject.rotation.y = angle;
+	    }
+	  }, {
+	    key: 'orbitRotation',
+	    get: function get() {
+	      return this._orbitRotObject.rotation.y;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 222 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -34500,7 +34628,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 222 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34509,7 +34637,7 @@
 
 	var _classCallCheck = __webpack_require__(191)['default'];
 
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -34561,7 +34689,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 223 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34570,7 +34698,7 @@
 
 	var _classCallCheck = __webpack_require__(191)['default'];
 
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -34580,7 +34708,7 @@
 
 	var c = _interopRequireWildcard(_constantsJs);
 
-	var _utilsJs = __webpack_require__(224);
+	var _utilsJs = __webpack_require__(225);
 
 	var DEG_2_RAD = Math.PI / 180;
 	var DEF_COLOR = 0xffffff;
@@ -34629,7 +34757,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 224 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34642,7 +34770,7 @@
 	exports.mousePos = mousePos;
 	exports.mousePosNormalized = mousePosNormalized;
 
-	var _jquery = __webpack_require__(216);
+	var _jquery = __webpack_require__(215);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -34668,7 +34796,246 @@
 	}
 
 /***/ },
-/* 225 */
+/* 226 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(177)['default'];
+
+	var _get = __webpack_require__(182)['default'];
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(215);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _baseInteractionJs = __webpack_require__(227);
+
+	var _baseInteractionJs2 = _interopRequireDefault(_baseInteractionJs);
+
+	var RAD_2_DEG = 180 / Math.PI;
+
+	var _default = (function (_BaseInteraction) {
+	  var _class = function _default(view) {
+	    var _this = this;
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, view);
+
+	    this.latLongMarker = view.latLongMarker;
+	    this.latLine = view.latLine;
+	    this.earth = view.earth;
+
+	    this.registerInteraction({
+	      test: function test() {
+	        return _this.isUserPointing(_this.latLongMarker.mesh);
+	      },
+	      activationChangeHandler: function activationChangeHandler(isActive) {
+	        _this.latLongMarker.setHighlighted(isActive);
+	        document.body.style.cursor = isActive ? 'move' : '';
+	      },
+	      stepHandler: function stepHandler() {
+	        var coords = _this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          _this.dispatch.emit('latitude.change', coords.lat);
+	          _this.dispatch.emit('longitude.change', coords.long);
+	        }
+	      }
+	    });
+	    this.registerInteraction({
+	      test: function test() {
+	        return _this.isUserPointing(_this.latLine.mesh);
+	      },
+	      activationChangeHandler: function activationChangeHandler(isActive) {
+	        _this.latLine.setHighlighted(isActive);
+	        _this.latLongMarker.setHighlighted(isActive);
+	        document.body.style.cursor = isActive ? 'move' : '';
+	      },
+	      stepHandler: function stepHandler() {
+	        var coords = _this._getPointerLatLong();
+	        if (coords != null) {
+	          // coords can be equal to null if user isn't pointing earth anymore.
+	          _this.dispatch.emit('latitude.change', coords.lat);
+	        }
+	      }
+	    });
+	  };
+
+	  _inherits(_class, _BaseInteraction);
+
+	  _createClass(_class, [{
+	    key: '_getPointerLatLong',
+	    value: function _getPointerLatLong() {
+	      var intersects = this.isUserPointing(this.earth.earthObject);
+	      if (!intersects) {
+	        // Pointer does not intersect with earth, return null.
+	        return null;
+	      }
+	      // Calculate vector pointing from Earth center to intersection point.
+	      var intVec = intersects[0].point;
+	      intVec.sub(this.earth.position);
+	      // Take into account earth tilt and rotation.
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation);
+
+	      // Latitude calculations.
+	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
+	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
+	      // .angleTo returns always positive number.
+	      if (intVec.y < 0) lat *= -1;
+	      // Longitude calculations.
+	      var xVec = new THREE.Vector3(1, 0, 0);
+	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
+	      if (intVec.z > 0) long *= -1;
+	      return { lat: lat, long: long };
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseInteractionJs2['default']);
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 227 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(215);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _utilsJs = __webpack_require__(225);
+
+	var _default = (function () {
+	  var _class = function _default(view) {
+	    _classCallCheck(this, _class);
+
+	    this.view = view;
+	    this.domElement = view.renderer.domElement;
+	    this.camera = view.camera;
+	    this.controls = view.controls;
+	    this.dispatch = view.dispatch;
+
+	    this.raycaster = new THREE.Raycaster();
+	    this.mouse = new THREE.Vector2(-2, -2); // intentionally out of view, which is limited to [-1, 1] x [-1, 1]
+	    this._followMousePosition();
+
+	    this._interactions = [];
+	  };
+
+	  _createClass(_class, [{
+	    key: 'registerInteraction',
+	    value: function registerInteraction(int) {
+	      this._interactions.push(int);
+	    }
+	  }, {
+	    key: 'checkInteraction',
+	    value: function checkInteraction() {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+	      for (var i = 0; i < this._interactions.length; i++) {
+	        var int = this._interactions[i];
+	        if (int._started) {
+	          int.stepHandler();
+	          return;
+	        }
+	      }
+
+	      var anyInteractionActive = false;
+	      for (var i = 0; i < this._interactions.length; i++) {
+	        var int = this._interactions[i];
+	        if (!anyInteractionActive && int.test()) {
+	          this._setInteractionActive(int, i, true);
+	          anyInteractionActive = true;
+	        } else {
+	          if (int._active) {
+	            this._setInteractionActive(int, i, false);
+	          }
+	        }
+	      }
+
+	      if (anyInteractionActive) {
+	        this.controls.noRotate = true;
+	      } else {
+	        this.controls.noRotate = false;
+	      }
+	    }
+	  }, {
+	    key: 'isUserPointing',
+	    value: function isUserPointing(mesh) {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+	      var intersects = this.raycaster.intersectObject(mesh);
+	      if (intersects.length > 0) {
+	        return intersects;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: '_setInteractionActive',
+	    value: function _setInteractionActive(int, idx, v) {
+	      int._active = v;
+	      int.activationChangeHandler(v);
+	      var $elem = (0, _jquery2['default'])(this.domElement);
+	      var namespace = 'interaction-' + idx;
+	      if (v) {
+	        $elem.on('mousedown.' + namespace + ' touchstart.' + namespace, function () {
+	          int._started = true;
+	        });
+	        $elem.on('mouseup.' + namespace + ' touchend.' + namespace + ' touchcancel.' + namespace, function () {
+	          int._started = false;
+	        });
+	      } else {
+	        $elem.off('.' + namespace);
+	      }
+	    }
+	  }, {
+	    key: '_followMousePosition',
+	    value: function _followMousePosition() {
+	      var _this = this;
+
+	      var onMouseMove = function onMouseMove(event) {
+	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this.domElement);
+	        _this.mouse.x = pos.x;
+	        _this.mouse.y = pos.y;
+	      };
+	      (0, _jquery2['default'])(this.domElement).on('mousemove touchmove', onMouseMove);
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34695,7 +35062,7 @@
 
 	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
 
-	var _viewsOrbitViewJs = __webpack_require__(226);
+	var _viewsOrbitViewJs = __webpack_require__(229);
 
 	var _viewsOrbitViewJs2 = _interopRequireDefault(_viewsOrbitViewJs);
 
@@ -34733,7 +35100,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 226 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34748,21 +35115,21 @@
 
 	var _interopRequireDefault = __webpack_require__(1)['default'];
 
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
+	var _interopRequireWildcard = __webpack_require__(216)['default'];
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 
-	var _jquery = __webpack_require__(216);
+	var _jquery = __webpack_require__(215);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _baseViewJs = __webpack_require__(217);
+	var _baseViewJs = __webpack_require__(214);
 
 	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
 
-	var _orbitViewInteractionJs = __webpack_require__(254);
+	var _orbitViewInteractionJs = __webpack_require__(230);
 
 	var _orbitViewInteractionJs2 = _interopRequireDefault(_orbitViewInteractionJs);
 
@@ -34845,7 +35212,93 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 227 */
+/* 230 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(177)['default'];
+
+	var _get = __webpack_require__(182)['default'];
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(215);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _baseInteractionJs = __webpack_require__(227);
+
+	var _baseInteractionJs2 = _interopRequireDefault(_baseInteractionJs);
+
+	var _solarSystemDataJs = __webpack_require__(219);
+
+	var _default = (function (_BaseInteraction) {
+	  var _class = function _default(view) {
+	    var _this = this;
+
+	    _classCallCheck(this, _class);
+
+	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, view);
+
+	    this.earth = view.earth;
+	    var day0Pos = (0, _solarSystemDataJs.earthEllipseLocationByDay)(0);
+	    // Base angle for further calculations in _getXZPlanPos.
+	    this._atan2Day0Pos = Math.atan2(day0Pos.z, day0Pos.x);
+
+	    this.registerInteraction({
+	      test: function test() {
+	        return _this.isUserPointing(_this.earth.earthObject);
+	      },
+	      activationChangeHandler: function activationChangeHandler(isActive) {
+	        _this.earth.setHighlighted(isActive);
+	        document.body.style.cursor = isActive ? 'move' : '';
+	      },
+	      stepHandler: function stepHandler() {
+	        var coords = _this._getXZPlanPos();
+	        var angleDiff = _this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
+	        var newDay = angleDiff / (Math.PI * 2) * 364;
+	        if (newDay < 0) newDay += 364;
+	        _this.dispatch.emit('day.change', newDay);
+	      }
+	    });
+	  };
+
+	  _inherits(_class, _BaseInteraction);
+
+	  _createClass(_class, [{
+	    key: '_getXZPlanPos',
+
+	    // Projects mouse position on XZ plane.
+	    value: function _getXZPlanPos() {
+	      var v = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
+	      v.unproject(this.camera);
+	      v.sub(this.camera.position);
+	      v.normalize();
+	      var distance = -this.camera.position.y / v.y;
+	      v.multiplyScalar(distance);
+	      var result = this.camera.position.clone();
+	      result.add(v);
+	      return result;
+	    }
+	  }]);
+
+	  return _class;
+	})(_baseInteractionJs2['default']);
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34870,7 +35323,7 @@
 
 	var _canvasViewJsx2 = _interopRequireDefault(_canvasViewJsx);
 
-	var _viewsRaysViewJs = __webpack_require__(228);
+	var _viewsRaysViewJs = __webpack_require__(232);
 
 	var _viewsRaysViewJs2 = _interopRequireDefault(_viewsRaysViewJs);
 
@@ -34891,7 +35344,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 228 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34906,7 +35359,7 @@
 	  value: true
 	});
 
-	var _jquery = __webpack_require__(216);
+	var _jquery = __webpack_require__(215);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -35094,16 +35547,16 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 229 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(230);
+	var content = __webpack_require__(234);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(232)(content, {});
+	var update = __webpack_require__(236)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -35120,10 +35573,10 @@
 	}
 
 /***/ },
-/* 230 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(231)();
+	exports = module.exports = __webpack_require__(235)();
 	// imports
 
 
@@ -35134,7 +35587,7 @@
 
 
 /***/ },
-/* 231 */
+/* 235 */
 /***/ function(module, exports) {
 
 	/*
@@ -35190,7 +35643,7 @@
 
 
 /***/ },
-/* 232 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -35415,7 +35868,7 @@
 
 
 /***/ },
-/* 233 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -35438,13 +35891,13 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _jquery = __webpack_require__(216);
+	var _jquery = __webpack_require__(215);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	__webpack_require__(234);
-
 	__webpack_require__(238);
+
+	__webpack_require__(242);
 
 	var Slider = (function (_React$Component) {
 	  function Slider(props) {
@@ -35492,13 +35945,13 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 234 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(216);
-	__webpack_require__(235);
-	__webpack_require__(236);
-	__webpack_require__(237);
+	var jQuery = __webpack_require__(215);
+	__webpack_require__(239);
+	__webpack_require__(240);
+	__webpack_require__(241);
 
 	/*!
 	 * jQuery UI Slider 1.10.4
@@ -36179,10 +36632,10 @@
 
 
 /***/ },
-/* 235 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(216);
+	var jQuery = __webpack_require__(215);
 
 	/*!
 	 * jQuery UI Core 1.10.4
@@ -36507,11 +36960,11 @@
 
 
 /***/ },
-/* 236 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(216);
-	__webpack_require__(237);
+	var jQuery = __webpack_require__(215);
+	__webpack_require__(241);
 
 	/*!
 	 * jQuery UI Mouse 1.10.4
@@ -36685,10 +37138,10 @@
 
 
 /***/ },
-/* 237 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(216);
+	var jQuery = __webpack_require__(215);
 
 	/*!
 	 * jQuery UI Widget 1.10.4
@@ -37214,16 +37667,16 @@
 
 
 /***/ },
-/* 238 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(239);
+	var content = __webpack_require__(243);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(232)(content, {});
+	var update = __webpack_require__(236)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -37240,10 +37693,10 @@
 	}
 
 /***/ },
-/* 239 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(231)();
+	exports = module.exports = __webpack_require__(235)();
 	// imports
 
 
@@ -37254,7 +37707,7 @@
 
 
 /***/ },
-/* 240 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37273,15 +37726,15 @@
 	  value: true
 	});
 
-	var _jquery = __webpack_require__(216);
+	var _jquery = __webpack_require__(215);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _sliderJsx = __webpack_require__(233);
+	var _sliderJsx = __webpack_require__(237);
 
 	var _sliderJsx2 = _interopRequireDefault(_sliderJsx);
 
-	__webpack_require__(241);
+	__webpack_require__(245);
 
 	var MONTH_NAMES_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -37332,18 +37785,18 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 241 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _interopRequireDefault = __webpack_require__(1)['default'];
 
-	var _jquery = __webpack_require__(216);
+	var _jquery = __webpack_require__(215);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	__webpack_require__(234);
+	__webpack_require__(238);
 
 	var TICK_WIDTH = 1;
 
@@ -37415,7 +37868,7 @@
 	});
 
 /***/ },
-/* 242 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37438,7 +37891,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _cityDataJs = __webpack_require__(243);
+	var _cityDataJs = __webpack_require__(247);
 
 	var _cityDataJs2 = _interopRequireDefault(_cityDataJs);
 
@@ -37457,7 +37910,8 @@
 	    key: 'selectChange',
 	    value: function selectChange(event) {
 	      var city = LOCATIONS[event.target.value];
-	      this.props.onLocationChange({ lat: city.lat, long: city.long });
+	      var rot = -city.long * Math.PI / 180;
+	      this.props.onLocationChange({ lat: city.lat, long: city.long, earthRotation: rot });
 	    }
 	  }, {
 	    key: 'getOptions',
@@ -37501,7 +37955,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 243 */
+/* 247 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -37535,7 +37989,7 @@
 	module.exports = exports["default"];
 
 /***/ },
-/* 244 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37558,58 +38012,25 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactMixin = __webpack_require__(249);
+
+	var _reactMixin2 = _interopRequireDefault(_reactMixin);
+
+	var _animationMixinJs = __webpack_require__(256);
+
+	var _animationMixinJs2 = _interopRequireDefault(_animationMixinJs);
+
 	var AnimationButton = (function (_React$Component) {
 	  function AnimationButton(props) {
 	    _classCallCheck(this, AnimationButton);
 
 	    _get(Object.getPrototypeOf(AnimationButton.prototype), 'constructor', this).call(this, props);
-	    this.state = {
-	      animationStarted: false
-	    };
-
 	    this.toggleState = this.toggleState.bind(this);
-	    this.animate = this.animate.bind(this);
 	  }
 
 	  _inherits(AnimationButton, _React$Component);
 
 	  _createClass(AnimationButton, [{
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      cancelAnimationFrame(this.rafId);
-	    }
-	  }, {
-	    key: 'toggleState',
-	    value: function toggleState() {
-	      if (!this.state.animationStarted) {
-	        this.startAnimation();
-	      } else {
-	        this.stopAnimation();
-	      }
-	    }
-	  }, {
-	    key: 'startAnimation',
-	    value: function startAnimation() {
-	      this.rafId = requestAnimationFrame(this.animate);
-	      this.setState({ animationStarted: true });
-	    }
-	  }, {
-	    key: 'stopAnimation',
-	    value: function stopAnimation() {
-	      cancelAnimationFrame(this.rafId);
-	      this.prevTimestamp = null;
-	      this.setState({ animationStarted: false });
-	    }
-	  }, {
-	    key: 'animate',
-	    value: function animate(timestamp) {
-	      this.rafId = requestAnimationFrame(this.animate);
-	      var progress = this.prevTimestamp ? timestamp - this.prevTimestamp : 0;
-	      var newValue = this.props.currentValue + progress * this.props.speed;
-	      this.props.onAnimationStep(newValue);
-	      this.prevTimestamp = timestamp;
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var label = this.state.animationStarted ? 'Stop' : 'Play';
@@ -37625,19 +38046,359 @@
 	})(_react2['default'].Component);
 
 	exports['default'] = AnimationButton;
+
+	_reactMixin2['default'].onClass(AnimationButton, _animationMixinJs2['default']);
 	module.exports = exports['default'];
 
 /***/ },
-/* 245 */
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var mixin = __webpack_require__(250);
+	var assign = __webpack_require__(251);
+
+	var mixinProto = mixin({
+	  // lifecycle stuff is as you'd expect
+	  componentDidMount: mixin.MANY,
+	  componentWillMount: mixin.MANY,
+	  componentWillReceiveProps: mixin.MANY,
+	  shouldComponentUpdate: mixin.ONCE,
+	  componentWillUpdate: mixin.MANY,
+	  componentDidUpdate: mixin.MANY,
+	  componentWillUnmount: mixin.MANY,
+	  getChildContext: mixin.MANY_MERGED
+	});
+
+	function setDefaultProps(reactMixin) {
+	  var getDefaultProps = reactMixin.getDefaultProps;
+
+	  if(getDefaultProps) {
+	    reactMixin.defaultProps = getDefaultProps();
+
+	    delete reactMixin.getDefaultProps;
+	  }
+	}
+
+	function setInitialState(reactMixin) {
+	  var getInitialState = reactMixin.getInitialState;
+	  var componentWillMount = reactMixin.componentWillMount;
+
+	  function applyInitialState(instance){
+	      var state = instance.state || {};
+	      assign(state, getInitialState.call(instance));
+	      instance.state = state;
+	  }
+
+	  if(getInitialState) {
+	    if(!componentWillMount) {
+	      reactMixin.componentWillMount = function() {
+	          applyInitialState(this);
+	      };
+	    }
+	    else {
+	      reactMixin.componentWillMount = function() {
+	        applyInitialState(this);
+	        componentWillMount.call(this);
+	      };
+	    }
+
+	    delete reactMixin.getInitialState;
+	  }
+	}
+
+	function mixinClass(reactClass, reactMixin) {
+	  setDefaultProps(reactMixin);
+	  setInitialState(reactMixin);
+
+	  var prototypeMethods = {};
+	  var staticProps = {};
+
+	  Object.keys(reactMixin).forEach(function(key) {
+	    if(typeof reactMixin[key] === 'function') {
+	      prototypeMethods[key] = reactMixin[key];
+	    }
+	    else {
+	      staticProps[key] = reactMixin[key];
+	    }
+	  });
+
+	  mixinProto(reactClass.prototype, prototypeMethods);
+
+	  var mergePropTypes = function(left, right, key){
+	    if (!left) return right;  
+	    if (!right) return left;  
+
+	    var result = {};
+	    Object.keys(left).forEach(function(leftKey){
+	      if (!right[leftKey]) {
+	        result[leftKey] = left[leftKey];
+	      }
+	    }); 
+
+	    Object.keys(right).forEach(function(rightKey){
+	      if (left[rightKey]) {
+	        result[rightKey] = function checkBothContextTypes(){
+	            return right[rightKey].apply(this, arguments) && left[rightKey].apply(this, arguments); 
+	        }
+	      } else {
+	        result[rightKey] = right[rightKey];
+	      }
+	    });
+
+	    return result;
+	  };
+
+	  mixin({
+	    childContextTypes: mergePropTypes,
+	    contextTypes: mergePropTypes,
+	    propTypes: mixin.MANY_MERGED_LOOSE,
+	    defaultProps: mixin.MANY_MERGED_LOOSE
+	  })(reactClass, staticProps);
+	}
+
+	module.exports = (function () {
+	  var reactMixin = mixinProto;
+
+	  reactMixin.onClass = function(reactClass, mixin) {
+	    mixinClass(reactClass, mixin)
+	  };
+
+	  reactMixin.decorate = function(mixin) {
+	    return function(reactClass) {
+	      return reactMixin.onClass(reactClass, mixin);
+	    };
+	  }
+
+	  return reactMixin;
+	})();
+
+
+/***/ },
+/* 250 */
+/***/ function(module, exports) {
+
+	var objToStr = function(x){ return Object.prototype.toString.call(x); };
+
+	var thrower = function(error){
+	    throw error;
+	};
+
+	var mixins = module.exports = function makeMixinFunction(rules, _opts){
+	    var opts = _opts || {};
+	    if (!opts.unknownFunction) {
+	        opts.unknownFunction = mixins.ONCE;
+	    }
+
+	    if (!opts.nonFunctionProperty) {
+	        opts.nonFunctionProperty = function(left, right, key){
+	            if (left !== undefined && right !== undefined) {
+	                var getTypeName = function(obj){
+	                    if (obj && obj.constructor && obj.constructor.name) {
+	                        return obj.constructor.name;
+	                    }
+	                    else {
+	                        return objToStr(obj).slice(8, -1);
+	                    }
+	                };
+	                throw new TypeError('Cannot mixin key ' + key + ' because it is provided by multiple sources, '
+	                        + 'and the types are ' + getTypeName(left) + ' and ' + getTypeName(right));
+	            }
+	            return left === undefined ? right : left;
+	        };
+	    }
+
+	    function setNonEnumerable(target, key, value){
+	        if (key in target){
+	            target[key] = value;
+	        }
+	        else {
+	            Object.defineProperty(target, key, {
+	                value: value,
+	                writable: true,
+	                configurable: true
+	            });
+	        }
+	    }
+
+	    return function applyMixin(source, mixin){
+	        Object.keys(mixin).forEach(function(key){
+	            var left = source[key], right = mixin[key], rule = rules[key];
+
+	            // this is just a weird case where the key was defined, but there's no value
+	            // behave like the key wasn't defined
+	            if (left === undefined && right === undefined) return;
+
+	            var wrapIfFunction = function(thing){
+	                return typeof thing !== "function" ? thing
+	                : function(){
+	                    return thing.call(this, arguments);
+	                };
+	            };
+
+	            // do we have a rule for this key?
+	            if (rule) {
+	                // may throw here
+	                var fn = rule(left, right, key);
+	                setNonEnumerable(source, key, wrapIfFunction(fn));
+	                return;
+	            }
+
+	            var leftIsFn = typeof left === "function";
+	            var rightIsFn = typeof right === "function";
+
+	            // check to see if they're some combination of functions or undefined
+	            // we already know there's no rule, so use the unknown function behavior
+	            if (leftIsFn && right === undefined
+	             || rightIsFn && left === undefined
+	             || leftIsFn && rightIsFn) {
+	                // may throw, the default is ONCE so if both are functions
+	                // the default is to throw
+	                setNonEnumerable(source, key, wrapIfFunction(opts.unknownFunction(left, right, key)));
+	                return;
+	            }
+
+	            // we have no rule for them, one may be a function but one or both aren't
+	            // our default is MANY_MERGED_LOOSE which will merge objects, concat arrays
+	            // and throw if there's a type mismatch or both are primitives (how do you merge 3, and "foo"?)
+	            source[key] = opts.nonFunctionProperty(left, right, key);
+	        });
+	    };
+	};
+
+	mixins._mergeObjects = function(obj1, obj2) {
+	    var assertObject = function(obj, obj2){
+	        var type = objToStr(obj);
+	        if (type !== '[object Object]') {
+	            var displayType = obj.constructor ? obj.constructor.name : 'Unknown';
+	            var displayType2 = obj2.constructor ? obj2.constructor.name : 'Unknown';
+	            thrower('cannot merge returned value of type ' + displayType + ' with an ' + displayType2);
+	        }
+	    };
+
+	    if (Array.isArray(obj1) && Array.isArray(obj2)) {
+	        return obj1.concat(obj2);
+	    }
+
+	    assertObject(obj1, obj2);
+	    assertObject(obj2, obj1);
+
+	    var result = {};
+	    Object.keys(obj1).forEach(function(k){
+	        if (Object.prototype.hasOwnProperty.call(obj2, k)) {
+	            thrower('cannot merge returns because both have the ' + JSON.stringify(k) + ' key');
+	        }
+	        result[k] = obj1[k];
+	    });
+
+	    Object.keys(obj2).forEach(function(k){
+	        // we can skip the conflict check because all conflicts would already be found
+	        result[k] = obj2[k];
+	    });
+	    return result;
+
+	}
+
+	// define our built-in mixin types
+	mixins.ONCE = function(left, right, key){
+	    if (left && right) {
+	        throw new TypeError('Cannot mixin ' + key + ' because it has a unique constraint.');
+	    }
+
+	    var fn = left || right;
+
+	    return function(args){
+	        return fn.apply(this, args);
+	    };
+	};
+
+	mixins.MANY = function(left, right, key){
+	    return function(args){
+	        if (right) right.apply(this, args);
+	        return left ? left.apply(this, args) : undefined;
+	    };
+	};
+
+	mixins.MANY_MERGED_LOOSE = function(left, right, key) {
+	    if(left && right) {
+	        return mixins._mergeObjects(left, right);
+	    }
+
+	    return left || right;
+	}
+
+	mixins.MANY_MERGED = function(left, right, key){
+	    return function(args){
+	        var res1 = right && right.apply(this, args);
+	        var res2 = left && left.apply(this, args);
+	        if (res1 && res2) {
+	            return mixins._mergeObjects(res1, res2)
+	        }
+	        return res2 || res1;
+	    };
+	};
+
+
+	mixins.REDUCE_LEFT = function(_left, _right, key){
+	    var left = _left || function(){ return x };
+	    var right = _right || function(x){ return x };
+	    return function(args){
+	        return right.call(this, left.apply(this, args));
+	    };
+	};
+
+	mixins.REDUCE_RIGHT = function(_left, _right, key){
+	    var left = _left || function(){ return x };
+	    var right = _right || function(x){ return x };
+	    return function(args){
+	        return left.call(this, right.apply(this, args));
+	    };
+	};
+
+
+
+/***/ },
+/* 251 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	function ToObject(val) {
+		if (val == null) {
+			throw new TypeError('Object.assign cannot be called with null or undefined');
+		}
+
+		return Object(val);
+	}
+
+	module.exports = Object.assign || function (target, source) {
+		var from;
+		var keys;
+		var to = ToObject(target);
+
+		for (var s = 1; s < arguments.length; s++) {
+			from = arguments[s];
+			keys = Object.keys(Object(from));
+
+			for (var i = 0; i < keys.length; i++) {
+				to[keys[i]] = from[keys[i]];
+			}
+		}
+
+		return to;
+	};
+
+
+/***/ },
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(246);
+	var content = __webpack_require__(253);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(232)(content, {});
+	var update = __webpack_require__(236)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -37654,10 +38415,10 @@
 	}
 
 /***/ },
-/* 246 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(231)();
+	exports = module.exports = __webpack_require__(235)();
 	// imports
 
 
@@ -37668,16 +38429,16 @@
 
 
 /***/ },
-/* 247 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(248);
+	var content = __webpack_require__(255);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(232)(content, {});
+	var update = __webpack_require__(236)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -37694,10 +38455,10 @@
 	}
 
 /***/ },
-/* 248 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(231)();
+	exports = module.exports = __webpack_require__(235)();
 	// imports
 
 
@@ -37708,255 +38469,57 @@
 
 
 /***/ },
-/* 249 */
-/***/ function(module, exports, __webpack_require__) {
+/* 256 */
+/***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
-	var _createClass = __webpack_require__(188)['default'];
-
-	var _classCallCheck = __webpack_require__(191)['default'];
-
-	var _interopRequireWildcard = __webpack_require__(215)['default'];
-
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports["default"] = {
+	  getInitialState: function getInitialState(props) {
+	    return {
+	      animationStarted: false
+	    };
+	  },
 
-	var _solarSystemDataJs = __webpack_require__(219);
+	  componentWillUnmount: function componentWillUnmount() {
+	    cancelAnimationFrame(this.rafId);
+	  },
 
-	var data = _interopRequireWildcard(_solarSystemDataJs);
+	  toggleState: function toggleState() {
+	    if (!this.state.animationStarted) {
+	      this.startAnimation();
+	    } else {
+	      this.stopAnimation();
+	    }
+	  },
 
-	var _constantsJs = __webpack_require__(220);
+	  startAnimation: function startAnimation() {
+	    this._animate = this.animate.bind(this);
+	    this.rafId = requestAnimationFrame(this._animate);
+	    this.setState({ animationStarted: true });
+	  },
 
-	var c = _interopRequireWildcard(_constantsJs);
+	  stopAnimation: function stopAnimation() {
+	    cancelAnimationFrame(this.rafId);
+	    this.prevTimestamp = null;
+	    this.setState({ animationStarted: false });
+	  },
 
-	var DEF_COLOR = 0x1286CD;
-	var DEF_EMISSIVE = 0x002135;
-
-	var _default = (function () {
-	  var _class = function _default(params) {
-	    _classCallCheck(this, _class);
-
-	    var simple = params.type === 'orbit-view';
-	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-	    var COLORS = simple ? { color: DEF_COLOR, emissive: DEF_EMISSIVE } : { specular: 0x252525 };
-	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
-	    this._material = new THREE.MeshPhongMaterial(COLORS);
-	    if (!simple) {
-	      this._material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
-	      this._material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
-	      this._material.bumpScale = 100000 * c.SF;
-	      this._material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
-	    }
-
-	    this._earthObject = new THREE.Mesh(geometry, this._material);
-	    this._tiltObject = new THREE.Object3D();
-	    this._tiltObject.add(this._earthObject);
-	    this._posObject = new THREE.Object3D();
-	    // Make sure that earth is at day 0 position.
-	    // This is necessary so angle diff is calculated correctly in _updateDay() method.
-	    var pos = data.earthEllipseLocationByDay(0);
-	    this._posObject.position.copy(pos);
-	    this._posObject.add(this._tiltObject);
-	  };
-
-	  _createClass(_class, [{
-	    key: 'rotate',
-
-	    // Rotates earth around its own axis.
-	    value: function rotate(angleDiff) {
-	      this._earthObject.rotation.y += angleDiff;
-	    }
-	  }, {
-	    key: 'setPositionFromDay',
-	    value: function setPositionFromDay(day) {
-	      var pos = data.earthEllipseLocationByDay(day);
-	      this.position.copy(pos);
-	    }
-	  }, {
-	    key: 'setTilted',
-	    value: function setTilted(v) {
-	      this._tiltObject.rotation.z = v ? data.EARTH_TILT : 0;
-	    }
-	  }, {
-	    key: 'setHighlighted',
-	    value: function setHighlighted(v) {
-	      this._material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
-	      this._material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
-	    }
-	  }, {
-	    key: 'rootObject',
-	    get: function get() {
-	      return this._posObject;
-	    }
-	  }, {
-	    key: 'posObject',
-	    get: function get() {
-	      return this._posObject;
-	    }
-	  }, {
-	    key: 'tiltObject',
-	    get: function get() {
-	      return this._tiltObject;
-	    }
-	  }, {
-	    key: 'earthObject',
-	    get: function get() {
-	      return this._earthObject;
-	    }
-	  }, {
-	    key: 'position',
-	    get: function get() {
-	      return this._posObject.position;
-	    }
-	  }, {
-	    key: 'tilt',
-	    get: function get() {
-	      return this._tiltObject.rotation.z;
-	    }
-	  }, {
-	    key: 'rotation',
-	    get: function get() {
-	      return this._earthObject.rotation.y;
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
+	  animate: function animate(timestamp) {
+	    this.rafId = requestAnimationFrame(this._animate);
+	    var progress = this.prevTimestamp ? timestamp - this.prevTimestamp : 0;
+	    var newValue = this.props.currentValue + progress * this.props.speed;
+	    this.props.onAnimationStep(newValue);
+	    this.prevTimestamp = timestamp;
+	  }
+	};
+	module.exports = exports["default"];
 
 /***/ },
-/* 250 */,
-/* 251 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _createClass = __webpack_require__(188)['default'];
-
-	var _classCallCheck = __webpack_require__(191)['default'];
-
-	var _interopRequireDefault = __webpack_require__(1)['default'];
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _jquery = __webpack_require__(216);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _utilsJs = __webpack_require__(224);
-
-	var _default = (function () {
-	  var _class = function _default(view) {
-	    _classCallCheck(this, _class);
-
-	    this.view = view;
-	    this.domElement = view.renderer.domElement;
-	    this.camera = view.camera;
-	    this.controls = view.controls;
-	    this.dispatch = view.dispatch;
-
-	    this.raycaster = new THREE.Raycaster();
-	    this.mouse = new THREE.Vector2(-2, -2); // intentionally out of view, which is limited to [-1, 1] x [-1, 1]
-	    this._followMousePosition();
-
-	    this._interactions = [];
-	  };
-
-	  _createClass(_class, [{
-	    key: 'registerInteraction',
-	    value: function registerInteraction(int) {
-	      this._interactions.push(int);
-	    }
-	  }, {
-	    key: 'checkInteraction',
-	    value: function checkInteraction() {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-
-	      for (var i = 0; i < this._interactions.length; i++) {
-	        var int = this._interactions[i];
-	        if (int._started) {
-	          int.stepHandler();
-	          return;
-	        }
-	      }
-
-	      var anyInteractionActive = false;
-	      for (var i = 0; i < this._interactions.length; i++) {
-	        var int = this._interactions[i];
-	        if (!anyInteractionActive && int.test()) {
-	          this._setInteractionActive(int, i, true);
-	          anyInteractionActive = true;
-	        } else {
-	          if (int._active) {
-	            this._setInteractionActive(int, i, false);
-	          }
-	        }
-	      }
-
-	      if (anyInteractionActive) {
-	        this.controls.noRotate = true;
-	      } else {
-	        this.controls.noRotate = false;
-	      }
-	    }
-	  }, {
-	    key: 'isUserPointing',
-	    value: function isUserPointing(mesh) {
-	      this.raycaster.setFromCamera(this.mouse, this.camera);
-	      var intersects = this.raycaster.intersectObject(mesh);
-	      if (intersects.length > 0) {
-	        return intersects;
-	      } else {
-	        return false;
-	      }
-	    }
-	  }, {
-	    key: '_setInteractionActive',
-	    value: function _setInteractionActive(int, idx, v) {
-	      int._active = v;
-	      int.activationChangeHandler(v);
-	      var $elem = (0, _jquery2['default'])(this.domElement);
-	      var namespace = 'interaction-' + idx;
-	      if (v) {
-	        $elem.on('mousedown.' + namespace + ' touchstart.' + namespace, function () {
-	          int._started = true;
-	        });
-	        $elem.on('mouseup.' + namespace + ' touchend.' + namespace + ' touchcancel.' + namespace, function () {
-	          int._started = false;
-	        });
-	      } else {
-	        $elem.off('.' + namespace);
-	      }
-	    }
-	  }, {
-	    key: '_followMousePosition',
-	    value: function _followMousePosition() {
-	      var _this = this;
-
-	      var onMouseMove = function onMouseMove(event) {
-	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this.domElement);
-	        _this.mouse.x = pos.x;
-	        _this.mouse.y = pos.y;
-	      };
-	      (0, _jquery2['default'])(this.domElement).on('mousemove touchmove', onMouseMove);
-	    }
-	  }]);
-
-	  return _class;
-	})();
-
-	exports['default'] = _default;
-	module.exports = exports['default'];
-
-/***/ },
-/* 252 */,
-/* 253 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37975,184 +38538,41 @@
 	  value: true
 	});
 
-	var _jquery = __webpack_require__(216);
+	var _react = __webpack_require__(2);
 
-	var _jquery2 = _interopRequireDefault(_jquery);
+	var _react2 = _interopRequireDefault(_react);
 
-	var _baseInteractionJs = __webpack_require__(251);
+	var _reactMixin = __webpack_require__(249);
 
-	var _baseInteractionJs2 = _interopRequireDefault(_baseInteractionJs);
+	var _reactMixin2 = _interopRequireDefault(_reactMixin);
 
-	var RAD_2_DEG = 180 / Math.PI;
+	var _animationMixinJs = __webpack_require__(256);
 
-	var _default = (function (_BaseInteraction) {
-	  var _class = function _default(view) {
-	    var _this = this;
+	var _animationMixinJs2 = _interopRequireDefault(_animationMixinJs);
 
-	    _classCallCheck(this, _class);
+	var AnimationCheckbox = (function (_React$Component) {
+	  function AnimationCheckbox(props) {
+	    _classCallCheck(this, AnimationCheckbox);
 
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, view);
+	    _get(Object.getPrototypeOf(AnimationCheckbox.prototype), 'constructor', this).call(this, props);
+	    this.toggleState = this.toggleState.bind(this);
+	  }
 
-	    this.latLongMarker = view.latLongMarker;
-	    this.latLine = view.latLine;
-	    this.earth = view.earth;
+	  _inherits(AnimationCheckbox, _React$Component);
 
-	    this.registerInteraction({
-	      test: function test() {
-	        return _this.isUserPointing(_this.latLongMarker.mesh);
-	      },
-	      activationChangeHandler: function activationChangeHandler(isActive) {
-	        _this.latLongMarker.setHighlighted(isActive);
-	        document.body.style.cursor = isActive ? 'move' : '';
-	      },
-	      stepHandler: function stepHandler() {
-	        var coords = _this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          _this.dispatch.emit('latitude.change', coords.lat);
-	          _this.dispatch.emit('longitude.change', coords.long);
-	        }
-	      }
-	    });
-	    this.registerInteraction({
-	      test: function test() {
-	        return _this.isUserPointing(_this.latLine.mesh);
-	      },
-	      activationChangeHandler: function activationChangeHandler(isActive) {
-	        _this.latLine.setHighlighted(isActive);
-	        _this.latLongMarker.setHighlighted(isActive);
-	        document.body.style.cursor = isActive ? 'move' : '';
-	      },
-	      stepHandler: function stepHandler() {
-	        var coords = _this._getPointerLatLong();
-	        if (coords != null) {
-	          // coords can be equal to null if user isn't pointing earth anymore.
-	          _this.dispatch.emit('latitude.change', coords.lat);
-	        }
-	      }
-	    });
-	  };
-
-	  _inherits(_class, _BaseInteraction);
-
-	  _createClass(_class, [{
-	    key: '_getPointerLatLong',
-	    value: function _getPointerLatLong() {
-	      var intersects = this.isUserPointing(this.earth.earthObject);
-	      if (!intersects) {
-	        // Pointer does not intersect with earth, return null.
-	        return null;
-	      }
-	      // Calculate vector pointing from Earth center to intersection point.
-	      var intVec = intersects[0].point;
-	      intVec.sub(this.earth.position);
-	      // Take into account earth tilt and rotation.
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation);
-
-	      // Latitude calculations.
-	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
-	      var lat = intVec.angleTo(xzVec) * RAD_2_DEG;
-	      // .angleTo returns always positive number.
-	      if (intVec.y < 0) lat *= -1;
-	      // Longitude calculations.
-	      var xVec = new THREE.Vector3(1, 0, 0);
-	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
-	      if (intVec.z > 0) long *= -1;
-	      return { lat: lat, long: long };
+	  _createClass(AnimationCheckbox, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2['default'].createElement('input', { type: 'checkbox', checked: this.state.animationStarted, onChange: this.toggleState });
 	    }
 	  }]);
 
-	  return _class;
-	})(_baseInteractionJs2['default']);
+	  return AnimationCheckbox;
+	})(_react2['default'].Component);
 
-	exports['default'] = _default;
-	module.exports = exports['default'];
+	exports['default'] = AnimationCheckbox;
 
-/***/ },
-/* 254 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _inherits = __webpack_require__(177)['default'];
-
-	var _get = __webpack_require__(182)['default'];
-
-	var _createClass = __webpack_require__(188)['default'];
-
-	var _classCallCheck = __webpack_require__(191)['default'];
-
-	var _interopRequireDefault = __webpack_require__(1)['default'];
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _jquery = __webpack_require__(216);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _baseInteractionJs = __webpack_require__(251);
-
-	var _baseInteractionJs2 = _interopRequireDefault(_baseInteractionJs);
-
-	var _solarSystemDataJs = __webpack_require__(219);
-
-	var _default = (function (_BaseInteraction) {
-	  var _class = function _default(view) {
-	    var _this = this;
-
-	    _classCallCheck(this, _class);
-
-	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, view);
-
-	    this.earth = view.earth;
-	    var day0Pos = (0, _solarSystemDataJs.earthEllipseLocationByDay)(0);
-	    // Base angle for further calculations in _getXZPlanPos.
-	    this._atan2Day0Pos = Math.atan2(day0Pos.z, day0Pos.x);
-
-	    this.registerInteraction({
-	      test: function test() {
-	        return _this.isUserPointing(_this.earth.earthObject);
-	      },
-	      activationChangeHandler: function activationChangeHandler(isActive) {
-	        _this.earth.setHighlighted(isActive);
-	        document.body.style.cursor = isActive ? 'move' : '';
-	      },
-	      stepHandler: function stepHandler() {
-	        var coords = _this._getXZPlanPos();
-	        var angleDiff = _this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
-	        var newDay = angleDiff / (Math.PI * 2) * 364;
-	        if (newDay < 0) newDay += 364;
-	        _this.dispatch.emit('day.change', newDay);
-	      }
-	    });
-	  };
-
-	  _inherits(_class, _BaseInteraction);
-
-	  _createClass(_class, [{
-	    key: '_getXZPlanPos',
-
-	    // Projects mouse position on XZ plane.
-	    value: function _getXZPlanPos() {
-	      var v = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
-	      v.unproject(this.camera);
-	      v.sub(this.camera.position);
-	      v.normalize();
-	      var distance = -this.camera.position.y / v.y;
-	      v.multiplyScalar(distance);
-	      var result = this.camera.position.clone();
-	      result.add(v);
-	      return result;
-	    }
-	  }]);
-
-	  return _class;
-	})(_baseInteractionJs2['default']);
-
-	exports['default'] = _default;
+	_reactMixin2['default'].onClass(AnimationCheckbox, _animationMixinJs2['default']);
 	module.exports = exports['default'];
 
 /***/ }
