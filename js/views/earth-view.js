@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import EventEmitter from 'eventemitter2';
 
 import BaseView from './base-view.js';
 import models from '../models/common-models.js';
@@ -25,7 +24,7 @@ export default class extends BaseView {
     super(parentEl, props, 'earth-view');
 
     // Rotate earth a bit so USA is visible.
-    this.rotateEarth(2);
+    this.earth.rotate(2);
 
     // Support mouse interaction.
     this.raycaster = new THREE.Raycaster();
@@ -33,24 +32,18 @@ export default class extends BaseView {
     this._enableMousePicking();
 
     // Emit events when camera is changed.
-    this.dispatch = new EventEmitter();
     this.controls.addEventListener('change', () => {
       this.dispatch.emit('camera.change');
     });
   }
 
-  // Delegate #on to EventEmitter object.
-  on() {
-    this.dispatch.on.apply(this.dispatch, arguments);
-  }
-
   // Normalized vector pointing from camera to earth.
   getCameraEarthVec() {
-    return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
+    return this.camera.position.clone().sub(this.earth.position).normalize();
   }
 
   lookAtSubsolarPoint() {
-    let earthPos = this.getEarthPosition();
+    let earthPos = this.earth.position;
     let camEarthDist = this.camera.position.distanceTo(earthPos);
     let earthSunDist = earthPos.length();
     this.camera.position.copy(earthPos);
@@ -61,18 +54,17 @@ export default class extends BaseView {
   render(timestamp) {
     this._animate(timestamp);
     this._interactivityHandler();
-    this.controls.update();
     super.render(timestamp);
   }
 
   _updateDay() {
-    let oldPos = this.getEarthPosition().clone();
+    let oldPos = this.earth.position.clone();
     super._updateDay();
-    let newPos = this.getEarthPosition().clone();
+    let newPos = this.earth.position.clone();
 
     let angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
     // Make sure that earth maintains its current rotation.
-    this.rotateEarth(angleDiff);
+    this.earth.rotate(angleDiff);
 
     // Update camera position, rotate it and adjust its orbit length.
     this.rotateCam(angleDiff);
@@ -100,8 +92,8 @@ export default class extends BaseView {
     super._initScene();
     this.latLine = new LatitudeLine();
     this.latLongMarker = new LatLongMarker();
-    this.earth.add(this.latLine.rootObject);
-    this.earth.add(this.latLongMarker.rootObject);
+    this.earth.earthObject.add(this.latLine.rootObject);
+    this.earth.earthObject.add(this.latLongMarker.rootObject);
   }
 
   // Sets camera next to earth at day 0 position.
@@ -118,7 +110,7 @@ export default class extends BaseView {
     }
     let progress = this._prevFrame ? timestamp - this._prevFrame : 0;
     let angleDiff = progress * 0.0001 * Math.PI;
-    this.rotateEarth(angleDiff);
+    this.earth.rotate(angleDiff);
     this._prevFrame = timestamp;
   }
 
@@ -183,9 +175,9 @@ export default class extends BaseView {
     this.latLongMarker.setHighlighted(v);
     this.latLine.setHighlighted(v);
     this.controls.noRotate = v;
+    document.body.style.cursor = v ? 'move' : '';
     let $elem = $(this.renderer.domElement);
     if (v) {
-      let $elem = $(this.renderer.domElement);
       $elem.on('mousedown.latDragging touchstart.latDragging', () => {
         this._isLatDragging = true;
       });
@@ -202,6 +194,7 @@ export default class extends BaseView {
     this._isLatLongDraggingEnabled = v;
     this.latLongMarker.setHighlighted(v);
     this.controls.noRotate = v;
+    document.body.style.cursor = v ? 'move' : '';
     let $elem = $(this.renderer.domElement);
     if (v) {
       $elem.on('mousedown.latLongDragging touchstart.latLongDragging', () => {
@@ -217,17 +210,17 @@ export default class extends BaseView {
 
   // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
   _getPointerLatLong() {
-    let intersects = this._isUserPointing(this.earth);
+    let intersects = this._isUserPointing(this.earth.earthObject);
     if (!intersects) {
       // Pointer does not intersect with earth, return null.
       return null;
     }
     // Calculate vector pointing from Earth center to intersection point.
     let intVec = intersects[0].point;
-    intVec.sub(this.getEarthPosition());
+    intVec.sub(this.earth.position);
     // Take into account earth tilt and rotation.
-    intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
-    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
+    intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
+    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation);
 
     // Latitude calculations.
     let xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);

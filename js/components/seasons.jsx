@@ -27,7 +27,7 @@ export default class Seasons extends React.Component {
 
     this.mainViewChange = this.mainViewChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
-    this.dayAnimStep = this.dayAnimStep.bind(this);
+    this.dayChange = this.dayChange.bind(this);
     this.simCheckboxChange = this.simCheckboxChange.bind(this);
     this.locationChange = this.locationChange.bind(this);
     this.latSliderChange = this.latSliderChange.bind(this);
@@ -78,7 +78,8 @@ export default class Seasons extends React.Component {
     this.setSimState({day: ui.value});
   }
 
-  dayAnimStep(newDay) {
+  dayChange(newDay) {
+    // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
     this.setSimState({day: newDay % 365});
   }
 
@@ -107,7 +108,7 @@ export default class Seasons extends React.Component {
   render() {
     return (
       <div>
-        <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange}/>
+        <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onLocationChange={this.locationChange} onDayChange={this.dayChange}/>
         <div className='controls' >
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
@@ -128,7 +129,7 @@ export default class Seasons extends React.Component {
                   <option value='rays'>Rays</option>
                 </select>
               </div>
-              <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimStep}/>
+              <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayChange}/>
               <label className='day'>Day: {this.getFormattedDay()}</label>
               <div className='day-slider'>
                 <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>

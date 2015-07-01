@@ -20520,7 +20520,7 @@
 
 	    this.mainViewChange = this.mainViewChange.bind(this);
 	    this.daySliderChange = this.daySliderChange.bind(this);
-	    this.dayAnimStep = this.dayAnimStep.bind(this);
+	    this.dayChange = this.dayChange.bind(this);
 	    this.simCheckboxChange = this.simCheckboxChange.bind(this);
 	    this.locationChange = this.locationChange.bind(this);
 	    this.latSliderChange = this.latSliderChange.bind(this);
@@ -20600,8 +20600,9 @@
 	      this.setSimState({ day: ui.value });
 	    }
 	  }, {
-	    key: 'dayAnimStep',
-	    value: function dayAnimStep(newDay) {
+	    key: 'dayChange',
+	    value: function dayChange(newDay) {
+	      // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
 	      this.setSimState({ day: newDay % 365 });
 	    }
 	  }, {
@@ -20637,7 +20638,7 @@
 	      return _reactAddons2['default'].createElement(
 	        'div',
 	        null,
-	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { ref: 'view', mainView: this.state.mainView, simulation: this.state.sim, onLocationChange: this.locationChange }),
+	        _reactAddons2['default'].createElement(_viewManagerJsx2['default'], { ref: 'view', mainView: this.state.mainView, simulation: this.state.sim, onLocationChange: this.locationChange, onDayChange: this.dayChange }),
 	        _reactAddons2['default'].createElement(
 	          'div',
 	          { className: 'controls' },
@@ -20717,7 +20718,7 @@
 	                  )
 	                )
 	              ),
-	              _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayAnimStep }),
+	              _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayChange }),
 	              _reactAddons2['default'].createElement(
 	                'label',
 	                { className: 'day' },
@@ -23766,7 +23767,7 @@
 	            { className: 'view-label' },
 	            'Orbit'
 	          ),
-	          _react2['default'].createElement(_orbitViewCompJsx2['default'], { ref: 'orbit', simulation: this.props.simulation })
+	          _react2['default'].createElement(_orbitViewCompJsx2['default'], { ref: 'orbit', simulation: this.props.simulation, onDayChange: this.props.onDayChange })
 	        ),
 	        _react2['default'].createElement(
 	          'div',
@@ -23968,10 +23969,6 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _eventemitter2 = __webpack_require__(214);
-
-	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
-
 	var _baseViewJs = __webpack_require__(217);
 
 	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
@@ -24017,7 +24014,7 @@
 	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'earth-view');
 
 	    // Rotate earth a bit so USA is visible.
-	    this.rotateEarth(2);
+	    this.earth.rotate(2);
 
 	    // Support mouse interaction.
 	    this.raycaster = new THREE.Raycaster();
@@ -24025,7 +24022,6 @@
 	    this._enableMousePicking();
 
 	    // Emit events when camera is changed.
-	    this.dispatch = new _eventemitter22['default']();
 	    this.controls.addEventListener('change', function () {
 	      _this.dispatch.emit('camera.change');
 	    });
@@ -24034,23 +24030,16 @@
 	  _inherits(_class, _BaseView);
 
 	  _createClass(_class, [{
-	    key: 'on',
-
-	    // Delegate #on to EventEmitter object.
-	    value: function on() {
-	      this.dispatch.on.apply(this.dispatch, arguments);
-	    }
-	  }, {
 	    key: 'getCameraEarthVec',
 
 	    // Normalized vector pointing from camera to earth.
 	    value: function getCameraEarthVec() {
-	      return this.camera.position.clone().sub(this.getEarthPosition()).normalize();
+	      return this.camera.position.clone().sub(this.earth.position).normalize();
 	    }
 	  }, {
 	    key: 'lookAtSubsolarPoint',
 	    value: function lookAtSubsolarPoint() {
-	      var earthPos = this.getEarthPosition();
+	      var earthPos = this.earth.position;
 	      var camEarthDist = this.camera.position.distanceTo(earthPos);
 	      var earthSunDist = earthPos.length();
 	      this.camera.position.copy(earthPos);
@@ -24062,19 +24051,18 @@
 	    value: function render(timestamp) {
 	      this._animate(timestamp);
 	      this._interactivityHandler();
-	      this.controls.update();
 	      _get(Object.getPrototypeOf(_class.prototype), 'render', this).call(this, timestamp);
 	    }
 	  }, {
 	    key: '_updateDay',
 	    value: function _updateDay() {
-	      var oldPos = this.getEarthPosition().clone();
+	      var oldPos = this.earth.position.clone();
 	      _get(Object.getPrototypeOf(_class.prototype), '_updateDay', this).call(this);
-	      var newPos = this.getEarthPosition().clone();
+	      var newPos = this.earth.position.clone();
 
 	      var angleDiff = Math.atan2(oldPos.z, oldPos.x) - Math.atan2(newPos.z, newPos.x);
 	      // Make sure that earth maintains its current rotation.
-	      this.rotateEarth(angleDiff);
+	      this.earth.rotate(angleDiff);
 
 	      // Update camera position, rotate it and adjust its orbit length.
 	      this.rotateCam(angleDiff);
@@ -24105,8 +24093,8 @@
 	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
 	      this.latLine = new _modelsLatitudeLineJs2['default']();
 	      this.latLongMarker = new _modelsLatLongMarkerJs2['default']();
-	      this.earth.add(this.latLine.rootObject);
-	      this.earth.add(this.latLongMarker.rootObject);
+	      this.earth.earthObject.add(this.latLine.rootObject);
+	      this.earth.earthObject.add(this.latLongMarker.rootObject);
 	    }
 	  }, {
 	    key: '_setInitialCamPos',
@@ -24126,7 +24114,7 @@
 	      }
 	      var progress = this._prevFrame ? timestamp - this._prevFrame : 0;
 	      var angleDiff = progress * 0.0001 * Math.PI;
-	      this.rotateEarth(angleDiff);
+	      this.earth.rotate(angleDiff);
 	      this._prevFrame = timestamp;
 	    }
 	  }, {
@@ -24199,13 +24187,13 @@
 	      this.latLongMarker.setHighlighted(v);
 	      this.latLine.setHighlighted(v);
 	      this.controls.noRotate = v;
+	      document.body.style.cursor = v ? 'move' : '';
 	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
 	      if (v) {
-	        var _$elem = (0, _jquery2['default'])(this.renderer.domElement);
-	        _$elem.on('mousedown.latDragging touchstart.latDragging', function () {
+	        $elem.on('mousedown.latDragging touchstart.latDragging', function () {
 	          _this3._isLatDragging = true;
 	        });
-	        _$elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
+	        $elem.on('mouseup.latDragging touchend.latDragging touchcancel.latDragging', function () {
 	          _this3._isLatDragging = false;
 	        });
 	      } else {
@@ -24221,6 +24209,7 @@
 	      this._isLatLongDraggingEnabled = v;
 	      this.latLongMarker.setHighlighted(v);
 	      this.controls.noRotate = v;
+	      document.body.style.cursor = v ? 'move' : '';
 	      var $elem = (0, _jquery2['default'])(this.renderer.domElement);
 	      if (v) {
 	        $elem.on('mousedown.latLongDragging touchstart.latLongDragging', function () {
@@ -24238,17 +24227,17 @@
 
 	    // Returns longitude and latitude pointed by cursor or null if pointer doesn't intersect with earth model.
 	    value: function _getPointerLatLong() {
-	      var intersects = this._isUserPointing(this.earth);
+	      var intersects = this._isUserPointing(this.earth.earthObject);
 	      if (!intersects) {
 	        // Pointer does not intersect with earth, return null.
 	        return null;
 	      }
 	      // Calculate vector pointing from Earth center to intersection point.
 	      var intVec = intersects[0].point;
-	      intVec.sub(this.getEarthPosition());
+	      intVec.sub(this.earth.position);
 	      // Take into account earth tilt and rotation.
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.getEarthTilt());
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.getEarthRotation());
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
+	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.rotation);
 
 	      // Latitude calculations.
 	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
@@ -34115,9 +34104,17 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
+	var _eventemitter2 = __webpack_require__(214);
+
+	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
+
 	var _modelsCommonModelsJs = __webpack_require__(218);
 
 	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
+
+	var _modelsEarthJs = __webpack_require__(250);
+
+	var _modelsEarthJs2 = _interopRequireDefault(_modelsEarthJs);
 
 	var _modelsSunEarthLineJs = __webpack_require__(221);
 
@@ -34156,6 +34153,9 @@
 	    this.controls.noPan = true;
 	    this.controls.noZoom = true;
 	    this.controls.rotateSpeed = 0.5;
+
+	    this.dispatch = new _eventemitter22['default']();
+	    this._interactionHandlers = [];
 
 	    this.props = {};
 	    this.setProps(props);
@@ -34201,26 +34201,11 @@
 	      }
 	    }
 	  }, {
-	    key: 'getEarthPosition',
-	    value: function getEarthPosition() {
-	      return this.earthPos.position;
-	    }
-	  }, {
-	    key: 'getEarthTilt',
-	    value: function getEarthTilt() {
-	      return this.earthTiltPivot.rotation.z;
-	    }
-	  }, {
-	    key: 'getEarthRotation',
-	    value: function getEarthRotation() {
-	      return this.earth.rotation.y;
-	    }
-	  }, {
-	    key: 'rotateEarth',
+	    key: 'on',
 
-	    // Rotates earth around its own axis.
-	    value: function rotateEarth(angleDiff) {
-	      this.earth.rotation.y += angleDiff;
+	    // Delegate #on to EventEmitter object.
+	    value: function on() {
+	      this.dispatch.on.apply(this.dispatch, arguments);
 	    }
 	  }, {
 	    key: 'rotateCam',
@@ -34233,6 +34218,10 @@
 	  }, {
 	    key: 'render',
 	    value: function render(timestamp) {
+	      this.controls.update();
+	      for (var i = 0; i < this._interactionHandlers.length; i++) {
+	        this._interactionHandlers[i].checkInteraction();
+	      }
 	      this.renderer.render(this.scene, this.camera);
 	    }
 	  }, {
@@ -34248,21 +34237,24 @@
 	      this.renderer.setSize(newWidth, newHeight);
 	    }
 	  }, {
+	    key: 'registerInteractionHandler',
+	    value: function registerInteractionHandler(handler) {
+	      this._interactionHandlers.push(handler);
+	    }
+	  }, {
 	    key: '_updateDay',
 
 	    // Called automatically when 'day' property is updated.
 	    value: function _updateDay() {
-	      var day = this.props.day;
-	      var pos = data.earthEllipseLocationByDay(day);
-	      this.earthPos.position.copy(pos);
-	      this.sunEarthLine.setEarthPos(pos);
+	      this.earth.setPositionFromDay(this.props.day);
+	      this.sunEarthLine.setEarthPos(this.earth.position);
 	    }
 	  }, {
 	    key: '_updateEarthTilt',
 
 	    // Called automatically when 'earthTilt' property is updated.
 	    value: function _updateEarthTilt() {
-	      this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
+	      this.earth.setTilted(this.props.earthTilt);
 	    }
 	  }, {
 	    key: '_updateSunEarthLine',
@@ -34287,18 +34279,10 @@
 	      this.scene.add(_modelsCommonModelsJs2['default'].orbit(basicProps));
 	      this.scene.add(_modelsCommonModelsJs2['default'].sun(basicProps));
 
-	      this.earth = _modelsCommonModelsJs2['default'].earth(basicProps);
+	      this.earth = new _modelsEarthJs2['default'](basicProps);
 	      this.earthAxis = _modelsCommonModelsJs2['default'].earthAxis(basicProps);
-	      this.earth.add(this.earthAxis);
-	      this.earthTiltPivot = new THREE.Object3D();
-	      this.earthTiltPivot.add(this.earth);
-	      this.earthPos = new THREE.Object3D();
-	      // Make sure that earth is at day 0 position.
-	      // This is necessary so angle diff is calculated correctly in _updateDay() method.
-	      var pos = data.earthEllipseLocationByDay(0);
-	      this.earthPos.position.copy(pos);
-	      this.earthPos.add(this.earthTiltPivot);
-	      this.scene.add(this.earthPos);
+	      this.earth.earthObject.add(this.earthAxis);
+	      this.scene.add(this.earth.rootObject);
 
 	      this.sunEarthLine = new _modelsSunEarthLineJs2['default'](basicProps);
 	      this.scene.add(this.sunEarthLine.rootObject);
@@ -34505,27 +34489,12 @@
 	var SUN_FOCUS = EARTH_ECCENTRICITY / EARTH_SEMI_MAJOR_AXIS / 2 * AU_2_KM / SCALE_FACTOR;
 	exports.SUN_FOCUS = SUN_FOCUS;
 	var EARTH_TILT = 0.41;
-
 	exports.EARTH_TILT = EARTH_TILT;
-	var DAY_NUMBER_BY_MONTH = {
-	  JAN: 19,
-	  FEB: 50,
-	  MAR: 78, // mar 20 17:42
-	  APR: 109,
-	  MAY: 139,
-	  JUN: 171, // jun 21 17:16
-	  JUL: 200,
-	  AUG: 231,
-	  SEP: 265, // sep 23 09:04
-	  OCT: 292,
-	  NOV: 323,
-	  DEC: 355 // dec 22 05:30
-	};
-
-	exports.DAY_NUMBER_BY_MONTH = DAY_NUMBER_BY_MONTH;
+	var SUMMER_SOLSTICE = 171;exports.SUMMER_SOLSTICE = SUMMER_SOLSTICE;
+	// 171 day of year
 
 	function earthEllipseLocationByDay(day) {
-	  var index = (DAY_NUMBER_BY_MONTH.JUN - day) / 365;
+	  var index = (SUMMER_SOLSTICE - day) / 365;
 	  var z = 1 / EARTH_SEMI_MAJOR_AXIS * Math.sin(index * 2 * Math.PI);
 	  var x = EARTH_SEMI_MAJOR_AXIS * Math.cos(index * 2 * Math.PI);
 
@@ -34563,9 +34532,14 @@
 	var SUN_RADIUS = 4000000 * SF;
 	exports.SUN_RADIUS = SUN_RADIUS;
 	var SIMPLE_SUN_RADIUS = 15000000 * SF;
+
 	exports.SIMPLE_SUN_RADIUS = SIMPLE_SUN_RADIUS;
 	var SUN_COLOR = 0xCB671F;
 	exports.SUN_COLOR = SUN_COLOR;
+	var HIGHLIGHT_COLOR = 0xff0000;
+	exports.HIGHLIGHT_COLOR = HIGHLIGHT_COLOR;
+	var HIGHLIGHT_EMISSIVE = 0xbb3333;
+	exports.HIGHLIGHT_EMISSIVE = HIGHLIGHT_EMISSIVE;
 
 /***/ },
 /* 221 */
@@ -34680,8 +34654,6 @@
 	var DEG_2_RAD = Math.PI / 180;
 	var DEF_COLOR = 0xffffff;
 	var DEF_EMISSIVE = 0x999999;
-	var HIGHLIGHT_COLOR = 0xff0000;
-	var HIGHLIGHT_EMISSIVE = 0xbb3333;
 
 	var LatitudeLine = (function () {
 	  function LatitudeLine() {
@@ -34709,8 +34681,8 @@
 	  }, {
 	    key: 'setHighlighted',
 	    value: function setHighlighted(v) {
-	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
-	      this.material.emissive.setHex(v ? HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+	      this.material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
+	      this.material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
 	    }
 	  }]);
 
@@ -34745,8 +34717,6 @@
 	var DEG_2_RAD = Math.PI / 180;
 	var DEF_COLOR = 0xffffff;
 	var DEF_EMISSIVE = 0x999999;
-	var HIGHLIGHT_COLOR = 0xff0000;
-	var HIGHLIGHT_EMISSIVE = 0xbb3333;
 
 	var LatLongMarker = (function () {
 	  function LatLongMarker() {
@@ -34779,8 +34749,8 @@
 	  }, {
 	    key: 'setHighlighted',
 	    value: function setHighlighted(v) {
-	      this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
-	      this.material.emissive.setHex(v ? HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+	      this.material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
+	      this.material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
 	    }
 	  }]);
 
@@ -34872,6 +34842,16 @@
 	  _inherits(OrbitViewComp, _CanvasView);
 
 	  _createClass(OrbitViewComp, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this = this;
+
+	      _get(Object.getPrototypeOf(OrbitViewComp.prototype), 'componentDidMount', this).call(this);
+	      this.externalView.on('day.change', function (newDay) {
+	        _this.props.onDayChange(newDay);
+	      });
+	    }
+	  }, {
 	    key: 'setViewAxis',
 	    value: function setViewAxis(vec) {
 	      this.externalView.setViewAxis(vec);
@@ -34914,6 +34894,10 @@
 
 	var _baseViewJs2 = _interopRequireDefault(_baseViewJs);
 
+	var _earthDraggingInteractionJs = __webpack_require__(249);
+
+	var _earthDraggingInteractionJs2 = _interopRequireDefault(_earthDraggingInteractionJs);
+
 	var _modelsCommonModelsJs = __webpack_require__(218);
 
 	var _modelsCommonModelsJs2 = _interopRequireDefault(_modelsCommonModelsJs);
@@ -34935,6 +34919,7 @@
 	    _classCallCheck(this, _class);
 
 	    _get(Object.getPrototypeOf(_class.prototype), 'constructor', this).call(this, parentEl, props, 'orbit-view');
+	    this.registerInteractionHandler(new _earthDraggingInteractionJs2['default'](this));
 	  };
 
 	  _inherits(_class, _BaseView);
@@ -34957,7 +34942,7 @@
 	    value: function _initScene() {
 	      _get(Object.getPrototypeOf(_class.prototype), '_initScene', this).call(this);
 	      this.viewAxis = _modelsCommonModelsJs2['default'].viewAxis();
-	      this.earthPos.add(this.viewAxis);
+	      this.earth.posObject.add(this.viewAxis);
 	      this._addLabels();
 	    }
 	  }, {
@@ -35105,7 +35090,7 @@
 	    value: function getNoonSolarAltitude() {
 	      // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
 	      // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
-	      var tiltAxisZRadians = 2 * Math.PI * (this.props.day - _solarSystemDataJs.DAY_NUMBER_BY_MONTH.JUN) / 365;
+	      var tiltAxisZRadians = 2 * Math.PI * (this.props.day - _solarSystemDataJs.SUMMER_SOLSTICE) / 365;
 	      // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
 	      // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
 	      var orbitalTiltDegrees = this.props.earthTilt ? _solarSystemDataJs.EARTH_TILT * RAD_2_DEG : 0;
@@ -37853,6 +37838,260 @@
 
 	// exports
 
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireDefault = __webpack_require__(1)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _jquery = __webpack_require__(216);
+
+	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _utilsJs = __webpack_require__(224);
+
+	var _solarSystemDataJs = __webpack_require__(219);
+
+	var _default = (function () {
+	  var _class = function _default(view) {
+	    _classCallCheck(this, _class);
+
+	    this.view = view;
+	    this.domElement = view.renderer.domElement;
+	    this.camera = view.camera;
+	    this.earth = view.earth;
+	    this.controls = view.controls;
+	    this.dispatch = view.dispatch;
+
+	    var day0Pos = (0, _solarSystemDataJs.earthEllipseLocationByDay)(0); // reference for further calculations
+	    this._atan2Day0Pos = Math.atan2(day0Pos.z, day0Pos.x);
+
+	    this.raycaster = new THREE.Raycaster();
+	    this.mouse = new THREE.Vector2(-2, -2); // intentionally out of view, which is limited to [-1, 1] x [-1, 1]
+	    this._followMousePosition();
+	  };
+
+	  _createClass(_class, [{
+	    key: 'checkInteraction',
+	    value: function checkInteraction() {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+
+	      if (this._isEarthDragging) {
+	        var coords = this._getXZPlanPos();
+	        var angleDiff = this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
+	        var newDay = angleDiff / (Math.PI * 2) * 364;
+	        if (newDay < 0) newDay += 364;
+	        this.dispatch.emit('day.change', newDay);
+	        return;
+	      }
+
+	      // Note that order of calls below is very important. First, we need to disable old interaction
+	      // and then enable new one (as they're both modifying camera controls).
+	      if (this._isUserPointing(this.earth.earthObject)) {
+	        this._setEarthDraggingEnabled(true);
+	      } else {
+	        this._setEarthDraggingEnabled(false);
+	      }
+	    }
+	  }, {
+	    key: '_setEarthDraggingEnabled',
+	    value: function _setEarthDraggingEnabled(v) {
+	      var _this = this;
+
+	      if (this._isEarthDraggingEnabled === v) return; // exit, nothing has changed
+	      this._isEarthDraggingEnabled = v;
+	      this.earth.setHighlighted(v);
+	      document.body.style.cursor = v ? 'move' : '';
+	      this.controls.noRotate = v;
+	      var $elem = (0, _jquery2['default'])(this.domElement);
+	      if (v) {
+	        $elem.on('mousedown.earthDragging touchstart.earthDragging', function () {
+	          _this._isEarthDragging = true;
+	        });
+	        $elem.on('mouseup.earthDragging touchend.earthDragging touchcancel.earthDragging', function () {
+	          _this._isEarthDragging = false;
+	        });
+	      } else {
+	        $elem.off('.earthDragging');
+	      }
+	    }
+	  }, {
+	    key: '_followMousePosition',
+	    value: function _followMousePosition() {
+	      var _this2 = this;
+
+	      var onMouseMove = function onMouseMove(event) {
+	        var pos = (0, _utilsJs.mousePosNormalized)(event, _this2.domElement);
+	        _this2.mouse.x = pos.x;
+	        _this2.mouse.y = pos.y;
+	      };
+	      (0, _jquery2['default'])(this.domElement).on('mousemove touchmove', onMouseMove);
+	    }
+	  }, {
+	    key: '_isUserPointing',
+	    value: function _isUserPointing(mesh) {
+	      this.raycaster.setFromCamera(this.mouse, this.camera);
+	      var intersects = this.raycaster.intersectObject(mesh);
+	      if (intersects.length > 0) {
+	        return intersects;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: '_getXZPlanPos',
+
+	    // Projects mouse position on XZ plane.
+	    value: function _getXZPlanPos() {
+	      var v = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
+	      v.unproject(this.camera);
+	      v.sub(this.camera.position);
+	      v.normalize();
+	      var distance = -this.camera.position.y / v.y;
+	      v.multiplyScalar(distance);
+	      var result = this.camera.position.clone();
+	      result.add(v);
+	      return result;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = __webpack_require__(188)['default'];
+
+	var _classCallCheck = __webpack_require__(191)['default'];
+
+	var _interopRequireWildcard = __webpack_require__(215)['default'];
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	var _solarSystemDataJs = __webpack_require__(219);
+
+	var data = _interopRequireWildcard(_solarSystemDataJs);
+
+	var _constantsJs = __webpack_require__(220);
+
+	var c = _interopRequireWildcard(_constantsJs);
+
+	var DEF_COLOR = 0x1286CD;
+	var DEF_EMISSIVE = 0x002135;
+
+	var _default = (function () {
+	  var _class = function _default(params) {
+	    _classCallCheck(this, _class);
+
+	    var simple = params.type === 'orbit-view';
+	    var RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+	    var COLORS = simple ? { color: DEF_COLOR, emissive: DEF_EMISSIVE } : { specular: 0x252525 };
+	    var geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
+	    this._material = new THREE.MeshPhongMaterial(COLORS);
+	    if (!simple) {
+	      this._material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
+	      this._material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
+	      this._material.bumpScale = 100000 * c.SF;
+	      this._material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
+	    }
+
+	    this._earthObject = new THREE.Mesh(geometry, this._material);
+	    this._tiltObject = new THREE.Object3D();
+	    this._tiltObject.add(this._earthObject);
+	    this._posObject = new THREE.Object3D();
+	    // Make sure that earth is at day 0 position.
+	    // This is necessary so angle diff is calculated correctly in _updateDay() method.
+	    var pos = data.earthEllipseLocationByDay(0);
+	    this._posObject.position.copy(pos);
+	    this._posObject.add(this._tiltObject);
+	  };
+
+	  _createClass(_class, [{
+	    key: 'rotate',
+
+	    // Rotates earth around its own axis.
+	    value: function rotate(angleDiff) {
+	      this._earthObject.rotation.y += angleDiff;
+	    }
+	  }, {
+	    key: 'setPositionFromDay',
+	    value: function setPositionFromDay(day) {
+	      var pos = data.earthEllipseLocationByDay(day);
+	      this.position.copy(pos);
+	    }
+	  }, {
+	    key: 'setTilted',
+	    value: function setTilted(v) {
+	      this._tiltObject.rotation.z = v ? data.EARTH_TILT : 0;
+	    }
+	  }, {
+	    key: 'setHighlighted',
+	    value: function setHighlighted(v) {
+	      this._material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
+	      this._material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+	    }
+	  }, {
+	    key: 'rootObject',
+	    get: function get() {
+	      return this._posObject;
+	    }
+	  }, {
+	    key: 'posObject',
+	    get: function get() {
+	      return this._posObject;
+	    }
+	  }, {
+	    key: 'tiltObject',
+	    get: function get() {
+	      return this._tiltObject;
+	    }
+	  }, {
+	    key: 'earthObject',
+	    get: function get() {
+	      return this._earthObject;
+	    }
+	  }, {
+	    key: 'position',
+	    get: function get() {
+	      return this._posObject.position;
+	    }
+	  }, {
+	    key: 'tilt',
+	    get: function get() {
+	      return this._tiltObject.rotation.z;
+	    }
+	  }, {
+	    key: 'rotation',
+	    get: function get() {
+	      return this._earthObject.rotation.y;
+	    }
+	  }]);
+
+	  return _class;
+	})();
+
+	exports['default'] = _default;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

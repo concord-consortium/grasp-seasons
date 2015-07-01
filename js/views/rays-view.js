@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {EARTH_TILT, DAY_NUMBER_BY_MONTH} from '../solar-system-data.js';
+import {EARTH_TILT, SUMMER_SOLSTICE} from '../solar-system-data.js';
 
 const DARK_BLUE = '#6E9CEF';
 const LIGHT_BLUE = '#99ADF1';
@@ -42,7 +42,7 @@ export default class {
   getNoonSolarAltitude() {
     // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
     // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
-    let tiltAxisZRadians = 2 * Math.PI * (this.props.day - DAY_NUMBER_BY_MONTH.JUN) / 365;
+    let tiltAxisZRadians = 2 * Math.PI * (this.props.day - SUMMER_SOLSTICE) / 365;
     // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
     // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
     let orbitalTiltDegrees = this.props.earthTilt ? EARTH_TILT * RAD_2_DEG : 0;

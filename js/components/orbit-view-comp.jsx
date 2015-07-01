@@ -8,6 +8,13 @@ export default class OrbitViewComp extends CanvasView {
     this.ExternalView = OrbitView;
   }
 
+  componentDidMount() {
+    super.componentDidMount();
+    this.externalView.on('day.change', (newDay) => {
+      this.props.onDayChange(newDay);
+    });
+  }
+
   setViewAxis(vec) {
     this.externalView.setViewAxis(vec);
   }

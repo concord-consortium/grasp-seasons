@@ -1,11 +1,9 @@
 import * as c from './constants.js';
 import {mousePosNormalized} from '../utils.js';
 
-let DEG_2_RAD = Math.PI / 180;
-let DEF_COLOR = 0xffffff;
-let DEF_EMISSIVE = 0x999999;
-let HIGHLIGHT_COLOR = 0xff0000;
-let HIGHLIGHT_EMISSIVE = 0xbb3333;
+const DEG_2_RAD = Math.PI / 180;
+const DEF_COLOR = 0xffffff;
+const DEF_EMISSIVE = 0x999999;
 
 export default class LatLongMarker {
   constructor() {
@@ -33,7 +31,7 @@ export default class LatLongMarker {
   }
 
   setHighlighted(v) {
-    this.material.color.setHex(v ? HIGHLIGHT_COLOR : DEF_COLOR);
-    this.material.emissive.setHex(v ? HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
+    this.material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
+    this.material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
   }
 }

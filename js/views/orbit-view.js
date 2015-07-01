@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import BaseView from './base-view.js';
+import EarthDraggingInteraction from './earth-dragging-interaction.js';
 import models from '../models/common-models.js';
 import * as data from '../solar-system-data.js';
 
@@ -12,6 +13,7 @@ const DEF_PROPERTIES = {
 export default class extends BaseView {
   constructor(parentEl, props = DEF_PROPERTIES) {
     super(parentEl, props, 'orbit-view');
+    this.registerInteractionHandler(new EarthDraggingInteraction(this));
   }
 
   setViewAxis(vec3) {
@@ -28,7 +30,7 @@ export default class extends BaseView {
   _initScene() {
     super._initScene();
     this.viewAxis = models.viewAxis();
-    this.earthPos.add(this.viewAxis);
+    this.earth.posObject.add(this.viewAxis);
     this._addLabels();
   }
 

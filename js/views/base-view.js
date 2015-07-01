@@ -1,5 +1,7 @@
 import $ from 'jquery';
+import EventEmitter from 'eventemitter2';
 import models from '../models/common-models.js';
+import Earth from '../models/earth.js';
 import SunEarthLine from '../models/sun-earth-line.js';
 import * as data from '../solar-system-data.js';
 
@@ -29,6 +31,9 @@ export default class {
     this.controls.noZoom = true;
     this.controls.rotateSpeed = 0.5;
 
+    this.dispatch = new EventEmitter();
+    this._interactionHandlers = [];
+
     this.props = {};
     this.setProps(props);
   }
@@ -50,21 +55,9 @@ export default class {
     }
   }
 
-  getEarthPosition() {
-    return this.earthPos.position;
-  }
-
-  getEarthTilt() {
-    return this.earthTiltPivot.rotation.z;
-  }
-
-  getEarthRotation() {
-    return this.earth.rotation.y;
-  }
-
-  // Rotates earth around its own axis.
-  rotateEarth(angleDiff) {
-    this.earth.rotation.y += angleDiff;
+  // Delegate #on to EventEmitter object.
+  on() {
+    this.dispatch.on.apply(this.dispatch, arguments);
   }
 
   // Rotates camera around the sun.
@@ -74,6 +67,10 @@ export default class {
   }
 
   render(timestamp) {
+    this.controls.update();
+    for (let i = 0; i < this._interactionHandlers.length; i++) {
+      this._interactionHandlers[i].checkInteraction();
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -87,17 +84,19 @@ export default class {
     this.renderer.setSize(newWidth, newHeight);
   }
 
+  registerInteractionHandler(handler) {
+    this._interactionHandlers.push(handler);
+  }
+
   // Called automatically when 'day' property is updated.
   _updateDay() {
-    let day = this.props.day;
-    let pos = data.earthEllipseLocationByDay(day);
-    this.earthPos.position.copy(pos);
-    this.sunEarthLine.setEarthPos(pos);
+    this.earth.setPositionFromDay(this.props.day);
+    this.sunEarthLine.setEarthPos(this.earth.position);
   }
 
   // Called automatically when 'earthTilt' property is updated.
   _updateEarthTilt() {
-    this.earthTiltPivot.rotation.z = this.props.earthTilt ? data.EARTH_TILT : 0;
+    this.earth.setTilted(this.props.earthTilt);
   }
 
   _updateSunEarthLine() {
@@ -120,18 +119,10 @@ export default class {
     this.scene.add(models.orbit(basicProps));
     this.scene.add(models.sun(basicProps));
 
-    this.earth = models.earth(basicProps);
+    this.earth = new Earth(basicProps);
     this.earthAxis = models.earthAxis(basicProps);
-    this.earth.add(this.earthAxis);
-    this.earthTiltPivot = new THREE.Object3D();
-    this.earthTiltPivot.add(this.earth);
-    this.earthPos = new THREE.Object3D();
-    // Make sure that earth is at day 0 position.
-    // This is necessary so angle diff is calculated correctly in _updateDay() method.
-    let pos = data.earthEllipseLocationByDay(0);
-    this.earthPos.position.copy(pos);
-    this.earthPos.add(this.earthTiltPivot);
-    this.scene.add(this.earthPos);
+    this.earth.earthObject.add(this.earthAxis);
+    this.scene.add(this.earth.rootObject);
 
     this.sunEarthLine = new SunEarthLine(basicProps);
     this.scene.add(this.sunEarthLine.rootObject);

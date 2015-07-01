@@ -71,7 +71,7 @@ export default class ViewManager extends React.Component {
         </div>
         <div className={`view ${layout.orbit}`}>
           <div className='view-label'>Orbit</div>
-          <OrbitViewComp ref='orbit' simulation={this.props.simulation}/>
+          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onDayChange={this.props.onDayChange}/>
         </div>
         <div className={`view ${layout.rays}`}>
           <div className='view-label'>Rays</div>
