@@ -20530,6 +20530,7 @@
 	    this.simCheckboxChange = this.simCheckboxChange.bind(this);
 	    this.latSliderChange = this.latSliderChange.bind(this);
 	    this.longSliderChange = this.longSliderChange.bind(this);
+	    this.citySelectChange = this.citySelectChange.bind(this);
 	    this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
 	  }
 
@@ -20562,7 +20563,7 @@
 	    }
 	  }, {
 	    key: 'setSimState',
-	    value: function setSimState(newSimState) {
+	    value: function setSimState(newSimState, callback) {
 	      var updateStruct = {};
 	      var _iteratorNormalCompletion = true;
 	      var _didIteratorError = false;
@@ -20592,10 +20593,12 @@
 	      var newState = _reactAddons2['default'].addons.update(this.state, {
 	        sim: updateStruct
 	      });
-	      this.setState(newState);
+	      this.setState(newState, callback);
 	    }
 	  }, {
 	    key: 'simStateChange',
+
+	    // Used by the simulation view itself, as user can interact with the view.
 	    value: function simStateChange(newState) {
 	      this.setSimState(newState);
 	    }
@@ -20618,6 +20621,7 @@
 	  }, {
 	    key: 'earthRotationAnimFrame',
 	    value: function earthRotationAnimFrame(newAngle) {
+	      // Again, animation simply increases value so make sure that angle has reasonable value.
 	      this.setSimState({ earthRotation: newAngle % (2 * Math.PI) });
 	    }
 	  }, {
@@ -20636,6 +20640,20 @@
 	    key: 'longSliderChange',
 	    value: function longSliderChange(event, ui) {
 	      this.setSimState({ long: ui.value });
+	    }
+	  }, {
+	    key: 'citySelectChange',
+	    value: function citySelectChange(lat, long) {
+	      var _this = this;
+
+	      // When a new city is selected, update lat-long marker, but also:
+	      // - rotate earth so the new point is on the bright side of earth,
+	      // - update camera position to look at this point.
+	      var rot = -long * Math.PI / 180;
+	      this.setSimState({ lat: lat, long: long, earthRotation: rot }, function () {
+	        // .setState is an async operation!
+	        _this.refs.view.lookAtLatLongMarker();
+	      });
 	    }
 	  }, {
 	    key: 'lookAtSubsolarPoint',
@@ -20749,7 +20767,7 @@
 	                null,
 	                'Select city:'
 	              ),
-	              _reactAddons2['default'].createElement(_citySelectJsx2['default'], { lat: this.state.sim.lat, long: this.state.sim.long, onLocationChange: this.simStateChange })
+	              _reactAddons2['default'].createElement(_citySelectJsx2['default'], { lat: this.state.sim.lat, long: this.state.sim.long, onCityChange: this.citySelectChange })
 	            ),
 	            _reactAddons2['default'].createElement(
 	              'div',
@@ -23734,6 +23752,11 @@
 	      this.refs.earth.lookAtSubsolarPoint();
 	    }
 	  }, {
+	    key: 'lookAtLatLongMarker',
+	    value: function lookAtLatLongMarker() {
+	      this.refs.earth.lookAtLatLongMarker();
+	    }
+	  }, {
 	    key: 'getLayout',
 	    value: function getLayout() {
 	      switch (this.props.mainView) {
@@ -23856,6 +23879,11 @@
 	    key: 'lookAtSubsolarPoint',
 	    value: function lookAtSubsolarPoint() {
 	      this.externalView.lookAtSubsolarPoint();
+	    }
+	  }, {
+	    key: 'lookAtLatLongMarker',
+	    value: function lookAtLatLongMarker() {
+	      this.externalView.lookAtLatLongMarker();
 	    }
 	  }]);
 
@@ -24020,8 +24048,6 @@
 	    });
 
 	    this.registerInteractionHandler(new _earthViewInteractionJs2['default'](this));
-
-	    window.earth = this;
 	  };
 
 	  _inherits(_class, _BaseView);
@@ -24041,6 +24067,27 @@
 	      var earthSunDist = earthPos.length();
 	      this.camera.position.copy(earthPos);
 	      this.camera.position.multiplyScalar((earthSunDist - camEarthDist) / earthSunDist);
+	      this.controls.update();
+	    }
+	  }, {
+	    key: 'lookAtLatLongMarker',
+	    value: function lookAtLatLongMarker() {
+	      // First, create vector pointing at lat 0, long 0.
+	      var markerVec = this.earth.lat0Long0AxisDir;
+	      // Apply latitude.
+	      markerVec.applyAxisAngle(this.earth.horizontalAxisDir, this.props.lat * DEG_2_RAD + this.earth.tilt);
+	      // Apply longitude.
+	      markerVec.applyAxisAngle(this.earth.verticalAxisDir, this.props.long * DEG_2_RAD + this.earth.overallRotation);
+	      markerVec.normalize();
+	      // Calculate quaternion that would be applied to camera position vector.
+	      var quaternion = new THREE.Quaternion();
+	      quaternion.setFromUnitVectors(this.getCameraEarthVec(), markerVec);
+	      // Note that cameraVec is normalized, the one below is not.
+	      var newCameraPos = this.camera.position.clone().sub(this.earth.position);
+	      newCameraPos.applyQuaternion(quaternion);
+	      newCameraPos.add(this.earth.position);
+	      // Update position and orbit controls.
+	      this.camera.position.copy(newCameraPos);
 	      this.controls.update();
 	    }
 	  }, {
@@ -34524,6 +34571,23 @@
 	    get: function get() {
 	      return this.rotation + this.orbitRotation;
 	    }
+	  }, {
+	    key: 'verticalAxisDir',
+	    get: function get() {
+	      var earthHorizontalAxis = new THREE.Vector3(0, 1, 0);
+	      earthHorizontalAxis.applyQuaternion(this.tiltObject.quaternion);
+	      return earthHorizontalAxis;
+	    }
+	  }, {
+	    key: 'horizontalAxisDir',
+	    get: function get() {
+	      return new THREE.Vector3(0, 0, 1);
+	    }
+	  }, {
+	    key: 'lat0Long0AxisDir',
+	    get: function get() {
+	      return new THREE.Vector3(1, 0, 0);
+	    }
 	  }]);
 
 	  return _class;
@@ -34880,9 +34944,9 @@
 	      // Calculate vector pointing from Earth center to intersection point.
 	      var intVec = intersects[0].point;
 	      intVec.sub(this.earth.position);
-	      // Take into account earth tilt and rotation.
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
-	      intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.overallRotation);
+	      // Take into account earth tilt and rotation. Note that order of these operations is important!
+	      intVec.applyAxisAngle(this.earth.verticalAxisDir, -this.earth.overallRotation);
+	      intVec.applyAxisAngle(this.earth.horizontalAxisDir, -this.earth.tilt);
 
 	      // Latitude calculations.
 	      var xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
@@ -34890,8 +34954,7 @@
 	      // .angleTo returns always positive number.
 	      if (intVec.y < 0) lat *= -1;
 	      // Longitude calculations.
-	      var xVec = new THREE.Vector3(1, 0, 0);
-	      var long = xVec.angleTo(xzVec) * RAD_2_DEG;
+	      var long = this.earth.lat0Long0AxisDir.angleTo(xzVec) * RAD_2_DEG;
 	      if (intVec.z > 0) long *= -1;
 	      return { lat: lat, long: long };
 	    }
@@ -37904,8 +37967,7 @@
 	    key: 'selectChange',
 	    value: function selectChange(event) {
 	      var city = LOCATIONS[event.target.value];
-	      var rot = -city.long * Math.PI / 180;
-	      this.props.onLocationChange({ lat: city.lat, long: city.long, earthRotation: rot });
+	      this.props.onCityChange(city.lat, city.long);
 	    }
 	  }, {
 	    key: 'getOptions',

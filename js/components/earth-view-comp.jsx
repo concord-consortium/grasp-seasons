@@ -25,4 +25,8 @@ export default class EarthViewComp extends CanvasView {
   lookAtSubsolarPoint() {
     this.externalView.lookAtSubsolarPoint();
   }
+
+  lookAtLatLongMarker() {
+    this.externalView.lookAtLatLongMarker();
+  }
 }

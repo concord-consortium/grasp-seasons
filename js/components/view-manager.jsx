@@ -45,6 +45,10 @@ export default class ViewManager extends React.Component {
     this.refs.earth.lookAtSubsolarPoint();
   }
 
+  lookAtLatLongMarker() {
+    this.refs.earth.lookAtLatLongMarker();
+  }
+
   getLayout() {
     switch(this.props.mainView) {
       case 'earth':

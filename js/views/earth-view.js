@@ -29,8 +29,6 @@ export default class extends BaseView {
     });
 
     this.registerInteractionHandler(new LatLongDraggingInteraction(this));
-
-    window.earth = this;
   }
 
   // Normalized vector pointing from camera to earth.
@@ -44,6 +42,26 @@ export default class extends BaseView {
     let earthSunDist = earthPos.length();
     this.camera.position.copy(earthPos);
     this.camera.position.multiplyScalar((earthSunDist - camEarthDist) / earthSunDist);
+    this.controls.update();
+  }
+
+  lookAtLatLongMarker() {
+    // First, create vector pointing at lat 0, long 0.
+    let markerVec = this.earth.lat0Long0AxisDir;
+    // Apply latitude.
+    markerVec.applyAxisAngle(this.earth.horizontalAxisDir, this.props.lat * DEG_2_RAD + this.earth.tilt);
+    // Apply longitude.
+    markerVec.applyAxisAngle(this.earth.verticalAxisDir, this.props.long * DEG_2_RAD + this.earth.overallRotation);
+    markerVec.normalize();
+    // Calculate quaternion that would be applied to camera position vector.
+    var quaternion = new THREE.Quaternion();
+    quaternion.setFromUnitVectors(this.getCameraEarthVec(), markerVec);
+    // Note that cameraVec is normalized, the one below is not.
+    let newCameraPos = this.camera.position.clone().sub(this.earth.position);
+    newCameraPos.applyQuaternion(quaternion);
+    newCameraPos.add(this.earth.position);
+    // Update position and orbit controls.
+    this.camera.position.copy(newCameraPos);
     this.controls.update();
   }
 

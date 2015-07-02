@@ -71,6 +71,20 @@ export default class {
     return this.rotation + this.orbitRotation;
   }
 
+  get verticalAxisDir() {
+    let earthHorizontalAxis = new THREE.Vector3(0, 1, 0);
+    earthHorizontalAxis.applyQuaternion(this.tiltObject.quaternion);
+    return earthHorizontalAxis;
+  }
+
+  get horizontalAxisDir() {
+    return new THREE.Vector3(0, 0, 1);
+  }
+
+  get lat0Long0AxisDir() {
+    return new THREE.Vector3(1, 0, 0);
+  }
+
   // Rotates earth around its own axis.
   rotate(angleDiff) {
     this._earthObject.rotation.y += angleDiff;

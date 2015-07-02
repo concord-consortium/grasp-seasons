@@ -55,9 +55,9 @@ export default class extends BaseInteraction {
     // Calculate vector pointing from Earth center to intersection point.
     let intVec = intersects[0].point;
     intVec.sub(this.earth.position);
-    // Take into account earth tilt and rotation.
-    intVec.applyAxisAngle(new THREE.Vector3(0, 0, 1), -this.earth.tilt);
-    intVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), -this.earth.overallRotation);
+    // Take into account earth tilt and rotation. Note that order of these operations is important!
+    intVec.applyAxisAngle(this.earth.verticalAxisDir, -this.earth.overallRotation);
+    intVec.applyAxisAngle(this.earth.horizontalAxisDir, -this.earth.tilt);
 
     // Latitude calculations.
     let xzVec = new THREE.Vector3(intVec.x, 0, intVec.z);
@@ -65,8 +65,7 @@ export default class extends BaseInteraction {
     // .angleTo returns always positive number.
     if (intVec.y < 0) lat *= -1;
     // Longitude calculations.
-    let xVec = new THREE.Vector3(1, 0, 0);
-    let long = xVec.angleTo(xzVec) * RAD_2_DEG;
+    let long = this.earth.lat0Long0AxisDir.angleTo(xzVec) * RAD_2_DEG;
     if (intVec.z > 0) long *= -1;
     return {lat: lat, long: long};
   }

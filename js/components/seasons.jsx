@@ -34,6 +34,7 @@ export default class Seasons extends React.Component {
     this.simCheckboxChange = this.simCheckboxChange.bind(this);
     this.latSliderChange = this.latSliderChange.bind(this);
     this.longSliderChange = this.longSliderChange.bind(this);
+    this.citySelectChange = this.citySelectChange.bind(this);
     this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
   }
 
@@ -61,7 +62,7 @@ export default class Seasons extends React.Component {
     return `${long}°${dir}`;
   }
 
-  setSimState(newSimState) {
+  setSimState(newSimState, callback) {
     let updateStruct = {};
     for (let key of Object.keys(newSimState)) {
       updateStruct[key] = {$set: newSimState[key]};
@@ -69,9 +70,10 @@ export default class Seasons extends React.Component {
     let newState = React.addons.update(this.state, {
       sim: updateStruct
     });
-    this.setState(newState);
+    this.setState(newState, callback);
   }
 
+  // Used by the simulation view itself, as user can interact with the view.
   simStateChange(newState) {
     this.setSimState(newState);
   }
@@ -90,6 +92,7 @@ export default class Seasons extends React.Component {
   }
 
   earthRotationAnimFrame(newAngle) {
+    // Again, animation simply increases value so make sure that angle has reasonable value.
     this.setSimState({earthRotation: newAngle % (2 * Math.PI)});
   }
 
@@ -105,6 +108,17 @@ export default class Seasons extends React.Component {
 
   longSliderChange(event, ui) {
     this.setSimState({long: ui.value});
+  }
+
+  citySelectChange(lat, long) {
+    // When a new city is selected, update lat-long marker, but also:
+    // - rotate earth so the new point is on the bright side of earth,
+    // - update camera position to look at this point.
+    let rot = -long * Math.PI / 180;
+    this.setSimState({lat: lat, long: long, earthRotation: rot}, () => {
+      // .setState is an async operation!
+      this.refs.view.lookAtLatLongMarker();
+    });
   }
 
   lookAtSubsolarPoint() {
@@ -143,7 +157,7 @@ export default class Seasons extends React.Component {
             </div>
             <div className='form-group pull-left'>
               <label>Select city:</label>
-              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onLocationChange={this.simStateChange}/>
+              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onCityChange={this.citySelectChange}/>
             </div>
             <div className='long-lat-sliders pull-right'>
               <div className='form-group'>

@@ -6,8 +6,7 @@ const LOCATIONS = [{name: 'Custom location', disabled: true}].concat(CITY_DATA);
 export default class CitySelect extends React.Component {
   selectChange(event) {
     let city = LOCATIONS[event.target.value];
-    let rot = -city.long * Math.PI / 180;
-    this.props.onLocationChange({lat: city.lat, long: city.long, earthRotation: rot});
+    this.props.onCityChange(city.lat, city.long);
   }
 
   getOptions() {
