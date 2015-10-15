@@ -1,6 +1,7 @@
-let AU = 149597870.691;
-let AU_2_KM = 149597870.7;
-let EARTH_ECCENTRICITY = 0.01671123;
+const AU = 149597870.691;
+const AU_2_KM = 149597870.7;
+const EARTH_ECCENTRICITY = 0.01671123;
+const RAD_2_DEG = 180 / Math.PI;
 
 export const SCALE_FACTOR = 100000;
 export const EARTH_ORBITAL_RADIUS = AU / SCALE_FACTOR;
@@ -18,4 +19,31 @@ export function earthEllipseLocationByDay(day) {
   z = z * EARTH_ORBITAL_RADIUS;
 
   return new THREE.Vector3(x, 0, z);
+}
+
+export function sunrayAngle(day, earthTilt, lat) {
+  // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
+  // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
+  let tiltAxisZRadians = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365;
+  // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
+  // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
+  let orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
+  let effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
+  return 90 - (lat + effectiveTiltDegrees);
+}
+
+export function angleToDay(angle, earthTilt, lat) {
+  // Inverse sunrayAngle function.
+  // If you write out math equation, you can convert sunrayAngle to formula below:
+  // angle = 90 - lat + Math.cos(2 * Math.PI * (day - SUMMER_SOLSTICE) / 365) * orbitalTiltDegrees
+  // (angle - 90 + lat) / orbitalTiltDegrees = Math.cos(2 * Math.PI * (day - SUMMER_SOLSTICE) / 365)
+  // Math.acos((angle - 90 + lat) / orbitalTiltDegrees)) = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365
+  // 365 * Math.acos((angle - 90 + lat) / orbitalTiltDegrees)) = 2 * Math.PI * (day - SUMMER_SOLSTICE)
+  // day - SUMMER_SOLSTICE = 365 * Math.acos((angle - 90 + lat) / orbitalTiltDegrees)) / (2 * Math.PI)
+  let orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
+  let distFromSolstice =  365 * Math.acos((angle - 90 + lat) / orbitalTiltDegrees) / (2 * Math.PI);
+  if (isNaN(distFromSolstice)) {
+    return null;
+  }
+  return {day1: SUMMER_SOLSTICE - distFromSolstice, day2: SUMMER_SOLSTICE + distFromSolstice};
 }

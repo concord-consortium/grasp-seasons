@@ -1,20 +1,19 @@
 import $ from 'jquery';
-import {EARTH_TILT, SUMMER_SOLSTICE} from '../solar-system-data.js';
+import {SUMMER_SOLSTICE, sunrayAngle} from '../solar-system-data.js';
 
 const DARK_BLUE = '#6E9CEF';
 const LIGHT_BLUE = '#99ADF1';
 const LIGHT_GREEN = '#84A44A';
 const DARK_GREEN = '#4C7F19';
-const RAY_COLOR = '#D8D8AC';
+const TEXT_COLOR = '#D8D8AC';
 const SKY_FRACTION = 0.8;
 
 const DEFAULT_PROPS = {
   day: 0,
   lat: 0,
-  earthTilt: true
+  earthTilt: true,
+  sunrayColor: '#D8D8AC'
 };
-
-const RAD_2_DEG = 180 / Math.PI;
 
 export default class {
   constructor(parentEl, props = DEFAULT_PROPS) {
@@ -34,20 +33,10 @@ export default class {
 
     if (this.props.day !== oldProps.day ||
       this.props.earthTilt !== oldProps.earthTilt ||
-      this.props.lat !== oldProps.lat) {
+      this.props.lat !== oldProps.lat ||
+      this.props.sunrayColor !== oldProps.sunrayColor) {
       this._drawRaysView();
     }
-  }
-
-  getNoonSolarAltitude() {
-    // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
-    // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
-    let tiltAxisZRadians = 2 * Math.PI * (this.props.day - SUMMER_SOLSTICE) / 365;
-    // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
-    // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
-    let orbitalTiltDegrees = this.props.earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
-    let effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
-    return 90 - (this.props.lat + effectiveTiltDegrees);
   }
 
   // Resizes canvas to fill its parent.
@@ -62,7 +51,7 @@ export default class {
   }
 
   _drawRaysView() {
-    let solarAngle = this.getNoonSolarAltitude();
+    let solarAngle = sunrayAngle(this.props.day, this.props.earthTilt, this.props.lat);
     let width = this.width;
     let height = this.height;
     let skyHeight = SKY_FRACTION * height;
@@ -95,8 +84,8 @@ export default class {
     let dx = width / (NUM_BEAMS + 1) / Math.sin(solarAngle * Math.PI / 180);
     let lineRotationRadians = (90 - solarAngle) * (Math.PI / 180);
 
-    this.ctx.strokeStyle = RAY_COLOR;
-    this.ctx.fillStyle = RAY_COLOR;
+    this.ctx.strokeStyle = this.props.sunrayColor;
+    this.ctx.fillStyle = this.props.sunrayColor;
 
     // Could be +/- Infinity when solarAngle is 0
     if (isFinite(dx)) {
@@ -157,6 +146,8 @@ export default class {
 
   _drawLabels(fontSize, width, y) {
     this.ctx.save();
+    this.ctx.strokeStyle = TEXT_COLOR;
+    this.ctx.fillStyle = TEXT_COLOR;
     this.ctx.font = `${fontSize}px sans-serif`;
     this.ctx.fillText('North', 10, y + fontSize * 0.3);
     let labelWidth = this.ctx.measureText('South').width;

@@ -5,6 +5,7 @@ import DaySlider from './day-slider.jsx';
 import CitySelect from './city-select.jsx';
 import AnimationCheckbox from './animation-checkbox.jsx';
 import AnimationButton from './animation-button.jsx';
+import EventEmitter from 'eventemitter2';
 
 import '../../css/seasons.css';
 
@@ -22,9 +23,12 @@ export default class Seasons extends React.Component {
         earthRotation: 1.539,
         sunEarthLine: true,
         lat: 40.11,
-        long: -88.2
+        long: -88.2,
+        sunrayColor: '#D8D8AC'
       }
     };
+
+    this.dispatch = new EventEmitter();
 
     this.simStateChange = this.simStateChange.bind(this);
     this.mainViewChange = this.mainViewChange.bind(this);
@@ -62,7 +66,7 @@ export default class Seasons extends React.Component {
     return `${long}°${dir}`;
   }
 
-  setSimState(newSimState, callback) {
+  setSimState(newSimState, callback, skipEvent = false) {
     let updateStruct = {};
     for (let key of Object.keys(newSimState)) {
       updateStruct[key] = {$set: newSimState[key]};
@@ -71,6 +75,9 @@ export default class Seasons extends React.Component {
       sim: updateStruct
     });
     this.setState(newState, callback);
+    if (!skipEvent) {
+      this.dispatch.emit('simState.change', this.state.sim);
+    }
   }
 
   // Used by the simulation view itself, as user can interact with the view.
