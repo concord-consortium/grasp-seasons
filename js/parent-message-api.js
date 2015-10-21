@@ -35,5 +35,13 @@ export default class ParentMessageAPI {
     phone.addListener('getSunrayAngle', function () {
       phone.post('sunrayAngle', scriptingAPI.getSunrayAngle());
     });
+
+    phone.addListener('setPlayBtnDisabled', function (content) {
+      scriptingAPI.setPlayBtnDisabled(content);
+    });
+
+    phone.addListener('setRotatingBtnDisabled', function (content) {
+      scriptingAPI.setRotatingBtnDisabled(content);
+    });
   }
 }

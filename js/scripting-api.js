@@ -21,4 +21,12 @@ export default class ScriptingAPI {
     let state = this.getSimState();
     return sunrayAngle(state.day, state.earthTilt, state.lat);
   }
+
+  setPlayBtnDisabled(v) {
+    this._seasons.setPlayBtnDisabled(v);
+  }
+
+  setRotatingBtnDisabled(v) {
+    this._seasons.setRotatingBtnDisabled(v);
+  }
 }

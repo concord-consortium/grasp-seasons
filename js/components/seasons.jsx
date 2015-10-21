@@ -66,7 +66,17 @@ export default class Seasons extends React.Component {
     return `${long}°${dir}`;
   }
 
-  setSimState(newSimState, callback, skipEvent = false) {
+  setPlayBtnDisabled(v) {
+    if (!this.refs.playButton) return;
+    this.refs.playButton.setDisabled(v);
+  }
+
+  setRotatingBtnDisabled(v) {
+    if (!this.refs.rotatingButton) return;
+    this.refs.rotatingButton.setDisabled(v);
+  }
+
+  setSimState(newSimState, callback, skipEvent=false) {
     let updateStruct = {};
     for (let key of Object.keys(newSimState)) {
       updateStruct[key] = {$set: newSimState[key]};
@@ -140,7 +150,7 @@ export default class Seasons extends React.Component {
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
             <span> </span>
-            <label><AnimationCheckbox speed={0.0003} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}/> Rotating</label>
+            <label><AnimationCheckbox ref='rotatingButton' speed={0.0003} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}/> Rotating</label>
             <span> </span>
             <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
             <span> </span>
@@ -156,7 +166,7 @@ export default class Seasons extends React.Component {
                   <option value='rays'>Rays</option>
                 </select>
               </div>
-              <AnimationButton speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}/>
+              <AnimationButton ref='playButton' speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}/>
               <label className='day'>Day: {this.getFormattedDay()}</label>
               <div className='day-slider'>
                 <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>

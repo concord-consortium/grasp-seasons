@@ -116,6 +116,16 @@
 	      var state = this.getSimState();
 	      return (0, _solarSystemDataJs.sunrayAngle)(state.day, state.earthTilt, state.lat);
 	    }
+	  }, {
+	    key: 'setPlayBtnDisabled',
+	    value: function setPlayBtnDisabled(v) {
+	      this._seasons.setPlayBtnDisabled(v);
+	    }
+	  }, {
+	    key: 'setRotatingBtnDisabled',
+	    value: function setRotatingBtnDisabled(v) {
+	      this._seasons.setRotatingBtnDisabled(v);
+	    }
 	  }]);
 
 	  return ScriptingAPI;
@@ -20870,6 +20880,18 @@
 	      return long + '°' + dir;
 	    }
 	  }, {
+	    key: 'setPlayBtnDisabled',
+	    value: function setPlayBtnDisabled(v) {
+	      if (!this.refs.playButton) return;
+	      this.refs.playButton.setDisabled(v);
+	    }
+	  }, {
+	    key: 'setRotatingBtnDisabled',
+	    value: function setRotatingBtnDisabled(v) {
+	      if (!this.refs.rotatingButton) return;
+	      this.refs.rotatingButton.setDisabled(v);
+	    }
+	  }, {
 	    key: 'setSimState',
 	    value: function setSimState(newSimState, callback) {
 	      var skipEvent = arguments[2] === undefined ? false : arguments[2];
@@ -20999,7 +21021,7 @@
 	            _reactAddons2['default'].createElement(
 	              'label',
 	              null,
-	              _reactAddons2['default'].createElement(_animationCheckboxJsx2['default'], { speed: 0.0003, currentValue: this.state.sim.earthRotation, onAnimationStep: this.earthRotationAnimFrame }),
+	              _reactAddons2['default'].createElement(_animationCheckboxJsx2['default'], { ref: 'rotatingButton', speed: 0.0003, currentValue: this.state.sim.earthRotation, onAnimationStep: this.earthRotationAnimFrame }),
 	              ' Rotating'
 	            ),
 	            _reactAddons2['default'].createElement(
@@ -21059,7 +21081,7 @@
 	                  )
 	                )
 	              ),
-	              _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayAnimFrame }),
+	              _reactAddons2['default'].createElement(_animationButtonJsx2['default'], { ref: 'playButton', speed: 0.02, currentValue: this.state.sim.day, onAnimationStep: this.dayAnimFrame }),
 	              _reactAddons2['default'].createElement(
 	                'label',
 	                { className: 'day' },
@@ -38184,7 +38206,7 @@
 	  _createClass(AnimationCheckbox, [{
 	    key: 'render',
 	    value: function render() {
-	      return _react2['default'].createElement('input', { type: 'checkbox', checked: this.state.animationStarted, onChange: this.toggleState });
+	      return _react2['default'].createElement('input', { type: 'checkbox', checked: this.state.animationStarted, onChange: this.toggleState, disabled: this.state.disabled });
 	    }
 	  }]);
 
@@ -38546,7 +38568,8 @@
 	exports["default"] = {
 	  getInitialState: function getInitialState(props) {
 	    return {
-	      animationStarted: false
+	      animationStarted: false,
+	      disabled: false
 	    };
 	  },
 
@@ -38580,6 +38603,14 @@
 	    var newValue = this.props.currentValue + progress * this.props.speed;
 	    this.props.onAnimationStep(newValue);
 	    this.prevTimestamp = timestamp;
+	  },
+
+	  setDisabled: function setDisabled(v) {
+	    this.setState({ disabled: v });
+	    if (v) {
+	      // Stop animation if we just disabled the component.
+	      this.stopAnimation();
+	    }
 	  }
 	};
 	module.exports = exports["default"];
@@ -38632,7 +38663,7 @@
 	      var label = this.state.animationStarted ? 'Stop' : 'Play';
 	      return _react2['default'].createElement(
 	        'button',
-	        { className: 'btn btn-default animation-btn', onClick: this.toggleState },
+	        { className: 'btn btn-default animation-btn', onClick: this.toggleState, disabled: this.state.disabled },
 	        label
 	      );
 	    }
@@ -38746,6 +38777,14 @@
 
 	      phone.addListener('getSunrayAngle', function () {
 	        phone.post('sunrayAngle', scriptingAPI.getSunrayAngle());
+	      });
+
+	      phone.addListener('setPlayBtnDisabled', function (content) {
+	        scriptingAPI.setPlayBtnDisabled(content);
+	      });
+
+	      phone.addListener('setRotatingBtnDisabled', function (content) {
+	        scriptingAPI.setRotatingBtnDisabled(content);
 	      });
 	    }
 	  }]);

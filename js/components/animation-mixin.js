@@ -1,7 +1,8 @@
 export default {
   getInitialState: function (props) {
     return {
-      animationStarted: false
+      animationStarted: false,
+      disabled: false
     };
   },
 
@@ -35,5 +36,13 @@ export default {
     let newValue = this.props.currentValue + progress * this.props.speed;
     this.props.onAnimationStep(newValue);
     this.prevTimestamp = timestamp;
+  },
+
+  setDisabled: function (v) {
+    this.setState({disabled: v});
+    if (v) {
+      // Stop animation if we just disabled the component.
+      this.stopAnimation();
+    }
   }
 }
