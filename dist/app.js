@@ -21922,7 +21922,9 @@
 	    var height = parentEl.clientHeight;
 	    this.scene = new THREE.Scene();
 	    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-	    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+	    this.renderer = new THREE.WebGLRenderer();
+	    this.renderer.setPixelRatio(window.devicePixelRatio);
+	    this.renderer.setClearColor(0x000000, 1);
 	    this.renderer.setSize(width, height);
 	    parentEl.appendChild(this.renderer.domElement);
 
@@ -33433,7 +33435,6 @@
 	var LIGHT_BLUE = '#99ADF1';
 	var LIGHT_GREEN = '#84A44A';
 	var DARK_GREEN = '#4C7F19';
-	var TEXT_COLOR = '#D8D8AC';
 	var SKY_FRACTION = 0.8;
 
 	var DEFAULT_PROPS = {
@@ -33543,8 +33544,6 @@
 	          this.ctx.restore();
 	        }
 	      }
-
-	      this._drawLabels(groundHeight * 0.3, width, skyHeight + groundHeight * 0.5);
 	    }
 	  }, {
 	    key: '_drawLine',
@@ -33577,18 +33576,6 @@
 	      this.ctx.lineTo(0, 0);
 	      this.ctx.fill();
 
-	      this.ctx.restore();
-	    }
-	  }, {
-	    key: '_drawLabels',
-	    value: function _drawLabels(fontSize, width, y) {
-	      this.ctx.save();
-	      this.ctx.strokeStyle = TEXT_COLOR;
-	      this.ctx.fillStyle = TEXT_COLOR;
-	      this.ctx.font = fontSize + 'px sans-serif';
-	      this.ctx.fillText('North', 10, y + fontSize * 0.3);
-	      var labelWidth = this.ctx.measureText('South').width;
-	      this.ctx.fillText('South', width - labelWidth - 10, y + fontSize * 0.3);
 	      this.ctx.restore();
 	    }
 	  }]);

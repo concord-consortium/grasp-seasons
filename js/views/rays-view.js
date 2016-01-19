@@ -5,7 +5,6 @@ const DARK_BLUE = '#6E9CEF';
 const LIGHT_BLUE = '#99ADF1';
 const LIGHT_GREEN = '#84A44A';
 const DARK_GREEN = '#4C7F19';
-const TEXT_COLOR = '#D8D8AC';
 const SKY_FRACTION = 0.8;
 
 const DEFAULT_PROPS = {
@@ -109,8 +108,6 @@ export default class {
         this.ctx.restore();
       }
     }
-
-    this._drawLabels(groundHeight * 0.3, width, skyHeight + groundHeight * 0.5);
   }
   
   _drawLine(angle, lengthAdjustment, maxLength) {
@@ -141,17 +138,6 @@ export default class {
     this.ctx.lineTo(0, 0);
     this.ctx.fill();
 
-    this.ctx.restore();
-  }
-
-  _drawLabels(fontSize, width, y) {
-    this.ctx.save();
-    this.ctx.strokeStyle = TEXT_COLOR;
-    this.ctx.fillStyle = TEXT_COLOR;
-    this.ctx.font = `${fontSize}px sans-serif`;
-    this.ctx.fillText('North', 10, y + fontSize * 0.3);
-    let labelWidth = this.ctx.measureText('South').width;
-    this.ctx.fillText('South', width - labelWidth - 10, y + fontSize * 0.3);
     this.ctx.restore();
   }
 }
