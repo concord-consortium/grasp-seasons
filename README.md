@@ -2,15 +2,15 @@
 
 Latest **stable** version:
 
-http://grasp-seasons.concord.org/
+http://models-resources.concord.org/grasp-seasons/index.html
 
 Latest **development** version:
 
-http://grasp-seasons.concord.org/branch/master/
+http://models-resources.concord.org/grasp-seasons/branch/master/index.html
 
 Old versions can be accesed via `/version/<tag>` path, e.g.:
 
-http://grasp-seasons.concord.org/version/0.1.0/
+http://models-resources.concord.org/grasp-seasons/version/0.1.0/index.html
 
 Github Pages deployment is equal to version 0.1.0:
 
