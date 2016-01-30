@@ -1,7 +1,22 @@
 # Seasons simulation
 
-Live demo:
+Latest **stable** version:
+
+http://grasp-seasons.concord.org/
+
+Latest **development** version:
+
+http://grasp-seasons.concord.org/branch/master/
+
+Old versions can be accesed via `/version/<tag>` path, e.g.:
+
+http://grasp-seasons.concord.org/version/0.1.0/
+
+Github Pages deployment is equal to version 0.1.0:
+
 http://concord-consortium.github.io/grasp-seasons/
+
+It won't be updated in the future.
 
 ## Development
 
@@ -21,6 +36,14 @@ or:
 ```
 webpack --watch
 ```
+
+## Deployment
+
+This project is automatically deployed to S3 bucket by Travis-CI.
+
+- `production` branch is deployed to top-level directory (http://grasp-seasons.concord.org/).
+- other branches are deployed to `/branch/` subdirectories (e.g. http://grasp-seasons.concord.org/branch/master)
+- tags are deployed to `/version/` subdirectories  (e.g. http://grasp-seasons.concord.org/version/0.1.0)
 
 ## License 
 
