@@ -1,4 +1,6 @@
 var path = require('path');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
+
 module.exports = {
   entry: './js/main.jsx',
   output: {
@@ -16,5 +18,10 @@ module.exports = {
         loader: 'style-loader!css-loader'
       }
     ]
-  }
+  },
+  plugins: [
+    new CopyWebpackPlugin([
+      { from: 'public' }
+    ])
+  ]
 };
