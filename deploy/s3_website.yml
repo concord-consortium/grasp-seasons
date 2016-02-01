@@ -15,6 +15,6 @@ ignore_on_server: ^grasp-seasons/(version/|branch/)
 ignore_on_server: ^(?!grasp-seasons/<%= Regexp.escape(ENV['DEPLOY_DIR']) %>/)
 <% end %>
 max_age:
-  "*": 0
-  "version/*": 31536000 # 1 year in seconds
-  "branch/*": 0
+  "grasp-seasons/*": 0
+  "grasp-seasons/version/*": 31536000 # 1 year in seconds
+  "grasp-seasons/branch/*": 0
