@@ -41,9 +41,9 @@ webpack --watch
 
 This project is automatically deployed to S3 bucket by Travis-CI.
 
-- `production` branch is deployed to top-level directory (http://grasp-seasons.concord.org/).
-- other branches are deployed to `/branch/` subdirectories (e.g. http://grasp-seasons.concord.org/branch/master)
-- tags are deployed to `/version/` subdirectories  (e.g. http://grasp-seasons.concord.org/version/0.1.0)
+- `production` branch is deployed to top-level directory (http://models-resources.concord.org/grasp-seasons/index.html).
+- other branches are deployed to `/branch/` subdirectories (e.g. http://models-resources.concord.org/grasp-seasons/branch/master/index.html)
+- tags are deployed to `/version/` subdirectories  (e.g. http://models-resources.concord.org/grasp-seasons/version/0.1.0/index.html)
 
 ## License 
 
