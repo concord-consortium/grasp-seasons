@@ -24,7 +24,8 @@ export default class Seasons extends React.Component {
         sunEarthLine: true,
         lat: 40.11,
         long: -88.2,
-        sunrayColor: '#D8D8AC'
+        sunrayColor: '#D8D8AC',
+        sunrayDistMarker: false
       }
     };
 

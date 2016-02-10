@@ -5,13 +5,15 @@ const DARK_BLUE = '#6E9CEF';
 const LIGHT_BLUE = '#99ADF1';
 const LIGHT_GREEN = '#84A44A';
 const DARK_GREEN = '#4C7F19';
+const DIST_MARKER_COLOR = '#87C2E8';
 const SKY_FRACTION = 0.8;
 
 const DEFAULT_PROPS = {
   day: 0,
   lat: 0,
   earthTilt: true,
-  sunrayColor: '#D8D8AC'
+  sunrayColor: '#D8D8AC',
+  sunrayDistMarker: false
 };
 
 export default class {
@@ -33,7 +35,8 @@ export default class {
     if (this.props.day !== oldProps.day ||
       this.props.earthTilt !== oldProps.earthTilt ||
       this.props.lat !== oldProps.lat ||
-      this.props.sunrayColor !== oldProps.sunrayColor) {
+      this.props.sunrayColor !== oldProps.sunrayColor ||
+      this.props.sunrayDistMarker !== oldProps.sunrayDistMarker) {
       this._drawRaysView();
     }
   }
@@ -88,12 +91,21 @@ export default class {
 
     // Could be +/- Infinity when solarAngle is 0
     if (isFinite(dx)) {
-      for (x = dx / 2; x < width; x += dx) {
+      let idx = 0;
+      for (x = dx / 2; x < width; x += dx, idx += 1) {
+        //this.ctx.fillStyle = idx == middleVisBeam || idx == middleVisBeam - 1 ? 'red' : this.props.sunrayColor;
         this.ctx.save();
         this.ctx.translate(x, skyHeight);
         this._drawLine(lineRotationRadians, 5, maxLength);
         this._drawArrow(lineRotationRadians);
         this.ctx.restore();
+      }
+
+      if (this.props.sunrayDistMarker) {
+        let numOfVisBeams = Math.floor((width - dx / 2) / dx) + 1;
+        let middleVisBeam1 = dx / 2 + dx * (Math.floor(numOfVisBeams / 2) - 1);
+        let middleVisBeam2 = middleVisBeam1 + dx;
+        this._drawRaysDistMarker(middleVisBeam1, middleVisBeam2, skyHeight, 0.5 * groundHeight);
       }
     }
 
@@ -124,10 +136,11 @@ export default class {
     this.ctx.restore();
   }
   
-  _drawArrow(angle) {
+  _drawArrow(angle, scaleX=1, scaleY=1) {
     this.ctx.save();
 
     this.ctx.rotate(angle);
+    this.ctx.scale(scaleX, scaleY);
     this.ctx.lineWidth = 1;
 
     this.ctx.beginPath();
@@ -137,6 +150,30 @@ export default class {
     this.ctx.lineTo(10, -20);
     this.ctx.lineTo(0, 0);
     this.ctx.fill();
+
+    this.ctx.restore();
+  }
+
+  _drawRaysDistMarker(x1, x2, y, height) {
+    this.ctx.save();
+
+    this.ctx.lineWidth = 4;
+    this.ctx.strokeStyle = DIST_MARKER_COLOR;
+    this.ctx.fillStyle = DIST_MARKER_COLOR;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(x1, y);
+    this.ctx.lineTo(x1, y + height);
+    this.ctx.moveTo(x2, y);
+    this.ctx.lineTo(x2, y + height);
+    this.ctx.moveTo(x1, y + 0.5 * height);
+    this.ctx.lineTo(x2, y + 0.5 * height);
+    this.ctx.stroke();
+
+    this.ctx.translate(x1, y + 0.5 * height);
+    this._drawArrow(Math.PI / 2, 0.9, 0.7);
+    this.ctx.translate(x2 - x1, 0);
+    this._drawArrow(-Math.PI / 2, 0.9, 0.7);
 
     this.ctx.restore();
   }
