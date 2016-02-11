@@ -29,8 +29,8 @@ export default class {
     this._setInitialCamPos();
 
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.noPan = true;
-    this.controls.noZoom = true;
+    this.controls.enablePan = false;
+    this.controls.enableZoom = false;
     this.controls.rotateSpeed = 0.5;
 
     this.dispatch = new EventEmitter();

@@ -77,6 +77,6 @@ export default class ViewManager extends React.Component {
           <RaysViewComp ref='rays' simulation={this.props.simulation}/>
         </div>
       </div>
-    )
+    );
   }
 }

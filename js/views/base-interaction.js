@@ -45,9 +45,9 @@ export default class {
     }
 
     if (anyInteractionActive) {
-      this.controls.noRotate = true;
+      this.controls.enableRotate = false;
     } else {
-      this.controls.noRotate = false;
+      this.controls.enableRotate = true;
     }
   }
 

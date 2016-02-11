@@ -11,7 +11,7 @@ export default class Slider extends React.Component {
   }
 
   get $slider() {
-    return $(React.findDOMNode(this));
+    return $(this.refs.container);
   }
 
   componentDidMount() {
@@ -29,7 +29,7 @@ export default class Slider extends React.Component {
 
   render() {
     return (
-      <div></div>
+      <div ref='container'></div>
     )
   }
 }

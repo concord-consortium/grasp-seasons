@@ -2,8 +2,7 @@ import React from 'react';
 
 export default class CanvasView extends React.Component {
   componentDidMount() {
-    let node = React.findDOMNode(this);
-    this.externalView = new this.ExternalView(node, this.props.simulation);
+    this.externalView = new this.ExternalView(this.refs.container, this.props.simulation);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -26,7 +25,7 @@ export default class CanvasView extends React.Component {
 
   render() {
     return (
-      <div style={{width: '100%', height: '100%'}}>
+      <div ref='container' style={{width: '100%', height: '100%'}}>
         {/* Canvas will be inserted here by the external view. */}
       </div>
     )

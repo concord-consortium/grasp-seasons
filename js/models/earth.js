@@ -12,10 +12,11 @@ export default class {
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
     if (!simple) {
-      this._material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
-      this._material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
+      let textureLoader = new THREE.TextureLoader();
+      this._material.map = textureLoader.load('images/earth-grid-2k.jpg');
+      this._material.bumpMap = textureLoader.load('images/earth-bump-2k.jpg');
       this._material.bumpScale = 100000 * c.SF;
-      this._material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
+      this._material.specularMap = textureLoader.load('images/earth-specular-2k.png');
     }
     
     this._earthObject = new THREE.Mesh(geometry, this._material);

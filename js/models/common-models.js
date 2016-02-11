@@ -18,8 +18,8 @@ export default {
       vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
       geometry.vertices.push(vertex);
     }
-    let material = new THREE.PointCloudMaterial({size: SIZE, color: 0xffffee});
-    let particles = new THREE.PointCloud(geometry, material);
+    let material = new THREE.PointsMaterial({size: SIZE, color: 0xffffee});
+    let particles = new THREE.Points(geometry, material);
     return particles;
   },
 
@@ -52,12 +52,6 @@ export default {
     let COLORS = simple ? {color: 0x1286CD, emissive: 0x002135} : {specular: 0x252525};
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     let material = new THREE.MeshPhongMaterial(COLORS);
-    if (!simple) {
-      material.map = THREE.ImageUtils.loadTexture('images/earth-grid-2k.jpg');
-      material.bumpMap = THREE.ImageUtils.loadTexture('images/earth-bump-2k.jpg');
-      material.bumpScale = 100000 * c.SF;
-      material.specularMap = THREE.ImageUtils.loadTexture('images/earth-specular-2k.png');
-    }
     return new THREE.Mesh(geometry, material);
   },
 
@@ -104,7 +98,7 @@ export default {
       geometry.vertices.push(new THREE.Vector3(i, 0, size));
 
     }
-    return new THREE.Line(geometry, material, THREE.LinePieces);
+    return new THREE.LineSegments(geometry, material);
   },
 
   earthAxis: function (params) {

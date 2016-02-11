@@ -1,4 +1,5 @@
-import React from 'react/addons';
+import React from 'react';
+import update from 'react-addons-update';
 import ViewManager from './view-manager.jsx';
 import Slider from './slider.jsx';
 import DaySlider from './day-slider.jsx';
@@ -82,7 +83,7 @@ export default class Seasons extends React.Component {
     for (let key of Object.keys(newSimState)) {
       updateStruct[key] = {$set: newSimState[key]};
     }
-    let newState = React.addons.update(this.state, {
+    let newState = update(this.state, {
       sim: updateStruct
     });
     this.setState(newState, callback);
