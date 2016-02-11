@@ -1,6 +1,7 @@
 label {
   font-weight: 500;
 }
+
 .controls {
   margin: 10px auto;
   position: relative;
@@ -24,6 +25,7 @@ label {
 .day {
   font: 1.75em 'museo-slab', georgia, 'times new roman', serif;
 }
+
 .day-slider {
   display: inline-block;
   width: 795px;
@@ -39,13 +41,15 @@ label {
 .left-col {
   width: 795px;
 }
+
 .right-col {
   width: 395px;
 }
+
 .long-lat-sliders {
   margin-top: -4px;
   width: 395px;
-  }
+}
 
 .btn {
   background: #eb8723;
@@ -67,6 +71,7 @@ label {
   background: -webkit-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
   background: linear-gradient(top, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
 }
+
 .btn:active, .btn:focus, .btn:hover, .btn:visited {
   background: #eb8723;
   border: none;
