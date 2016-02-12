@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import THREE from 'three';
 
 import BaseView from './base-view.js';
 import models from '../models/common-models.js';

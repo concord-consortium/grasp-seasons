@@ -1,3 +1,5 @@
+import THREE from 'three';
+
 const AU = 149597870.691;
 const AU_2_KM = 149597870.7;
 const EARTH_ECCENTRICITY = 0.01671123;

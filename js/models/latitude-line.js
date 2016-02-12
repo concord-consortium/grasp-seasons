@@ -1,3 +1,4 @@
+import THREE from 'three';
 import * as c from './constants.js';
 
 const DEG_2_RAD = Math.PI / 180;

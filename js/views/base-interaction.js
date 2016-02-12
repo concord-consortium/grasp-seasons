@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import THREE from 'three';
 import {mousePosNormalized} from '../utils.js';
 
 export default class {

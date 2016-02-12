@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import THREE from 'three';
 import BaseInteraction from './base-interaction.js';
 
 const RAD_2_DEG = 180 / Math.PI;

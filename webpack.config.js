@@ -2,6 +2,7 @@
 require('es6-promise').polyfill();
 
 var path = require('path');
+var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var lib = process.env.WEBPACK_TARGET === 'lib';
@@ -19,13 +20,18 @@ module.exports = {
       { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime' },
       { test: /\.css$/, exclude: /node_modules/, loader: 'style!css' },
       { test: /\.less$/, exclude: /node_modules/, loader: 'style!css!less' },
-      // inline base64 URLs for <=8k images, direct URLs for the rest
-      { test: /\.(png|jpg|gif)$/, loader: 'url-loader?limit=8192' }
+      // inline base64 URLs for <=2MB images, direct URLs for the rest.
+      { test: /\.(png|jpg|gif)$/, loader: 'url-loader?limit=2097152' }
     ]
   },
   plugins: [
     new CopyWebpackPlugin([
       { from: 'public' }
-    ])
+    ]),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    })
   ]
 };

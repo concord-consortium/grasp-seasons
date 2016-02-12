@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import THREE from 'three';
 import BaseInteraction from './base-interaction.js';
 import {earthEllipseLocationByDay} from '../solar-system-data.js';
 

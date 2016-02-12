@@ -1,3 +1,4 @@
+import THREE from 'three';
 import * as c from './constants.js';
 
 const LINE_RADIUS = 30000 * c.SF;
