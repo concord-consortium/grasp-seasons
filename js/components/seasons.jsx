@@ -8,7 +8,7 @@ import AnimationCheckbox from './animation-checkbox.jsx';
 import AnimationButton from './animation-button.jsx';
 import EventEmitter from 'eventemitter2';
 
-import '../../css/seasons.css';
+import '../../css/seasons.less';
 
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July",
                      "August", "September", "October", "November", "December"];
@@ -147,7 +147,7 @@ export default class Seasons extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className='grasp-seasons'>
         <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onSimStateChange={this.simStateChange}/>
         <div className='controls' >
           <div className='pull-right right-col'>

@@ -3,7 +3,7 @@ import EarthViewComp from './earth-view-comp.jsx';
 import OrbitViewComp from './orbit-view-comp.jsx';
 import RaysViewComp from './rays-view-comp.jsx';
 
-import '../../css/view-manager.css';
+import '../../css/view-manager.less';
 
 export default class ViewManager extends React.Component {
   constructor(props) {
