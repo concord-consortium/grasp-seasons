@@ -1,4 +1,8 @@
 .grasp-seasons {
+  // Note that bootstrap imports are scoped to .grasp-seasons, so we won't pollute rest of the page.
+  // Use (less) to enforce LESS processing. Otherwise, style won't respect scope nesting.
+  @import (less) "../node_modules/jquery-ui/themes/smoothness/jquery-ui.css";
+
   .ui-widget {
     font-family: inherit;
     font-size: inherit;
