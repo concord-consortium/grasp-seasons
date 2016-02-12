@@ -1,3 +1,6 @@
+// https://github.com/webpack/css-loader/issues/145
+require('es6-promise').polyfill();
+
 var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
