@@ -13,11 +13,16 @@ import '../../css/seasons.less';
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July",
                      "August", "September", "October", "November", "December"];
 
+const ANIM_SPEED = 0.02;
+const DAILY_ROTATION_ANIM_SPEED = 0.0003;
+const ROTATION_SPEED = 0.0004;
+
 export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       mainView: 'earth',
+      dailyRotation: false,
       sim: {
         day: 171,
         earthTilt: true,
@@ -35,7 +40,7 @@ export default class Seasons extends React.Component {
     this.dispatch = new EventEmitter();
 
     this.simStateChange = this.simStateChange.bind(this);
-    this.mainViewChange = this.mainViewChange.bind(this);
+    this.handleStateChange = this.handleStateChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
     this.dayAnimFrame = this.dayAnimFrame.bind(this);
     this.earthRotationAnimFrame = this.earthRotationAnimFrame.bind(this);
@@ -72,6 +77,11 @@ export default class Seasons extends React.Component {
     else if (this.state.sim.long < 0) dir = 'W';
     let long = Math.abs(this.state.sim.long).toFixed(2);
     return `${long}°${dir}`;
+  }
+
+  getAnimSpeed() {
+    // Slow down animation when daily rotation is on.
+    return this.state.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED;
   }
 
   setPlayBtnDisabled(v) {
@@ -111,8 +121,11 @@ export default class Seasons extends React.Component {
     this.setSimState(newState);
   }
 
-  mainViewChange(event) {
-    this.setState({mainView: event.target.value});
+  handleStateChange(event) {
+    let state = {};
+    // Handle all kind of inputs (checkboxes and radios use .checked prop).
+    state[event.target.name] = event.target.checked !== undefined ? event.target.checked : event.target.value;
+    this.setState(state);
   }
 
   daySliderChange(event, ui) {
@@ -121,7 +134,11 @@ export default class Seasons extends React.Component {
 
   dayAnimFrame(newDay) {
     // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
-    this.setSimState({day: newDay % 365});
+    let state = {day: newDay % 365};
+    if (this.state.dailyRotation) {
+      state.earthRotation = (newDay % 1) * 2 * Math.PI;
+    }
+    this.setSimState(state);
   }
 
   earthRotationAnimFrame(newAngle) {
@@ -170,7 +187,7 @@ export default class Seasons extends React.Component {
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
             <span> </span>
-            <label><AnimationCheckbox ref='rotatingButton' speed={0.0003} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}/> Rotating</label>
+            <label><AnimationCheckbox ref='rotatingButton' speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}/> Rotating</label>
             <span> </span>
             <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
             <span> </span>
@@ -180,13 +197,14 @@ export default class Seasons extends React.Component {
             <div className='form-group'>
               <div className='pull-right'>
                 <label>Main view:</label>
-                <select className='form-control' value={this.state.mainView} onChange={this.mainViewChange}>
+                <select className='form-control' name='mainView' value={this.state.mainView} onChange={this.handleStateChange}>
                   <option value='earth'>Earth</option>
                   <option value='orbit'>Orbit</option>
                   <option value='rays'>Rays</option>
                 </select>
               </div>
-              <AnimationButton ref='playButton' speed={0.02} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}/>
+              <AnimationButton ref='playButton' speed={this.getAnimSpeed()} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}/>
+              <label><input type='checkbox' name='dailyRotation' checked={this.state.dailyRotation} onChange={this.handleStateChange}/> Daily rotation</label>
               <label className='day'>Day: {this.getFormattedDay()}</label>
               <div className='day-slider'>
                 <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
