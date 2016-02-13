@@ -156,6 +156,10 @@ export default class Seasons extends React.Component {
 
   lookAtSubsolarPoint() {
     this.refs.view.lookAtSubsolarPoint();
+    // Clicking the subsolar button should also turn the Earth such that the longitude of
+    // the selected city or point is visible. 11.5 deg shift ensures that the point is perfectly
+    // positioned. I can't explain why we need it.
+    this.setSimState({earthRotation: (11.5 - this.state.sim.long) * Math.PI / 180});
   }
 
   render() {
