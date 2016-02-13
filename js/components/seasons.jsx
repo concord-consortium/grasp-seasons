@@ -26,6 +26,7 @@ export default class Seasons extends React.Component {
         lat: 40.11,
         long: -88.2,
         sunrayColor: '#D8D8AC',
+        groundColor: '#4C7F19',
         sunrayDistMarker: false,
         sunrayOrientation: 'horizontal'
       }
@@ -43,6 +44,10 @@ export default class Seasons extends React.Component {
     this.longSliderChange = this.longSliderChange.bind(this);
     this.citySelectChange = this.citySelectChange.bind(this);
     this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
+  }
+
+  on(event, callback) {
+    this.dispatch.on(event, callback);
   }
 
   getFormattedDay() {
@@ -82,15 +87,23 @@ export default class Seasons extends React.Component {
   setSimState(newSimState, callback, skipEvent=false) {
     let updateStruct = {};
     for (let key of Object.keys(newSimState)) {
-      updateStruct[key] = {$set: newSimState[key]};
+      if (newSimState[key] !== this.state.sim[key]) {
+        updateStruct[key] = {$set: newSimState[key]};
+      }
+    }
+    if (Object.keys(updateStruct).length === 0) {
+      // Skip if there is nothing to update.
+      return;
     }
     let newState = update(this.state, {
       sim: updateStruct
     });
-    this.setState(newState, callback);
-    if (!skipEvent) {
-      this.dispatch.emit('simState.change', this.state.sim);
-    }
+    this.setState(newState, () => {
+      if (callback) callback();
+      if (!skipEvent) {
+        this.dispatch.emit('simState.change', this.state.sim);
+      }
+    });
   }
 
   // Used by the simulation view itself, as user can interact with the view.
@@ -149,7 +162,7 @@ export default class Seasons extends React.Component {
     return (
       <div className='grasp-seasons'>
         <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onSimStateChange={this.simStateChange}/>
-        <div className='controls' >
+        <div className='controls clearfix' >
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
             <span> </span>
@@ -191,7 +204,6 @@ export default class Seasons extends React.Component {
             </div>
           </div>
         </div>
-        <br className='clear' />
       </div>
     );
   }
