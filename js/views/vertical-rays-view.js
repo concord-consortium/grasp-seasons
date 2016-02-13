@@ -5,8 +5,6 @@ const DEG_2_RAD = Math.PI / 180;
 
 const DARK_BLUE = '#6E9CEF';
 const LIGHT_BLUE = '#99ADF1';
-const LIGHT_GREEN = '#84A44A';
-const DARK_GREEN = '#4C7F19';
 const DIST_MARKER_COLOR = '#87C2E8';
 
 const GROUND_FRACTION = 0.2;
@@ -18,6 +16,7 @@ const DEFAULT_PROPS = {
   lat: 0,
   earthTilt: true,
   sunrayColor: '#D8D8AC',
+  groundColor: '#4C7F19',
   sunrayDistMarker: false
 };
 
@@ -41,6 +40,7 @@ export default class {
       this.props.earthTilt !== oldProps.earthTilt ||
       this.props.lat !== oldProps.lat ||
       this.props.sunrayColor !== oldProps.sunrayColor ||
+      this.props.groundColor !== oldProps.groundColor ||
       this.props.sunrayDistMarker !== oldProps.sunrayDistMarker) {
       this.render();
     }
@@ -111,9 +111,7 @@ export default class {
   drawDistanceBetweenRays() {
     if (this.props.sunrayDistMarker && !this.polarNight) {
       let dx = raysXDiff(this.solarAngle, this.width);
-      let numOfVisibleRays = Math.floor((this.width - dx / 2) / dx) + 1;
-      let middleRayX = dx * 0.5 + dx * (Math.floor(numOfVisibleRays / 2) - 1);
-      this.drawRaysDistMarker(middleRayX, this.height * (1 - GROUND_FRACTION), dx);
+      this.drawRaysDistMarker(dx * 0.5, this.height * (1 - GROUND_FRACTION), dx);
     }
   }
 
@@ -141,15 +139,10 @@ export default class {
   }
 
   drawGround(angle, groundFraction) {
-    if (!this.groundGradient) {
-      this.groundGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
-      this.groundGradient.addColorStop(0, LIGHT_GREEN);
-      this.groundGradient.addColorStop(1, DARK_GREEN);
-    }
     this.ctx.save();
     this.ctx.translate(this.width * 0.5,  this.height * (1 - groundFraction));
     this.ctx.rotate(angle);
-    this.ctx.fillStyle = this.groundGradient;
+    this.ctx.fillStyle = this.props.groundColor;
     this.ctx.fillRect(-this.width, 0, this.width * 2, this.height);
     this.ctx.restore();
   }

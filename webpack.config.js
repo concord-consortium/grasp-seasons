@@ -7,7 +7,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // WEBPACK_TARGET=lib webpack will build UMD library.
 var lib = process.env.WEBPACK_TARGET === 'lib';
-var optimize = process.env.WEBPACK_OPTIMIZE || lib;
+var optimize = process.env.WEBPACK_OPTIMIZE === 'true';
 
 module.exports = {
   entry: lib ? './js/lib.js' : './js/main.jsx',
