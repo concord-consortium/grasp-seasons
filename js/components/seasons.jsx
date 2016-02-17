@@ -33,7 +33,7 @@ export default class Seasons extends React.Component {
         sunrayColor: '#D8D8AC',
         groundColor: '#4C7F19',
         sunrayDistMarker: false,
-        sunrayOrientation: 'horizontal'
+        sunrayOrientation: 'vertical'
       }
     };
 

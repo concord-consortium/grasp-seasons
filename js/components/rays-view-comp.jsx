@@ -46,11 +46,11 @@ export default class RaysViewComp extends React.Component {
         </div>
         <div style={{position: 'absolute', left: '10px', bottom: '5px', color: '#fff', opacity: 0.8}}>
           <label>
-            <input type='radio' name='orientation' value='horizontal' checked={orient === 'horizontal'} onChange={this.handleOrientChange}/> Space view
+            <input type='radio' name='orientation' value='vertical' checked={orient === 'vertical'} onChange={this.handleOrientChange}/> Ground view
           </label>
           <span> </span>
           <label>
-            <input type='radio' name='orientation' value='vertical' checked={orient === 'vertical'} onChange={this.handleOrientChange}/> Ground view
+            <input type='radio' name='orientation' value='horizontal' checked={orient === 'horizontal'} onChange={this.handleOrientChange}/> Space view
           </label>
         </div>
       </div>
