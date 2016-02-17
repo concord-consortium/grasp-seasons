@@ -56,7 +56,7 @@ export default class ViewManager extends React.Component {
       case 'orbit':
         return {earth: 'small-top', orbit: 'main', rays: 'small-bottom'};
       case 'rays':
-        return {earth: 'small-top', orbit: 'small-bottom', rays: 'main'};
+        return {earth: 'small-bottom', orbit: 'small-top', rays: 'main'};
     }
   }
 

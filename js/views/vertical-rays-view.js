@@ -3,8 +3,7 @@ import {SUMMER_SOLSTICE, sunrayAngle} from '../solar-system-data.js';
 
 const DEG_2_RAD = Math.PI / 180;
 
-const DARK_BLUE = '#6E9CEF';
-const LIGHT_BLUE = '#99ADF1';
+const SKY_COLOR = '#99ADF1';
 const DIST_MARKER_COLOR = '#87C2E8';
 
 const GROUND_FRACTION = 0.2;
@@ -46,6 +45,14 @@ export default class {
     }
   }
 
+  render() {
+    this.drawSky(SKY_COLOR);
+    this.drawGround(0, GROUND_FRACTION);
+    this.drawPolarNightOverlay();
+    this.drawRays();
+    this.drawDistanceBetweenRays();
+  }
+
   get solarAngle() {
     return sunrayAngle(this.props.day, this.props.earthTilt, this.props.lat) * DEG_2_RAD;
   }
@@ -53,14 +60,6 @@ export default class {
   get polarNight() {
     let solarAngle = this.solarAngle;
     return solarAngle < 0 || solarAngle > 180 * DEG_2_RAD;
-  }
-
-  render() {
-    this.drawSky();
-    this.drawGround(0, GROUND_FRACTION);
-    this.drawPolarNightOverlay();
-    this.drawRays();
-    this.drawDistanceBetweenRays();
   }
 
   drawRays() {
@@ -126,14 +125,9 @@ export default class {
     this.render();
   }
 
-  drawSky() {
-    if (!this.skyGradient) {
-      this.skyGradient = this.ctx.createLinearGradient(0, 0, 0, 1);
-      this.skyGradient.addColorStop(0, DARK_BLUE);
-      this.skyGradient.addColorStop(1, LIGHT_BLUE);
-    }
+  drawSky(color) {
     this.ctx.save();
-    this.ctx.fillStyle = this.skyGradient;
+    this.ctx.fillStyle = color;
     this.ctx.fillRect(0, 0, this.width, this.height);
     this.ctx.restore();
   }

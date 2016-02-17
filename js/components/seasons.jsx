@@ -21,7 +21,7 @@ export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mainView: 'earth',
+      mainView: 'rays',
       dailyRotation: false,
       sim: {
         day: 171,
