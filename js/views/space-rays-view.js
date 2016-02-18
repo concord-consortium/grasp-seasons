@@ -1,4 +1,4 @@
-import VerticalRaysView from './vertical-rays-view';
+import GroundRaysView from './ground-rays-view';
 
 const DEG_2_RAD = Math.PI / 180;
 const GROUND_FRACTION = 0.5;
@@ -6,7 +6,7 @@ const NUM_BEAMS = 8;
 const RAYS_ANGLE = 90 * DEG_2_RAD;
 const SKY_COLOR = '#000';
 
-export default class extends VerticalRaysView {
+export default class extends GroundRaysView {
   render() {
     this.drawSky(SKY_COLOR);
     this.drawGround(this.solarAngle, GROUND_FRACTION);

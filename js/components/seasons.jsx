@@ -21,7 +21,6 @@ export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      mainView: 'rays',
       dailyRotation: false,
       sim: {
         day: 171,
@@ -32,14 +31,19 @@ export default class Seasons extends React.Component {
         long: -88.2,
         sunrayColor: '#D8D8AC',
         groundColor: '#4C7F19',
-        sunrayDistMarker: false,
-        sunrayOrientation: 'vertical'
+        sunrayDistMarker: false
+      },
+      view: {
+        'main': 'raysGround',
+        'small-top': 'orbit',
+        'small-bottom': 'earth'
       }
     };
 
     this.dispatch = new EventEmitter();
 
     this.simStateChange = this.simStateChange.bind(this);
+    this.viewChange = this.viewChange.bind(this);
     this.handleStateChange = this.handleStateChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
     this.dayAnimFrame = this.dayAnimFrame.bind(this);
@@ -105,10 +109,8 @@ export default class Seasons extends React.Component {
       // Skip if there is nothing to update.
       return;
     }
-    let newState = update(this.state, {
-      sim: updateStruct
-    });
-    this.setState(newState, () => {
+    let newState = update(this.state.sim, updateStruct);
+    this.setState({sim: newState}, () => {
       if (callback) callback();
       if (!skipEvent) {
         this.dispatch.emit('simState.change', this.state.sim);
@@ -119,6 +121,24 @@ export default class Seasons extends React.Component {
   // Used by the simulation view itself, as user can interact with the view.
   simStateChange(newState) {
     this.setSimState(newState);
+  }
+
+  viewChange(viewPosition, viewName) {
+    let updateStruct = {};
+    updateStruct[viewPosition] = {$set: viewName};
+    // Swap views if needed.
+    if (viewName !== 'nothing') {
+      let oldView = this.state.view[viewPosition];
+      for (let key in this.state.view) {
+        if (this.state.view[key] === viewName) {
+          updateStruct[key] = {$set: oldView};
+        }
+      }
+    }
+    let newState = update(this.state.view, updateStruct);
+    this.setState({view: newState}, () => {
+      this.dispatch.emit('viewState.change', this.state.view);
+    });
   }
 
   handleStateChange(event) {
@@ -182,7 +202,7 @@ export default class Seasons extends React.Component {
   render() {
     return (
       <div className='grasp-seasons'>
-        <ViewManager ref='view' mainView={this.state.mainView} simulation={this.state.sim} onSimStateChange={this.simStateChange}/>
+        <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange}/>
         <div className='controls clearfix' >
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
@@ -195,14 +215,6 @@ export default class Seasons extends React.Component {
           </div>
           <div className='left-col'>
             <div className='form-group'>
-              <div className='pull-right'>
-                <label>Main view:</label>
-                <select className='form-control' name='mainView' value={this.state.mainView} onChange={this.handleStateChange}>
-                  <option value='earth'>Earth</option>
-                  <option value='orbit'>Orbit</option>
-                  <option value='rays'>Rays</option>
-                </select>
-              </div>
               <AnimationButton ref='playButton' speed={this.getAnimSpeed()} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}/>
               <label><input type='checkbox' name='dailyRotation' checked={this.state.dailyRotation} onChange={this.handleStateChange}/> Daily rotation</label>
               <label className='day'>Day: {this.getFormattedDay()}</label>

@@ -8,34 +8,50 @@
 
   .view {
     position: absolute;
+    
+    &.main {
+      width: 795px;
+      height: 600px;
+      left: 0;
+    }
+    
+    &.small-top {
+      width: 395px;
+      height: 295px;
+      right: 0;
+      top: 0;
+    }
+
+    &.small-bottom {
+      width: 395px;
+      height: 295px;
+      right: 0;
+      bottom: 0;
+    }
+    
+    &.hidden {
+      display: none;
+    }
   }
 
-  .view.main {
-    width: 795px;
-    height: 600px;
-    left: 0;
-  }
-
-  .view.small-top {
-    width: 395px;
-    height: 295px;
-    right: 0;
-    top: 0;
-  }
-
-  .view.small-bottom {
-    width: 395px;
-    height: 295px;
-    right: 0;
-    bottom: 0;
-  }
-
-  .view-label {
+  .view-select {
     position: absolute;
-    top: 2px;
-    left: 5px;
-    font-size: 16px;
-    color: white;
-    opacity: 0.8;
+    width: 90px !important;
+    height: 25px !important;
+
+    &.main {
+      top: 7px;
+      left: 5px;
+    }
+
+    &.small-top {
+      top: 7px;
+      left: 811px;
+    }
+
+    &.small-bottom {
+      top: 311px;
+      left: 811px;
+    }
   }
 }

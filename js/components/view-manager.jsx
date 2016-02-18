@@ -10,6 +10,7 @@ export default class ViewManager extends React.Component {
     super(props);
     this.rafCallback = this.rafCallback.bind(this);
     this.syncCameraAndViewAxis = this.syncCameraAndViewAxis.bind(this);
+    this.handleViewChange = this.handleViewChange.bind(this);
   }
 
   componentDidMount() {
@@ -22,10 +23,11 @@ export default class ViewManager extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.mainView !== this.props.mainView) {
+    if (prevProps.view !== this.props.view) {
       this.refs.earth.resize();
       this.refs.orbit.resize();
-      this.refs.rays.resize();
+      this.refs.raysGround.resize();
+      this.refs.raysSpace.resize();
     }
   }
 
@@ -49,33 +51,49 @@ export default class ViewManager extends React.Component {
     this.refs.earth.lookAtLatLongMarker();
   }
 
-  getLayout() {
-    switch(this.props.mainView) {
-      case 'earth':
-        return {earth: 'main', orbit: 'small-top', rays: 'small-bottom'};
-      case 'orbit':
-        return {earth: 'small-top', orbit: 'main', rays: 'small-bottom'};
-      case 'rays':
-        return {earth: 'small-bottom', orbit: 'small-top', rays: 'main'};
+  handleViewChange(event) {
+    this.props.onViewChange(event.target.name, event.target.value);
+  }
+
+  getViewPosition(view) {
+    for (let key in this.props.view) {
+      if (this.props.view[key] === view) return key;
     }
+    return 'hidden';
+  }
+
+  renderViewSelect(position) {
+    return (
+      <select className={`form-control view-select ${position}`} name={position}
+              value={this.props.view[position]} onChange={this.handleViewChange}>
+        <option value='earth'>Earth</option>
+        <option value='orbit'>Orbit</option>
+        <option value='raysGround'>Ground</option>
+        <option value='raysSpace'>Space</option>
+        <option value='nothing'>Nothing</option>
+      </select>
+    );
   }
 
   render() {
-    let layout = this.getLayout();
     return (
       <div className='view-manager'>
-        <div className={`view ${layout.earth}`}>
-          <EarthViewComp ref='earth' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} onCameraChange={this.syncCameraAndViewAxis}/>
-          <div className='view-label'>Earth</div>
+        <div className={`view ${this.getViewPosition('earth')}`}>
+          <EarthViewComp ref='earth' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
+                         onCameraChange={this.syncCameraAndViewAxis}/>
         </div>
-        <div className={`view ${layout.orbit}`}>
+        <div className={`view ${this.getViewPosition('orbit')}`}>
           <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
-          <div className='view-label'>Orbit</div>
         </div>
-        <div className={`view ${layout.rays}`}>
-          <RaysViewComp ref='rays' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
-          <div className='view-label'>Rays</div>
+        <div className={`view ${this.getViewPosition('raysGround')}`}>
+          <RaysViewComp ref='raysGround' type='ground' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
         </div>
+        <div className={`view ${this.getViewPosition('raysSpace')}`}>
+          <RaysViewComp ref='raysSpace' type='space' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
+        </div>
+        {this.renderViewSelect('main')}
+        {this.renderViewSelect('small-top')}
+        {this.renderViewSelect('small-bottom')}
       </div>
     );
   }
