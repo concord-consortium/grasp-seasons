@@ -1,5 +1,6 @@
 import $ from 'jquery';
-import {SUMMER_SOLSTICE, sunrayAngle} from '../solar-system-data.js';
+import {sunrayAngle} from '../solar-system-data.js';
+import {colorInterpolation} from '../utils.js';
 
 const DEG_2_RAD = Math.PI / 180;
 
@@ -10,12 +11,25 @@ const GROUND_FRACTION = 0.2;
 const DIST_MARKER_HEIGHT_FRACTION = 0.1;
 const NUM_BEAMS = 10;
 
+const MAX_DAY = 364;
+// Color palette for ground.
+// Keys defines time of year normalized to [0, 1] range. So, Jan 1st is 0, Dec 31st is 1.
+const GROUND_COLORS = {
+  0.21: [255, 255, 255], // white, winter
+  0.23: [118, 199, 68], // light green, spring
+  0.60: [72, 140, 42], // green, summer
+  0.70: [100, 132, 0], /// dark green, summer
+  0.73: [147, 112, 22], // brown, autumn
+  0.96: [125, 74, 5], // brown, autumn
+  0.98: [255, 255, 255] // white, winter
+};
+
 const DEFAULT_PROPS = {
   day: 0,
   lat: 0,
   earthTilt: true,
   sunrayColor: '#D8D8AC',
-  groundColor: '#4C7F19',
+  groundColor: 'auto', // different for each season
   sunrayDistMarker: false
 };
 
@@ -24,6 +38,7 @@ export default class {
     this.canvas = document.createElement('canvas');
     parentEl.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
+    this.groundColorFunc = colorInterpolation(GROUND_COLORS);
 
     this.props = {};
     this.setProps(props);
@@ -136,7 +151,7 @@ export default class {
     this.ctx.save();
     this.ctx.translate(this.width * 0.5,  this.height * (1 - groundFraction));
     this.ctx.rotate(angle);
-    this.ctx.fillStyle = this.props.groundColor;
+    this.ctx.fillStyle = this.props.groundColor === 'auto' ? this.groundColorFunc(this.props.day / MAX_DAY) : this.props.groundColor;
     this.ctx.fillRect(-this.width, 0, this.width * 2, this.height);
     this.ctx.restore();
   }
