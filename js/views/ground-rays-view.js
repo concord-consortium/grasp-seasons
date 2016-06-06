@@ -15,13 +15,13 @@ const MAX_DAY = 364;
 // Color palette for ground.
 // Keys defines time of year normalized to [0, 1] range. So, Jan 1st is 0, Dec 31st is 1.
 const GROUND_COLORS = {
-  0.20: [200, 200, 200], // gray, winter
+  0.20: [151, 169, 177], // light blue, winter
   0.23: [118, 199, 68], // light green, spring
   0.60: [72, 140, 42], // green, summer
   0.70: [100, 132, 0], /// dark green, summer
   0.73: [147, 112, 22], // brown, autumn
   0.96: [125, 74, 5], // brown, autumn
-  0.99: [140, 140, 140] // gray, winter
+  0.98: [116, 136, 144] // dark blue, winter
 };
 
 const DEFAULT_PROPS = {
