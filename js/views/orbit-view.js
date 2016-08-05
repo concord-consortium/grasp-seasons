@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import BaseView from './base-view.js';
 import EarthDraggingInteraction from './orbit-view-interaction.js';
 import models from '../models/common-models.js';
@@ -23,8 +22,8 @@ export default class extends BaseView {
 
   _setInitialCamPos() {
     this.camera.position.x = 0;
-    this.camera.position.y = 245232773 / data.SCALE_FACTOR;
-    this.camera.position.z = 228174616 / data.SCALE_FACTOR;
+    this.camera.position.y = 360000000 / data.SCALE_FACTOR;
+    this.camera.position.z = 0;
   }
 
   _initScene() {

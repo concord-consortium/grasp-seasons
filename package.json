@@ -1,6 +1,6 @@
 {
   "name": "grasp-seasons",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "",
   "main": "dist-lib/grasp-seasons.js",
   "files": [
@@ -45,7 +45,8 @@
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
-    "webpack": "^1.9.11"
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
     "bootstrap": "^3.3.6",

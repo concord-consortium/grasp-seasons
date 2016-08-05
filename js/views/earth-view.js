@@ -1,13 +1,9 @@
-import $ from 'jquery';
 import THREE from 'three';
-
 import BaseView from './base-view.js';
-import models from '../models/common-models.js';
 import LatitudeLine from '../models/latitude-line.js';
 import LatLongMarker from '../models/lat-long-marker.js';
 import LatLongDraggingInteraction from './earth-view-interaction.js';
 import * as data from '../solar-system-data.js';
-import {mousePosNormalized} from '../utils.js';
 
 const DEG_2_RAD = Math.PI / 180;
 
@@ -107,8 +103,8 @@ export default class extends BaseView {
     this.earth.earthObject.add(this.latLongMarker.rootObject);
   }
 
-  // Sets camera next to earth at day 0 position.
   _setInitialCamPos() {
+    // Sets camera next to earth at day 0 position to set initial distance from earth.
     this.camera.position.x = -129000000 / data.SCALE_FACTOR;
     this.camera.position.y = 5000000 / data.SCALE_FACTOR;
     this.camera.position.z = 25000000 / data.SCALE_FACTOR;

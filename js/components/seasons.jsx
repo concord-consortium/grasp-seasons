@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import React from 'react';
 import update from 'react-addons-update';
 import ViewManager from './view-manager.jsx';
@@ -16,29 +17,30 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "Ju
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
 const ROTATION_SPEED = 0.0004;
+const DEFAULT_STATE = {
+  dailyRotation: false,
+  sim: {
+    day: 171,
+    earthTilt: true,
+    earthRotation: 1.539,
+    sunEarthLine: false,
+    lat: 40.11,
+    long: -88.2,
+    sunrayColor: '#D8D8AC',
+    groundColor: 'auto', // different for each season
+    sunrayDistMarker: false
+  },
+  view: {
+    'main': 'raysGround',
+    'small-top': 'orbit',
+    'small-bottom': 'earth'
+  }
+};
 
 export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      dailyRotation: false,
-      sim: {
-        day: 171,
-        earthTilt: true,
-        earthRotation: 1.539,
-        sunEarthLine: true,
-        lat: 40.11,
-        long: -88.2,
-        sunrayColor: '#D8D8AC',
-        groundColor: 'auto', // different for each season
-        sunrayDistMarker: false
-      },
-      view: {
-        'main': 'raysGround',
-        'small-top': 'orbit',
-        'small-bottom': 'earth'
-      }
-    };
+    this.state = $.extend(true, {}, DEFAULT_STATE, props.initialState);
 
     this.dispatch = new EventEmitter();
 
@@ -53,6 +55,10 @@ export default class Seasons extends React.Component {
     this.longSliderChange = this.longSliderChange.bind(this);
     this.citySelectChange = this.citySelectChange.bind(this);
     this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
+  }
+
+  componentDidMount() {
+    this.lookAtSubsolarPoint();
   }
 
   on(event, callback) {
@@ -242,3 +248,8 @@ export default class Seasons extends React.Component {
     );
   }
 }
+
+Seasons.defaultProps = {
+  // Can be used to overwrite default initial state.
+  initialState: {}
+};
