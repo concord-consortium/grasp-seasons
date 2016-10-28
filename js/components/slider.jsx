@@ -14,12 +14,38 @@ export default class Slider extends React.Component {
     return $(this.refs.container);
   }
 
+  getSliderOpts(props) {
+    const options = Object.assign({}, props);
+    // Enhance options, support logging.
+    if (props.log) {
+      options.start = function (event, ui) {
+        this._slideStart = Date.now();
+        this._prevValue = ui.value;
+        if (props.start) {
+          props.start(event, ui);
+        }
+      };
+      options.stop = function (event, ui) {
+        const duration = (Date.now() - this._slideStart) / 1000;
+        props.log(props.logId + 'SliderChanged', {
+          value: ui.value,
+          prevValue: this._prevValue,
+          duration
+        });
+        if (props.stop) {
+          props.stop(event, ui);
+        }
+      };
+    }
+    return options;
+  }
+
   componentDidMount() {
-    this.$slider[this.sliderFuncName](this.props);
+    this.$slider[this.sliderFuncName](this.getSliderOpts(this.props));
   }
 
   componentWillReceiveProps(nextProps) {
-    this.$slider[this.sliderFuncName](nextProps);
+    this.$slider[this.sliderFuncName](this.getSliderOpts(nextProps));
   }
 
   shouldComponentUpdate() {
@@ -33,3 +59,8 @@ export default class Slider extends React.Component {
     )
   }
 }
+
+Slider.defaultProps = {
+  log: null, // or function(action, data) { ... }
+  logId: ''
+};

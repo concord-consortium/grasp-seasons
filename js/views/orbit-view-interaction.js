@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import THREE from 'three';
 import BaseInteraction from './base-interaction.js';
 import {earthEllipseLocationByDay} from '../solar-system-data.js';
@@ -13,19 +12,21 @@ export default class extends BaseInteraction {
     this._atan2Day0Pos = Math.atan2(day0Pos.z, day0Pos.x);
 
     this.registerInteraction({
+      actionName: 'EarthSphereDragged',
       test: () => {
         return this.isUserPointing(this.earth.earthObject);
       },
-      activationChangeHandler: (isActive) => {
+      setActive: (isActive) => {
         this.earth.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';
       },
-      stepHandler: () => {
+      step: () => {
         let coords = this._getXZPlanPos();
         let angleDiff = this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
         let newDay = angleDiff / (Math.PI * 2) * 364;
         if (newDay < 0) newDay += 364;
         this.dispatch.emit('props.change', {day: newDay});
+        this.updateLogValue({day: newDay});
       }
     });
   }

@@ -6,12 +6,19 @@ import animationMixin from './animation-mixin.js';
 export default class AnimationCheckbox extends React.Component {
   constructor(props) {
     super(props);
-    this.toggleState = this.toggleState.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    this.toggleState();
+    if (this.props.onChange) {
+      this.props.onChange(event);
+    }
   }
 
   render() {
     return (
-      <input type='checkbox' checked={this.state.animationStarted} onChange={this.toggleState} disabled={this.state.disabled}/>
+      <input type='checkbox' name={this.props.name} checked={this.state.animationStarted} onChange={this.handleChange} disabled={this.state.disabled}/>
     )
   }
 }

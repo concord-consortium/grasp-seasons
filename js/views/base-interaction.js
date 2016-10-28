@@ -14,9 +14,16 @@ export default class {
     this.mouse = new THREE.Vector2(-2, -2); // intentionally out of view, which is limited to [-1, 1] x [-1, 1]
     this._followMousePosition();
 
-    this._interactions = []
+    this._interactions = [];
+    this._interactionStartTime = null;
+    this._firstValue = this._lastValue = null;
   }
 
+  // Interaction handler interface:
+  // - test
+  // - step
+  // - setActive
+  // - actionName
   registerInteraction(int) {
     this._interactions.push(int);
   }
@@ -27,7 +34,7 @@ export default class {
     for (let i = 0; i < this._interactions.length; i++) {
       let int = this._interactions[i];
       if (int._started) {
-        int.stepHandler();
+        int.step();
         return;
       }
     }
@@ -39,17 +46,11 @@ export default class {
         this._setInteractionActive(int, i, true);
         anyInteractionActive = true;
       } else {
-        if (int._active) {
-          this._setInteractionActive(int, i, false);
-        }
+        this._setInteractionActive(int, i, false);
       }
     }
 
-    if (anyInteractionActive) {
-      this.controls.enableRotate = false;
-    } else {
-      this.controls.enableRotate = true;
-    }
+    this.controls.enableRotate = !anyInteractionActive;
   }
 
   isUserPointing(mesh) {
@@ -62,21 +63,39 @@ export default class {
     }
   }
 
+  updateLogValue(value) {
+    if (this._firstValue === null) this._firstValue = value;
+    this._lastValue = value;
+  }
+
   _setInteractionActive(int, idx, v) {
+    if (int._active === v) return;
     int._active = v;
-    int.activationChangeHandler(v);
+    int.setActive(v);
     let $elem = $(this.domElement);
     let namespace = `interaction-${idx}`;
     if (v) {
       $elem.on(`mousedown.${namespace} touchstart.${namespace}`, () => {
         int._started = true;
+        this._interactionStartTime = Date.now();
       });
       $elem.on(`mouseup.${namespace} touchend.${namespace} touchcancel.${namespace}`, () => {
         int._started = false;
+        const duration = (Date.now() - this._interactionStartTime) / 1000; // in seconds
+        this._log(int.actionName, duration);
       });
     } else {
       $elem.off(`.${namespace}`);
     }
+  }
+
+  _log(actionName, duration) {
+    this.dispatch.emit('log', actionName, {
+      value: this._lastValue,
+      prevValue: this._firstValue,
+      duration
+    });
+    this._firstValue = this._lastValue = null;
   }
 
   _followMousePosition() {

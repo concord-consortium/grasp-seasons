@@ -13,35 +13,39 @@ export default class extends BaseInteraction {
     this.earth = view.earth;
 
     this.registerInteraction({
+      actionName: 'LatLngMarkerDragged',
       test: () => {
         return this.isUserPointing(this.latLongMarker.mesh);
       },
-      activationChangeHandler: (isActive) => {
+      setActive: (isActive) => {
         this.latLongMarker.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';
       },
-      stepHandler: () => {
+      step: () => {
         let coords = this._getPointerLatLong();
         if (coords != null) {
           // coords can be equal to null if user isn't pointing earth anymore.
           this.dispatch.emit('props.change', {lat: coords.lat, long: coords.long});
+          this.updateLogValue(coords);
         }
       }
     });
     this.registerInteraction({
+      actionName: 'LatLineDragged',
       test: () => {
         return this.isUserPointing(this.latLine.mesh);
       },
-      activationChangeHandler: (isActive) => {
+      setActive: (isActive) => {
         this.latLine.setHighlighted(isActive);
         this.latLongMarker.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';
       },
-      stepHandler: () => {
+      step: () => {
         let coords = this._getPointerLatLong();
         if (coords != null) {
           // coords can be equal to null if user isn't pointing earth anymore.
           this.dispatch.emit('props.change', {lat: coords.lat});
+          this.updateLogValue(coords);
         }
       }
     });

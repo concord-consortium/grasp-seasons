@@ -3,6 +3,11 @@ import React from 'react';
 export default class CanvasView extends React.Component {
   componentDidMount() {
     this.externalView = new this.ExternalView(this.refs.container, this.props.simulation);
+    if (this.externalView.on) {
+      this.externalView.on('log', (action, data) => {
+        this.props.log(action, data)
+      });
+    }
   }
 
   componentWillReceiveProps(nextProps) {

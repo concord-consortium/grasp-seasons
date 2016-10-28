@@ -7,7 +7,6 @@ import DaySlider from './day-slider.jsx';
 import CitySelect from './city-select.jsx';
 import AnimationCheckbox from './animation-checkbox.jsx';
 import AnimationButton from './animation-button.jsx';
-import EventEmitter from 'eventemitter2';
 
 import '../../css/seasons.less';
 
@@ -18,7 +17,6 @@ const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
 const ROTATION_SPEED = 0.0004;
 const DEFAULT_STATE = {
-  dailyRotation: false,
   sim: {
     day: 171,
     earthTilt: true,
@@ -27,8 +25,9 @@ const DEFAULT_STATE = {
     lat: 40.11,
     long: -88.2,
     sunrayColor: '#D8D8AC',
-    groundColor: 'auto', // different for each season
-    sunrayDistMarker: false
+    groundColor: '#4C7F19', // 'auto' will make color different for each season
+    sunrayDistMarker: false,
+    dailyRotation: false
   },
   view: {
     'main': 'raysGround',
@@ -37,32 +36,41 @@ const DEFAULT_STATE = {
   }
 };
 
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = $.extend(true, {}, DEFAULT_STATE, props.initialState);
 
-    this.dispatch = new EventEmitter();
-
     this.simStateChange = this.simStateChange.bind(this);
     this.viewChange = this.viewChange.bind(this);
-    this.handleStateChange = this.handleStateChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
+    this.daySliderStop = this.daySliderStop.bind(this);
     this.dayAnimFrame = this.dayAnimFrame.bind(this);
     this.earthRotationAnimFrame = this.earthRotationAnimFrame.bind(this);
     this.simCheckboxChange = this.simCheckboxChange.bind(this);
     this.latSliderChange = this.latSliderChange.bind(this);
     this.longSliderChange = this.longSliderChange.bind(this);
     this.citySelectChange = this.citySelectChange.bind(this);
-    this.lookAtSubsolarPoint = this.lookAtSubsolarPoint.bind(this);
+    this.subpolarButtonClick = this.subpolarButtonClick.bind(this);
+    this.logCheckboxChange = this.logCheckboxChange.bind(this);
+    this.logButtonClick = this.logButtonClick.bind(this);
+    this.log = this.log.bind(this);
+  }
+
+  log(action, data) {
+    this.props.logHandler(action, data);
   }
 
   componentDidMount() {
     this.lookAtSubsolarPoint();
-  }
-
-  on(event, callback) {
-    this.dispatch.on(event, callback);
+    this.log('SeasonsOpened', {
+      sim: this.state.sim,
+      view: this.state.view
+    });
   }
 
   getFormattedDay() {
@@ -91,7 +99,7 @@ export default class Seasons extends React.Component {
 
   getAnimSpeed() {
     // Slow down animation when daily rotation is on.
-    return this.state.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED;
+    return this.state.sim.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED;
   }
 
   setPlayBtnDisabled(v) {
@@ -119,7 +127,7 @@ export default class Seasons extends React.Component {
     this.setState({sim: newState}, () => {
       if (callback) callback();
       if (!skipEvent) {
-        this.dispatch.emit('simState.change', this.state.sim);
+        this.props.onSimStateChange(this.state.sim);
       }
     });
   }
@@ -143,25 +151,23 @@ export default class Seasons extends React.Component {
     }
     let newState = update(this.state.view, updateStruct);
     this.setState({view: newState}, () => {
-      this.dispatch.emit('viewState.change', this.state.view);
+      this.log('ViewsRearranged', this.state.view);
+      this.props.onViewStateChange(this.state.view);
     });
-  }
-
-  handleStateChange(event) {
-    let state = {};
-    // Handle all kind of inputs (checkboxes and radios use .checked prop).
-    state[event.target.name] = event.target.checked !== undefined ? event.target.checked : event.target.value;
-    this.setState(state);
   }
 
   daySliderChange(event, ui) {
     this.setSimState({day: ui.value});
   }
 
+  daySliderStop(event, ui) {
+    this.log('DaySliderChanged', {day: ui.value});
+  }
+
   dayAnimFrame(newDay) {
     // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
     let state = {day: newDay % 365};
-    if (this.state.dailyRotation) {
+    if (this.state.sim.dailyRotation) {
       state.earthRotation = (newDay % 1) * 2 * Math.PI;
     }
     this.setSimState(state);
@@ -176,6 +182,17 @@ export default class Seasons extends React.Component {
     let newSimState = {};
     newSimState[event.target.name] = event.target.checked;
     this.setSimState(newSimState);
+    this.logCheckboxChange(event);
+  }
+
+  logCheckboxChange(event) {
+    this.log(capitalize(event.target.name) + 'CheckboxChanged', {
+      value: event.target.checked
+    });
+  }
+
+  logButtonClick(event) {
+    this.log(capitalize(event.target.name) + 'ButtonClicked');
   }
 
   latSliderChange(event, ui) {
@@ -186,7 +203,7 @@ export default class Seasons extends React.Component {
     this.setSimState({long: ui.value});
   }
 
-  citySelectChange(lat, long) {
+  citySelectChange(lat, long, city) {
     // When a new city is selected, update lat-long marker, but also:
     // - rotate earth so the new point is on the bright side of earth,
     // - update camera position to look at this point.
@@ -195,6 +212,11 @@ export default class Seasons extends React.Component {
       // .setState is an async operation!
       this.refs.view.lookAtLatLongMarker();
     });
+    this.log('CityPulldownChanged', {
+      city,
+      lat,
+      long
+    })
   }
 
   lookAtSubsolarPoint() {
@@ -205,15 +227,23 @@ export default class Seasons extends React.Component {
     this.setSimState({earthRotation: (11.5 - this.state.sim.long) * Math.PI / 180});
   }
 
+  subpolarButtonClick(event) {
+    this.lookAtSubsolarPoint();
+    this.logButtonClick(event);
+  }
+
   render() {
     return (
       <div className='grasp-seasons'>
-        <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange}/>
+        <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log}/>
         <div className='controls clearfix' >
           <div className='pull-right right-col'>
-            <button className='btn btn-default' onClick={this.lookAtSubsolarPoint}>View Subsolar Point</button>
+            <button className='btn btn-default' onClick={this.subpolarButtonClick} name='ViewSubpolarPoint'>View Subsolar Point</button>
             <span> </span>
-            <label><AnimationCheckbox ref='rotatingButton' speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}/> Rotating</label>
+            <label>
+              <AnimationCheckbox ref='rotatingButton' speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}
+                                 name='EarthRotation' onChange={this.logCheckboxChange}/> Rotating
+            </label>
             <span> </span>
             <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
             <span> </span>
@@ -221,11 +251,12 @@ export default class Seasons extends React.Component {
           </div>
           <div className='left-col'>
             <div className='form-group'>
-              <AnimationButton ref='playButton' speed={this.getAnimSpeed()} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}/>
-              <label><input type='checkbox' name='dailyRotation' checked={this.state.dailyRotation} onChange={this.handleStateChange}/> Daily rotation</label>
+              <AnimationButton ref='playButton' speed={this.getAnimSpeed()} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}
+                               onClick={this.logButtonClick}/>
+              <label><input type='checkbox' name='dailyRotation' checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> Daily rotation</label>
               <label className='day'>Day: {this.getFormattedDay()}</label>
               <div className='day-slider'>
-                <DaySlider value={this.state.sim.day} slide={this.daySliderChange}/>
+                <DaySlider value={this.state.sim.day} slide={this.daySliderChange} log={this.log} logId='Day'/>
               </div>
             </div>
             <div className='form-group pull-left'>
@@ -235,11 +266,11 @@ export default class Seasons extends React.Component {
             <div className='long-lat-sliders pull-right'>
               <div className='form-group'>
                 <label>Latitude: {this.getFormattedLat()}</label>
-                <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange}/>
+                <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId='Latitude'/>
               </div>
               <div className='form-group'>
                 <label>Longitude: {this.getFormattedLong()}</label>
-                <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange}/>
+                <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange} log={this.log} logId='Longitude'/>
               </div>
             </div>
           </div>
@@ -251,5 +282,11 @@ export default class Seasons extends React.Component {
 
 Seasons.defaultProps = {
   // Can be used to overwrite default initial state.
-  initialState: {}
+  initialState: {},
+  // State is divided into values that are related to simulation and physics and ones that purely define UI.
+  onSimStateChange: function (simState) {},
+  onViewStateChange: function (viewState) {},
+  logHandler: function (action, data) {
+    console.log('[log]', action, data);
+  }
 };
