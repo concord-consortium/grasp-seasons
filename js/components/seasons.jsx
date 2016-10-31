@@ -67,10 +67,6 @@ export default class Seasons extends React.Component {
 
   componentDidMount() {
     this.lookAtSubsolarPoint();
-    this.log('SeasonsOpened', {
-      sim: this.state.sim,
-      view: this.state.view
-    });
   }
 
   getFormattedDay() {
