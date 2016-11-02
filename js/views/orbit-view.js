@@ -20,6 +20,13 @@ export default class extends BaseView {
     this.viewAxis.rotateX(Math.PI * 0.5);
   }
 
+  getCameraAngle() {
+    const refVec = this.camera.position.clone().setY(0);
+    let angle = this.camera.position.angleTo(refVec) * 180 / Math.PI;
+    if (this.camera.position.y < 0) angle *= -1;
+    return angle;
+  }
+
   _setInitialCamPos() {
     this.camera.position.x = 0;
     this.camera.position.y = 360000000 / data.SCALE_FACTOR;

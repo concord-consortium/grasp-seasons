@@ -1,6 +1,6 @@
 {
   "name": "grasp-seasons",
-  "version": "0.7.0-pre.1",
+  "version": "0.7.0",
   "description": "",
   "main": "dist-lib/grasp-seasons.js",
   "files": [

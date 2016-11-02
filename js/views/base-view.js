@@ -42,6 +42,17 @@ export default class {
     this.setProps(props);
 
     this._interactionHandler = null;
+
+    // Emit events when camera is changed.
+    this.controls.addEventListener('change', () => {
+      this.dispatch.emit('camera.change');
+    });
+    this.controls.addEventListener('start', () => {
+      this.dispatch.emit('camera.changeStart');
+    });
+    this.controls.addEventListener('end', () => {
+      this.dispatch.emit('camera.changeEnd');
+    });
   }
 
   setProps(newProps) {

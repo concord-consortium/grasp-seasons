@@ -209,7 +209,7 @@ export default class Seasons extends React.Component {
       this.refs.view.lookAtLatLongMarker();
     });
     this.log('CityPulldownChanged', {
-      city,
+      value: city,
       lat,
       long
     })

@@ -19,12 +19,6 @@ const DEF_PROPERTIES = {
 export default class extends BaseView {
   constructor(parentEl, props = DEF_PROPERTIES) {
     super(parentEl, props, 'earth-view');
-
-    // Emit events when camera is changed.
-    this.controls.addEventListener('change', () => {
-      this.dispatch.emit('camera.change');
-    });
-
     this.registerInteractionHandler(new LatLongDraggingInteraction(this));
   }
 
@@ -84,11 +78,11 @@ export default class extends BaseView {
 
   _updateLat() {
     this.latLine.setLat(this.props.lat);
-    this.latLongMarker.setLatLong(this.props.lat, this.props.long)
+    this.latLongMarker.setLatLong(this.props.lat, this.props.long);
   }
 
   _updateLong() {
-    this.latLongMarker.setLatLong(this.props.lat, this.props.long)
+    this.latLongMarker.setLatLong(this.props.lat, this.props.long);
   }
 
   _updateEarthRotation() {
