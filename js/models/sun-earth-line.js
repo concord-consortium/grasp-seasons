@@ -3,8 +3,8 @@ import * as c from './constants.js';
 
 const LINE_RADIUS = 30000 * c.SF;
 const SIMPLE_LINE_RADIUS = 800000 * c.SF;
-const POINTER_RADIUS = 100000 * c.SF;
-const POINTER_TUBE = 45000 * c.SF;
+const POINTER_RADIUS = 200000 * c.SF;
+const POINTER_TUBE = 60000 * c.SF;
 
 export default class {
   constructor(props) {
@@ -51,10 +51,19 @@ export default class {
   }
 
   _initPointer() {
-    let material = new THREE.MeshPhongMaterial({color: c.SUN_COLOR});
-    let geometry = new THREE.TorusGeometry(POINTER_RADIUS, POINTER_TUBE, 4, 16);
-    let mesh = new THREE.Mesh(geometry, material);
-    mesh.rotation.y = Math.PI * 0.5;
-    return mesh;
+    let container = new THREE.Object3D();
+
+    for (let i = 1; i < 8; i++) {
+      let radius = POINTER_RADIUS * Math.pow(i, 1.5);
+      let material = new THREE.MeshPhongMaterial({color: c.SUN_COLOR, transparent: true, opacity: 0.75 / Math.pow(i, 0.4)});
+      let geometry = new THREE.TorusGeometry(radius, POINTER_TUBE, 6, 16 * i);
+      let mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.y = Math.PI * 0.5;
+      // Based on circle equation: x^2 + y^2 = r^2
+      mesh.position.x = Math.sqrt(Math.pow(this._earthRadius, 2) - Math.pow(radius, 2)) - this._earthRadius;
+      container.add(mesh);
+    }
+
+    return container;
   }
 }

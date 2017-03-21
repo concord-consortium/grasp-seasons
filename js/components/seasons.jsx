@@ -21,7 +21,7 @@ const DEFAULT_STATE = {
     day: 171,
     earthTilt: true,
     earthRotation: 1.539,
-    sunEarthLine: false,
+    sunEarthLine: true,
     lat: 40.11,
     long: -88.2,
     sunrayColor: '#D8D8AC',
@@ -30,9 +30,9 @@ const DEFAULT_STATE = {
     dailyRotation: false
   },
   view: {
-    'main': 'raysGround',
+    'main': 'earth',
     'small-top': 'orbit',
-    'small-bottom': 'earth'
+    'small-bottom': 'raysGround'
   }
 };
 
