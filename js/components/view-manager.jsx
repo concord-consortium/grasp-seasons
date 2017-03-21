@@ -80,7 +80,7 @@ export default class ViewManager extends React.Component {
       <div className='view-manager'>
         <div className={`view ${this.getViewPosition('earth')}`}>
           <EarthViewComp ref='earth' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
-                         onCameraChange={this.syncCameraAndViewAxis}/>
+                         onCameraChange={this.syncCameraAndViewAxis} log={this.props.log}/>
         </div>
         <div className={`view ${this.getViewPosition('orbit')}`}>
           <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log}/>
