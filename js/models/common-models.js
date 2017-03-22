@@ -65,7 +65,8 @@ export default {
     return new THREE.Mesh(geometry, material);
   },
 
-  orbit: function () {
+  orbit: function (params) {
+    let simple = params.type === 'orbit-view';
     let curve = new THREE.EllipseCurve(
       data.SUN_FOCUS * 2, 0, // ax, aY
       data.EARTH_SEMI_MAJOR_AXIS * data.EARTH_ORBITAL_RADIUS, data.EARTH_ORBITAL_RADIUS, // xRadius, yRadius
@@ -74,7 +75,7 @@ export default {
     );
     let path = new THREE.Path(curve.getPoints(150));
     let geometry = path.createPointsGeometry(150);
-    let material = new THREE.LineBasicMaterial({color: 0xffff00, linewidth: 2});
+    let material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.7 : 0.9, linewidth: 2});
     let mesh = new THREE.Line(geometry, material);
     mesh.rotateX(Math.PI / 2);
 
@@ -103,20 +104,14 @@ export default {
   },
 
   grid: function (params) {
-    let steps = params.type === 'orbit-view' ? 5 : 60;
-    let size = data.EARTH_ORBITAL_RADIUS;
-    let step = size / steps;
-
+    let simple = params.type === 'orbit-view';
+    let COUNT = 24;
+    let STEP = 365 / COUNT;
     let geometry = new THREE.Geometry();
-    let material = new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.2});
-
-    for (let i = -size; i <= size; i += step) {
-      geometry.vertices.push(new THREE.Vector3(-size, 0, i));
-      geometry.vertices.push(new THREE.Vector3(size, 0, i));
-
-      geometry.vertices.push(new THREE.Vector3(i, 0, -size));
-      geometry.vertices.push(new THREE.Vector3(i, 0, size));
-
+    let material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.3 : 0.6});
+    for (let i = 0; i < 365; i += STEP) {
+      geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+      geometry.vertices.push(data.earthEllipseLocationByDay(i));
     }
     return new THREE.LineSegments(geometry, material);
   },
@@ -143,7 +138,7 @@ export default {
   cameraSymbol: function () {
     let DIST_FROM_EARTH = 60000000 * c.SF;
     let RADIUS = 6000000 * c.SF;
-    let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, 1.5 * RADIUS, 32);
+    let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, 1.5 * RADIUS, 12);
     let material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x007700});
     let lens = new THREE.Mesh(geometry, material);
     lens.position.y = DIST_FROM_EARTH;
