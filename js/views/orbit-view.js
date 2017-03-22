@@ -16,8 +16,8 @@ export default class extends BaseView {
   }
 
   setViewAxis(vec3) {
-    this.viewAxis.lookAt(vec3);
-    this.viewAxis.rotateX(Math.PI * 0.5);
+    this.cameraSymbol.lookAt(vec3);
+    this.cameraSymbol.rotateX(Math.PI * 0.5);
   }
 
   getCameraAngle() {
@@ -35,8 +35,8 @@ export default class extends BaseView {
 
   _initScene() {
     super._initScene();
-    this.viewAxis = models.viewAxis();
-    this.earth.posObject.add(this.viewAxis);
+    this.cameraSymbol = models.cameraSymbol();
+    this.earth.posObject.add(this.cameraSymbol);
     this._addLabels();
   }
 

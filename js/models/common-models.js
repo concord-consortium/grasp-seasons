@@ -3,6 +3,14 @@ import fontDef from 'raw!./museo-500-regular.json';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
 
+function addEdges(mesh) {
+  let geometry = new THREE.EdgesGeometry(mesh.geometry);
+  let material = new THREE.LineBasicMaterial({color: 0x000000});
+  let edges = new THREE.LineSegments(geometry, material);
+  edges.scale.x = edges.scale.y = edges.scale.z = 1.02; // so edges are more visible
+  mesh.add(edges);
+}
+
 export default {
   stars: function () {
     let SIZE = 4000000 * c.SF;
@@ -132,22 +140,23 @@ export default {
     return mesh;
   },
 
-  viewAxis: function () {
-    let HEIGHT = 70000000 * c.SF;
-    let HEAD_HEIGHT = HEIGHT * 0.2;
-    let RADIUS = 2000000 * c.SF;
-    let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
+  cameraSymbol: function () {
+    let DIST_FROM_EARTH = 60000000 * c.SF;
+    let RADIUS = 6000000 * c.SF;
+    let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, 1.5 * RADIUS, 32);
     let material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x007700});
-    let mesh = new THREE.Mesh(geometry, material);
-    mesh.position.y = HEIGHT * 0.5 + c.SIMPLE_EARTH_RADIUS + HEAD_HEIGHT;
+    let lens = new THREE.Mesh(geometry, material);
+    lens.position.y = DIST_FROM_EARTH;
+    addEdges(lens);
 
-    let arrowHeadGeo = new THREE.CylinderGeometry(RADIUS * 3, 0, HEAD_HEIGHT, 32);
-    let arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
-    arrowHeadMesh.position.y = -HEIGHT * 0.5 - HEAD_HEIGHT * 0.5;
-    mesh.add(arrowHeadMesh);
+    geometry = new THREE.BoxGeometry(RADIUS * 3, RADIUS * 3, RADIUS * 3);
+    let box = new THREE.Mesh(geometry, material);
+    box.position.y = RADIUS * 2;
+    addEdges(box);
+    lens.add(box);
 
     let pivot = new THREE.Object3D();
-    pivot.add(mesh);
+    pivot.add(lens);
     return pivot;
   }
 }
