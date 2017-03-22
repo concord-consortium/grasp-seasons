@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import THREE from 'three';
+import * as THREE from 'three';
 import 'imports?THREE=three!three/examples/js/controls/OrbitControls';
 
 import EventEmitter from 'eventemitter2';

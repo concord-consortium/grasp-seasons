@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
 import earthGridImg from '../../images/earth-grid-2k.jpg';

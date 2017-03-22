@@ -41,18 +41,18 @@ export default class extends BaseView {
   }
 
   _addLabels() {
-    let juneLbl = models.label('Jun');
+    let juneLbl = models.label('June');
     juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
     juneLbl.rotateZ(-Math.PI * 0.5);
 
-    let decLbl = models.label('Dec');
+    let decLbl = models.label('December');
     decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
     decLbl.rotateZ(Math.PI * 0.5);
 
-    let sepLbl = models.label('Sep');
+    let sepLbl = models.label('September');
     sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
 
-    let marLbl = models.label('Mar');
+    let marLbl = models.label('March');
     marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
     marLbl.rotateZ(Math.PI);
 

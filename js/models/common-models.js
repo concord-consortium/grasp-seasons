@@ -1,5 +1,5 @@
-import THREE from 'three';
-import fontDef from 'raw!three/examples/fonts/helvetiker_regular.typeface.js';
+import * as THREE from 'three';
+import fontDef from 'raw!./museo-500-regular.json';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
 
@@ -76,16 +76,22 @@ export default {
   label: function (txt) {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
-    let font = new THREE.Font(JSON.parse(fontDef.substring(65, fontDef.length - 2)));
+    let font = new THREE.Font(JSON.parse(fontDef));
     let geometry = new THREE.TextGeometry(txt, {
-      size: 50000000 * c.SF,
+      size: 28000000 * c.SF,
       height: 1000000 * c.SF,
       font: font
     });
     let material = new THREE.LineBasicMaterial({color: 0xffff00});
     let mesh = new THREE.Mesh(geometry, material);
-    mesh.rotation.x = -Math.PI * 0.5;
-    return mesh;
+    // Center labels.
+    let bbox = new THREE.Box3().setFromObject(mesh);
+    mesh.position.x = -0.5 * (bbox.max.x - bbox.min.x);
+    // Apply rotation.
+    let container = new THREE.Object3D();
+    container.rotation.x = -Math.PI * 0.5;
+    container.add(mesh);
+    return container;
   },
 
   grid: function (params) {

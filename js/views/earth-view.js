@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import BaseView from './base-view.js';
 import LatitudeLine from '../models/latitude-line.js';
 import LatLongMarker from '../models/lat-long-marker.js';

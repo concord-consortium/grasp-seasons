@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 const AU = 149597870.691;
 const AU_2_KM = 149597870.7;
