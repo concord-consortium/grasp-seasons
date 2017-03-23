@@ -23,6 +23,11 @@ const CITY_DATA = [
     "name": "McMurdo Station",
     "lat": -77.88,
     "long": 166.73
+  },
+  {
+    "name": "Hastings, New Zealand",
+    "lat": -39.65,
+    "long": 176.83
   }
 ];
 
