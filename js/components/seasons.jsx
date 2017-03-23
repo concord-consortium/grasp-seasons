@@ -244,6 +244,17 @@ export default class Seasons extends React.Component {
             <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
             <span> </span>
             <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
+
+            <div className='long-lat-sliders pull-right'>
+              <div className='form-group'>
+                <label>Latitude: {this.getFormattedLat()}</label>
+                <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId='Latitude'/>
+              </div>
+              <div className='form-group'>
+                <label>Longitude: {this.getFormattedLong()}</label>
+                <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange} log={this.log} logId='Longitude'/>
+              </div>
+            </div>
           </div>
           <div className='left-col'>
             <div className='form-group'>
@@ -256,18 +267,7 @@ export default class Seasons extends React.Component {
               </div>
             </div>
             <div className='form-group pull-left'>
-              <label>Select city:</label>
               <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onCityChange={this.citySelectChange}/>
-            </div>
-            <div className='long-lat-sliders pull-right'>
-              <div className='form-group'>
-                <label>Latitude: {this.getFormattedLat()}</label>
-                <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId='Latitude'/>
-              </div>
-              <div className='form-group'>
-                <label>Longitude: {this.getFormattedLong()}</label>
-                <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange} log={this.log} logId='Longitude'/>
-              </div>
             </div>
           </div>
         </div>
