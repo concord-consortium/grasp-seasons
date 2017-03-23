@@ -6,6 +6,7 @@ import * as data from '../solar-system-data.js';
 const DEF_PROPERTIES = {
   day: 0,
   earthTilt: true,
+  earthRotation: 4.94,
   sunEarthLine: true
 };
 

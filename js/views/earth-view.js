@@ -85,10 +85,6 @@ export default class extends BaseView {
     this.latLongMarker.setLatLong(this.props.lat, this.props.long);
   }
 
-  _updateEarthRotation() {
-    this.earth.rotation = this.props.earthRotation;
-  }
-
   _initScene() {
     super._initScene();
     this.latLine = new LatitudeLine();

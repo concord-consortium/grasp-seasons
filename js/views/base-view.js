@@ -11,6 +11,7 @@ import * as data from '../solar-system-data.js';
 const DEF_PROPERTIES = {
   day: 0,
   earthTilt: true,
+  earthRotation: 4.94,
   sunEarthLine: true
 };
 
@@ -114,6 +115,10 @@ export default class {
   // Called automatically when 'earthTilt' property is updated.
   _updateEarthTilt() {
     this.earth.setTilted(this.props.earthTilt);
+  }
+
+  _updateEarthRotation() {
+    this.earth.rotation = this.props.earthRotation;
   }
 
   _updateSunEarthLine() {

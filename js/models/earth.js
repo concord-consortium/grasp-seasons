@@ -2,10 +2,11 @@ import * as THREE from 'three';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
 import earthGridImg from '../../images/earth-grid-2k.jpg';
+import earthSimpleImg from '../../images/earth-simple-0.5k.png';
 import earthBumpImg from '../../images/earth-bump-2k.jpg';
 import earthSpecularImg from '../../images/earth-specular-2k.png';
 
-const DEF_COLOR = 0x1286CD;
+const DEF_COLOR = 0xffffff;
 const DEF_EMISSIVE = 0x002135;
 
 export default class {
@@ -15,14 +16,13 @@ export default class {
     let COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE} : {specular: 0x252525};
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
-    if (!simple) {
-      let textureLoader = new THREE.TextureLoader();
-      this._material.map = textureLoader.load(earthGridImg);
+    let textureLoader = new THREE.TextureLoader();
+    this._material.map = textureLoader.load(simple ? earthSimpleImg : earthGridImg);
+    if (true || !simple) {
       this._material.bumpMap = textureLoader.load(earthBumpImg);
       this._material.bumpScale = 100000 * c.SF;
       this._material.specularMap = textureLoader.load(earthSpecularImg);
     }
-    
     this._earthObject = new THREE.Mesh(geometry, this._material);
     this._orbitRotObject = new THREE.Object3D();
     this._orbitRotObject.add(this._earthObject);
