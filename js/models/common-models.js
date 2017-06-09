@@ -51,7 +51,7 @@ export default {
   sun: function (params) {
     let radius = params.type === 'orbit-view' ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
     let geometry = new THREE.SphereGeometry(radius, 32, 32);
-    let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR});
+    let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR, color: 0x000000});
     let mesh = new THREE.Mesh(geometry, material);
     return mesh;
   },
