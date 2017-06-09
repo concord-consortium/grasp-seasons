@@ -87,7 +87,7 @@ export default {
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
     let font = new THREE.Font(JSON.parse(fontDef));
     let geometry = new THREE.TextGeometry(txt, {
-      size: 28000000 * c.SF,
+      size: 16000000 * c.SF,
       height: 1000000 * c.SF,
       font: font
     });
