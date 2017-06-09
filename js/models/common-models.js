@@ -118,8 +118,8 @@ export default {
 
   earthAxis: function (params) {
     let simple = params.type === 'orbit-view';
-    let HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
-    let RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
+    let HEIGHT = simple ? 50000000 * c.SF : 15000000 * c.SF;
+    let RADIUS = simple ? 1200000 * c.SF : 120000 * c.SF;
     let HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
     let HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
     let EMISSIVE_COL = simple ? 0x770000 : 0x330000;
@@ -127,7 +127,7 @@ export default {
     let material = new THREE.MeshPhongMaterial({color: 0xff0000, emissive: EMISSIVE_COL});
     let mesh = new THREE.Mesh(geometry, material);
 
-    let arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
+    let arrowHeadGeo = new THREE.SphereGeometry(HEAD_RADIUS, 32, 32);
     let arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
     arrowHeadMesh.position.y = HEIGHT * 0.5;
     mesh.add(arrowHeadMesh);
