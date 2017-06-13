@@ -153,5 +153,9 @@ export default {
     let pivot = new THREE.Object3D();
     pivot.add(lens);
     return pivot;
+  },
+
+  hiddenCameraSymbol: function () {
+    return new THREE.Object3D();
   }
 }

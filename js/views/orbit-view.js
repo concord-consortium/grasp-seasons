@@ -34,6 +34,16 @@ export default class extends BaseView {
     this.camera.position.z = 0;
   }
 
+  toggleCameraModel(show) {
+    this.earth.posObject.remove(this.cameraSymbol);
+    if (show) {
+      this.cameraSymbol = models.cameraSymbol();
+    } else {
+      this.cameraSymbol = models.hiddenCameraSymbol();
+    }
+    this.earth.posObject.add(this.cameraSymbol);
+  }
+
   _initScene() {
     super._initScene();
     this.cameraSymbol = models.cameraSymbol();
