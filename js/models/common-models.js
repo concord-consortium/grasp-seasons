@@ -82,16 +82,24 @@ export default {
     return mesh;
   },
 
-  label: function (txt) {
+  label: function (txt, small) {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
     let font = new THREE.Font(JSON.parse(fontDef));
+    let SIZE = 16000000;
+    let HEIGHT = 1000000;
+    let SIZE_SMALL = SIZE / 2;
+    let HEIGHT_SMALL = HEIGHT / 2;
+
+    let COLOR = 0xffff00;
+    let COLOR_SMALL = 0xeeee66;
+
     let geometry = new THREE.TextGeometry(txt, {
-      size: 16000000 * c.SF,
-      height: 1000000 * c.SF,
+      size: small ? SIZE_SMALL * c.SF : SIZE * c.SF,
+      height: small ? HEIGHT_SMALL * c.SF : HEIGHT * c.SF,
       font: font
     });
-    let material = new THREE.LineBasicMaterial({color: 0xffff00});
+    let material = new THREE.LineBasicMaterial({color: small ? COLOR_SMALL : COLOR});
     let mesh = new THREE.Mesh(geometry, material);
     // Center labels.
     let bbox = new THREE.Box3().setFromObject(mesh);
