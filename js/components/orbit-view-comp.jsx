@@ -20,6 +20,10 @@ export default class OrbitViewComp extends CanvasView {
     this.externalView.setViewAxis(vec);
   }
 
+  toggleCameraModel(show) {
+    this.externalView.toggleCameraModel(show);
+  }
+
   _setupLogging() {
     this.externalView.on('camera.changeStart', () => {
       this._startAngle = this.externalView.getCameraAngle();

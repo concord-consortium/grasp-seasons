@@ -34,6 +34,16 @@ export default class extends BaseView {
     this.camera.position.z = 0;
   }
 
+  toggleCameraModel(show) {
+    this.earth.posObject.remove(this.cameraSymbol);
+    if (show) {
+      this.cameraSymbol = models.cameraSymbol();
+    } else {
+      this.cameraSymbol = models.hiddenCameraSymbol();
+    }
+    this.earth.posObject.add(this.cameraSymbol);
+  }
+
   _initScene() {
     super._initScene();
     this.cameraSymbol = models.cameraSymbol();
@@ -42,24 +52,18 @@ export default class extends BaseView {
   }
 
   _addLabels() {
-    let juneLbl = models.label('June');
-    juneLbl.position.x = data.EARTH_ORBITAL_RADIUS * 1.05;
-    juneLbl.rotateZ(-Math.PI * 0.5);
+    let months = ["March", "Apr", "May", "June", "Jul", "Aug", "September", "Oct", "Nov", "December", "Jan", "Feb"];
+    let segments = months.length;
+    let arc = 2 * Math.PI / segments;
+    let labelRadius = data.EARTH_ORBITAL_RADIUS * 1.15;
 
-    let decLbl = models.label('December');
-    decLbl.position.x = -data.EARTH_ORBITAL_RADIUS * 1.05;
-    decLbl.rotateZ(Math.PI * 0.5);
-
-    let sepLbl = models.label('September');
-    sepLbl.position.z = -data.EARTH_ORBITAL_RADIUS * 1.05;
-
-    let marLbl = models.label('March');
-    marLbl.position.z = data.EARTH_ORBITAL_RADIUS * 1.05;
-    marLbl.rotateZ(Math.PI);
-
-    this.scene.add(juneLbl);
-    this.scene.add(decLbl);
-    this.scene.add(sepLbl);
-    this.scene.add(marLbl);
+    for (let i = 0; i < months.length; i++) {
+      let monthLbl = models.label(months[i], months[i].length === 3);
+      let angle = i * arc;
+      monthLbl.position.x = labelRadius * Math.sin(angle);
+      monthLbl.position.z = labelRadius * Math.cos(angle);
+      monthLbl.rotateZ(angle);
+      this.scene.add(monthLbl);
+    }
   }
 }

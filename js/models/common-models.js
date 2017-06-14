@@ -51,7 +51,7 @@ export default {
   sun: function (params) {
     let radius = params.type === 'orbit-view' ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
     let geometry = new THREE.SphereGeometry(radius, 32, 32);
-    let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR});
+    let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR, color: 0x000000});
     let mesh = new THREE.Mesh(geometry, material);
     return mesh;
   },
@@ -82,16 +82,24 @@ export default {
     return mesh;
   },
 
-  label: function (txt) {
+  label: function (txt, small) {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
     let font = new THREE.Font(JSON.parse(fontDef));
+    let SIZE = 16000000;
+    let HEIGHT = 1000000;
+    let SIZE_SMALL = SIZE / 2;
+    let HEIGHT_SMALL = HEIGHT / 2;
+
+    let COLOR = 0xffff00;
+    let COLOR_SMALL = 0xeeee66;
+
     let geometry = new THREE.TextGeometry(txt, {
-      size: 28000000 * c.SF,
-      height: 1000000 * c.SF,
+      size: small ? SIZE_SMALL * c.SF : SIZE * c.SF,
+      height: small ? HEIGHT_SMALL * c.SF : HEIGHT * c.SF,
       font: font
     });
-    let material = new THREE.LineBasicMaterial({color: 0xffff00});
+    let material = new THREE.LineBasicMaterial({color: small ? COLOR_SMALL : COLOR});
     let mesh = new THREE.Mesh(geometry, material);
     // Center labels.
     let bbox = new THREE.Box3().setFromObject(mesh);
@@ -118,8 +126,8 @@ export default {
 
   earthAxis: function (params) {
     let simple = params.type === 'orbit-view';
-    let HEIGHT = simple ? 70000000 * c.SF : 17000000 * c.SF;
-    let RADIUS = simple ? 2000000 * c.SF : 200000 * c.SF;
+    let HEIGHT = simple ? 50000000 * c.SF : 15000000 * c.SF;
+    let RADIUS = simple ? 1200000 * c.SF : 120000 * c.SF;
     let HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
     let HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
     let EMISSIVE_COL = simple ? 0x770000 : 0x330000;
@@ -127,7 +135,7 @@ export default {
     let material = new THREE.MeshPhongMaterial({color: 0xff0000, emissive: EMISSIVE_COL});
     let mesh = new THREE.Mesh(geometry, material);
 
-    let arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);
+    let arrowHeadGeo = new THREE.SphereGeometry(HEAD_RADIUS, 32, 32);
     let arrowHeadMesh = new THREE.Mesh(arrowHeadGeo, material);
     arrowHeadMesh.position.y = HEIGHT * 0.5;
     mesh.add(arrowHeadMesh);
@@ -153,5 +161,9 @@ export default {
     let pivot = new THREE.Object3D();
     pivot.add(lens);
     return pivot;
+  },
+
+  hiddenCameraSymbol: function () {
+    return new THREE.Object3D();
   }
 }

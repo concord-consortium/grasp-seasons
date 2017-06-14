@@ -13,7 +13,7 @@ export default class {
   constructor(params) {
     let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    let COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE} : {specular: 0x252525};
+    let COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE} : {specular: 0x000000};
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
     let textureLoader = new THREE.TextureLoader();
@@ -21,7 +21,6 @@ export default class {
     if (true || !simple) {
       this._material.bumpMap = textureLoader.load(earthBumpImg);
       this._material.bumpScale = 100000 * c.SF;
-      this._material.specularMap = textureLoader.load(earthSpecularImg);
     }
     this._earthObject = new THREE.Mesh(geometry, this._material);
     this._orbitRotObject = new THREE.Object3D();
