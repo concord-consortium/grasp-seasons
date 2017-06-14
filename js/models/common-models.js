@@ -92,7 +92,7 @@ export default {
     let HEIGHT_SMALL = HEIGHT / 2;
 
     let COLOR = 0xffff00;
-    let COLOR_SMALL = 0xeeee66;
+    let COLOR_SMALL = 0x999966;
 
     let geometry = new THREE.TextGeometry(txt, {
       size: small ? SIZE_SMALL * c.SF : SIZE * c.SF,
