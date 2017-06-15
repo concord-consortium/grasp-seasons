@@ -16,6 +16,7 @@ export default class ViewManager extends React.Component {
 
   componentDidMount() {
     this._rafId = requestAnimationFrame(this.rafCallback);
+    this.refs.orbit.toggleCameraModel(this.isEarthViewVisible());
     this.syncCameraAndViewAxis();
   }
 

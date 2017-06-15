@@ -30,9 +30,9 @@ const DEFAULT_STATE = {
     dailyRotation: false
   },
   view: {
-    'main': 'earth',
-    'small-top': 'orbit',
-    'small-bottom': 'raysGround'
+    'main': 'orbit',
+    'small-top': 'raysGround',
+    'small-bottom': 'nothing'
   }
 };
 
