@@ -126,9 +126,9 @@ export default {
 
   earthAxis: function (params) {
     let simple = params.type === 'orbit-view';
-    let HEIGHT = simple ? 50000000 * c.SF : 15000000 * c.SF;
+    let HEIGHT = simple ? 35000000 * c.SF : 16000000 * c.SF;
     let RADIUS = simple ? 1200000 * c.SF : 120000 * c.SF;
-    let HEAD_RADIUS = RADIUS * (simple ? 3 : 2);
+    let HEAD_RADIUS = RADIUS * (simple ? 2.5 : 2.2);
     let HEAD_HEIGHT = HEIGHT * (simple ? 0.2 : 0.05);
     let EMISSIVE_COL = simple ? 0x770000 : 0x330000;
     let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
