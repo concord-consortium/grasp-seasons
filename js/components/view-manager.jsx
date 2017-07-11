@@ -11,12 +11,12 @@ export default class ViewManager extends React.Component {
     this.rafCallback = this.rafCallback.bind(this);
     this.syncCameraAndViewAxis = this.syncCameraAndViewAxis.bind(this);
     this.handleViewChange = this.handleViewChange.bind(this);
-    this.isEarthViewVisible = this.isEarthViewVisible.bind(this);
+    this.showOrbitViewCameraModel = this.showOrbitViewCameraModel.bind(this);
   }
 
   componentDidMount() {
     this._rafId = requestAnimationFrame(this.rafCallback);
-    this.refs.orbit.toggleCameraModel(this.isEarthViewVisible());
+    this.refs.orbit.toggleCameraModel(this.showOrbitViewCameraModel());
     this.syncCameraAndViewAxis();
   }
 
@@ -31,8 +31,8 @@ export default class ViewManager extends React.Component {
       this.refs.raysGround.resize();
       this.refs.raysSpace.resize();
 
-      this.refs.orbit.toggleCameraModel(this.isEarthViewVisible());
-      if (this.isEarthViewVisible()){
+      this.refs.orbit.toggleCameraModel(this.showOrbitViewCameraModel());
+      if (this.showOrbitViewCameraModel()){
         this.syncCameraAndViewAxis();
       }
     }
@@ -69,8 +69,11 @@ export default class ViewManager extends React.Component {
     return 'hidden';
   }
 
-  isEarthViewVisible(){
-    return (Object.values(this.props.view)).indexOf("earth") > -1;
+  showOrbitViewCameraModel(){
+    // Hiding camera model for now, retaining functionality for future.
+    // If Earth is visible in another view, Orbit view will show camera model
+    // return (Object.values(this.props.view)).indexOf("earth") > -1;
+    return false;
   }
 
   getEarthScreenPosition(){
@@ -100,7 +103,7 @@ export default class ViewManager extends React.Component {
                          onCameraChange={this.syncCameraAndViewAxis} log={this.props.log}/>
         </div>
         <div className={`view ${this.getViewPosition('orbit')}`}>
-          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.isEarthViewVisible()}/>
+          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()}/>
         </div>
         <div className={`view ${this.getViewPosition('raysGround')}`}>
           <RaysViewComp ref='raysGround' type='ground' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
