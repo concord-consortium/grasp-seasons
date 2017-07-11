@@ -2,6 +2,7 @@ import BaseView from './base-view.js';
 import EarthDraggingInteraction from './orbit-view-interaction.js';
 import models from '../models/common-models.js';
 import * as data from '../solar-system-data.js';
+import * as THREE from 'three';
 
 const DEF_PROPERTIES = {
   day: 0,
@@ -26,6 +27,25 @@ export default class extends BaseView {
     let angle = this.camera.position.angleTo(refVec) * 180 / Math.PI;
     if (this.camera.position.y < 0) angle *= -1;
     return angle;
+  }
+
+  getEarthPosition() {
+    var vector = new THREE.Vector3();
+
+    var widthHalf = 0.5 * this.renderer.context.canvas.width;
+    var heightHalf = 0.5 * this.renderer.context.canvas.height;
+
+    this.earth.posObject.updateMatrixWorld();
+    vector.setFromMatrixPosition(this.earth.posObject.matrixWorld);
+    vector.project(this.camera);
+
+    vector.x = ( vector.x * widthHalf ) + widthHalf;
+    vector.y = - ( vector.y * heightHalf ) + heightHalf;
+
+    return {
+        x: vector.x,
+        y: vector.y
+    };
   }
 
   _setInitialCamPos() {

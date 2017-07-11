@@ -73,6 +73,12 @@ export default class ViewManager extends React.Component {
     return (Object.values(this.props.view)).indexOf("earth") > -1;
   }
 
+  getEarthScreenPosition(){
+    if ((Object.values(this.props.view)).indexOf("orbit") > -1){
+      return this.refs.orbit.getEarthScreenPosition();
+    } else return null;
+  }
+
   renderViewSelect(position) {
     return (
       <select className={`form-control view-select ${position}`} name={position}

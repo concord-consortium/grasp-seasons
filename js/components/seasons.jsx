@@ -228,6 +228,10 @@ export default class Seasons extends React.Component {
     this.logButtonClick(event);
   }
 
+  getEarthScreenPosition(){
+    return this.refs.view.getEarthScreenPosition();
+  }
+
   render() {
     return (
       <div className='grasp-seasons'>
