@@ -24,6 +24,10 @@ export default class OrbitViewComp extends CanvasView {
     this.externalView.toggleCameraModel(show);
   }
 
+  getEarthPosition(){
+    return this.externalView.getEarthPosition();
+  }
+
   _setupLogging() {
     this.externalView.on('camera.changeStart', () => {
       this._startAngle = this.externalView.getCameraAngle();
