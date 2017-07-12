@@ -229,7 +229,7 @@ export default class Seasons extends React.Component {
   }
 
   getEarthScreenPosition(){
-    return this.refs.view.getEarthScreenPosition();
+    return this.refs.view.getEarthPosition();
   }
 
   render() {
