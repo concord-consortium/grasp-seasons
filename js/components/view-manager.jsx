@@ -78,7 +78,7 @@ export default class ViewManager extends React.Component {
 
   getEarthScreenPosition(){
     if ((Object.values(this.props.view)).indexOf("orbit") > -1){
-      return this.refs.orbit.getEarthScreenPosition();
+      return this.refs.orbit.getEarthPosition();
     } else return null;
   }
 
