@@ -31,16 +31,17 @@ export default class extends BaseView {
 
   getEarthPosition() {
     var vector = new THREE.Vector3();
+    var canvas = this.renderer.domElement;
 
-    var widthHalf = 0.5 * this.renderer.context.canvas.width;
-    var heightHalf = 0.5 * this.renderer.context.canvas.height;
+    vector.set( 1, 2, 3 );
 
-    this.earth.posObject.updateMatrixWorld();
-    vector.setFromMatrixPosition(this.earth.posObject.matrixWorld);
-    vector.project(this.camera);
+    // map to normalized device coordinate (NDC) space
+    vector.project( this.camera );
 
-    vector.x = ( vector.x * widthHalf ) + widthHalf;
-    vector.y = - ( vector.y * heightHalf ) + heightHalf;
+    // map to 2D screen space
+    vector.x = Math.round( (   vector.x + 1 ) * canvas.width  / 2 );
+    vector.y = Math.round( ( - vector.y + 1 ) * canvas.height / 2 );
+    vector.z = 0;
 
     return {
         x: vector.x,
