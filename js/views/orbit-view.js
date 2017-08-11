@@ -30,22 +30,22 @@ export default class extends BaseView {
   }
 
   getEarthPosition() {
-    var vector = new THREE.Vector3();
-    var canvas = this.renderer.domElement;
+    let vector = this.earth.posObject.position.clone();
 
-    vector.set( 1, 2, 3 );
+    let container = this.renderer.context.canvas;
 
-    // map to normalized device coordinate (NDC) space
-    vector.project( this.camera );
+    let widthHalf = (container.width/2);
+    let heightHalf = (container.height/2);
 
-    // map to 2D screen space
-    vector.x = Math.round( (   vector.x + 1 ) * canvas.width  / 2 );
-    vector.y = Math.round( ( - vector.y + 1 ) * canvas.height / 2 );
+    vector.project(this.camera);
+
+    vector.x = ( vector.x * widthHalf ) + widthHalf;
+    vector.y = - ( vector.y * heightHalf ) + heightHalf;
     vector.z = 0;
 
     return {
-        x: vector.x,
-        y: vector.y
+        x: Math.round(vector.x),
+        y: Math.round(vector.y)
     };
   }
 

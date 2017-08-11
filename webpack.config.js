@@ -17,6 +17,7 @@ module.exports = {
     library: lib ? 'GRASPSeasons' : undefined,
     libraryTarget: lib ? 'umd' : undefined
   },
+  devServer: { inline: true },
   module: {
     loaders: [
       { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime' },
