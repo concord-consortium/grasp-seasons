@@ -82,6 +82,10 @@ export default class ViewManager extends React.Component {
     } else return null;
   }
 
+  lockCameraRotation(lock){
+    this.refs.orbit.lockCameraRotation(lock);
+  }
+
   renderViewSelect(position) {
     return (
       <select className={`form-control view-select ${position}`} name={position}

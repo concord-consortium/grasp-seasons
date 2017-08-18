@@ -232,6 +232,10 @@ export default class Seasons extends React.Component {
     return this.refs.view.getEarthScreenPosition();
   }
 
+  lockCameraRotation(lock){
+    this.refs.view.lockCameraRotation(lock);
+  }
+
   render() {
     return (
       <div className='grasp-seasons'>

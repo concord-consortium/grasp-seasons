@@ -49,6 +49,10 @@ export default class extends BaseView {
     };
   }
 
+  lockCameraRotation(lock) {
+    this.lockCameraRotation(lock);
+  }
+
   _setInitialCamPos() {
     this.camera.position.x = 0;
     this.camera.position.y = 360000000 / data.SCALE_FACTOR;

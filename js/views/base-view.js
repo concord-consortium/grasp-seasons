@@ -73,6 +73,15 @@ export default class {
     }
   }
 
+  lockCameraRotation(isLocked) {
+    if (isLocked) {
+      this.controls.rotateSpeed = 0;
+    }
+    else {
+      this.controls.rotateSpeed = 0.5;
+    }
+  }
+
   // Delegate #on to EventEmitter object.
   on() {
     this.dispatch.on.apply(this.dispatch, arguments);

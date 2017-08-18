@@ -28,6 +28,10 @@ export default class OrbitViewComp extends CanvasView {
     return this.externalView.getEarthPosition();
   }
 
+  lockCameraRotation(lock){
+    this.externalView.lockCameraRotation(lock);
+  }
+
   _setupLogging() {
     this.externalView.on('camera.changeStart', () => {
       this._startAngle = this.externalView.getCameraAngle();
