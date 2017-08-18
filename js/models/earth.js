@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
 import earthGridImg from '../../images/earth-grid-2k.jpg';
-import earthSimpleImg from '../../images/earth-simple-0.5k.png';
+import earthSimpleImg from '../../images/earth-0.5k.jpg';
 import earthBumpImg from '../../images/earth-bump-2k.jpg';
 import earthSpecularImg from '../../images/earth-specular-2k.png';
 
