@@ -6,8 +6,9 @@ const DEF_COLOR = 0xffffff;
 const DEF_EMISSIVE = 0x999999;
 
 export default class LatitudeLine {
-  constructor() {
-    let geometry = new THREE.TorusGeometry(c.EARTH_RADIUS, c.EARTH_RADIUS * 0.01, 16, 100);
+  constructor(thin) {
+    let torusRadius = thin ? 0.002 : 0.01;
+    let geometry = new THREE.TorusGeometry(c.EARTH_RADIUS, c.EARTH_RADIUS * torusRadius, 16, 100);
     let material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
     let mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = Math.PI * 0.5;

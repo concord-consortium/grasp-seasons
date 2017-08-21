@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
-import earthGridImg from '../../images/earth-grid-2k.jpg';
-import earthSimpleImg from '../../images/earth-0.5k.jpg';
+import earthGridImg from '../../images/earth-2k.jpg';//'../../images/earth-grid-2k.jpg';
+import earthSimpleImg from '../../images/earth-equator-0.5k.jpg';//'../../images/earth-0.5k.jpg';
 import earthBumpImg from '../../images/earth-bump-2k.jpg';
 import earthSpecularImg from '../../images/earth-specular-2k.png';
 
@@ -13,7 +13,7 @@ export default class {
   constructor(params) {
     let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    let COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE} : {specular: 0x000000};
+    let COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE, specular: 0x000000} : {specular: 0x000000};
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
     let textureLoader = new THREE.TextureLoader();

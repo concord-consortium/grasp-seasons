@@ -91,6 +91,9 @@ export default class extends BaseView {
     this.latLongMarker = new LatLongMarker();
     this.earth.earthObject.add(this.latLine.rootObject);
     this.earth.earthObject.add(this.latLongMarker.rootObject);
+    this.equatorLine = new LatitudeLine(true);
+    this.equatorLine.setLat(0);
+    this.earth.earthObject.add(this.equatorLine.rootObject);
   }
 
   _setInitialCamPos() {

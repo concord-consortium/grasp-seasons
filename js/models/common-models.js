@@ -59,7 +59,7 @@ export default {
   earth: function (params) {
     let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    let COLORS = simple ? {color: 0x1286CD, emissive: 0x002135} : {specular: 0x252525};
+    let COLORS = { specular: 0x252525 };//simple ? {color: 0x1286CD, emissive: 0x002135} : {specular: 0x252525};
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     let material = new THREE.MeshPhongMaterial(COLORS);
     return new THREE.Mesh(geometry, material);
