@@ -93,6 +93,7 @@ export default class extends BaseView {
     this.earth.earthObject.add(this.latLongMarker.rootObject);
     this.equatorLine = new LatitudeLine(true);
     this.equatorLine.setLat(0);
+    this.equatorLine.name = 'equator';
     this.earth.earthObject.add(this.equatorLine.rootObject);
   }
 

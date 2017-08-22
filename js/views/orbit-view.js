@@ -1,5 +1,7 @@
 import BaseView from './base-view.js';
 import EarthDraggingInteraction from './orbit-view-interaction.js';
+import LatitudeLine from '../models/latitude-line.js';
+import LatLongMarker from '../models/lat-long-marker.js';
 import models from '../models/common-models.js';
 import * as data from '../solar-system-data.js';
 import * as THREE from 'three';
@@ -65,8 +67,22 @@ export default class extends BaseView {
     this.earth.posObject.add(this.cameraSymbol);
   }
 
+  _updateLat() {
+    this.latLine.setLat(this.props.lat);
+    this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+    console.log('setlat called in orbit view');
+  }
+
+  _updateLong() {
+    this.latLongMarker.setLatLong(this.props.lat, this.props.long);
+  }
+
   _initScene() {
     super._initScene();
+    this.latLine = new LatitudeLine(false, true);
+    this.latLongMarker = new LatLongMarker(true);
+    this.earth.earthObject.add(this.latLine.rootObject);
+    this.earth.earthObject.add(this.latLongMarker.rootObject);
     this.cameraSymbol = models.cameraSymbol();
     this.earth.posObject.add(this.cameraSymbol);
     this._addLabels();

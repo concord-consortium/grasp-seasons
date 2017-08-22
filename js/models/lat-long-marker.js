@@ -7,11 +7,13 @@ const DEF_COLOR = 0xffffff;
 const DEF_EMISSIVE = 0x999999;
 
 export default class LatLongMarker {
-  constructor() {
-    let geometry = new THREE.SphereGeometry(300000 * c.SF, 32, 32);
+  constructor(simple) {
+    this.markerRadius = simple ? c.LATLNG_MARKER_RADIUS * 5 : c.LATLNG_MARKER_RADIUS;
+    let geometry = new THREE.SphereGeometry(this.markerRadius, 32, 32);
     let material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
     let mesh = new THREE.Mesh(geometry, material);
-    mesh.position.x = c.EARTH_RADIUS;
+    this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.02: c.EARTH_RADIUS;
+    mesh.position.x = this.earthRadius;
     let pivot = new THREE.Object3D();
     pivot.add(mesh);
 
