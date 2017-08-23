@@ -116,7 +116,7 @@ export default {
     let COUNT = 24;
     let STEP = 365 / COUNT;
     let geometry = new THREE.Geometry();
-    let material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.3 : 0.6});
+    let material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.4 : 0.6});
     for (let i = 0; i < 365; i += STEP) {
       geometry.vertices.push(new THREE.Vector3(0, 0, 0));
       geometry.vertices.push(data.earthEllipseLocationByDay(i));

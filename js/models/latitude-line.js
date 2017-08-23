@@ -8,8 +8,8 @@ const DEF_EMISSIVE = 0x999999;
 export default class LatitudeLine {
   constructor(equator, simple) {
     let torusRadius = equator ? c.LAT_LINE_THICKNESS / 5 : c.LAT_LINE_THICKNESS;
-    this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.02: c.EARTH_RADIUS;
-    if (simple) torusRadius = torusRadius * 5;
+    this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.03: c.EARTH_RADIUS;
+    if (simple) torusRadius = torusRadius * 6;
     let geometry = new THREE.TorusGeometry(this.earthRadius, this.earthRadius * torusRadius, 16, 100);
     let material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
     let mesh = new THREE.Mesh(geometry, material);
