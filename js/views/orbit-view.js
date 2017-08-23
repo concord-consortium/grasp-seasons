@@ -70,7 +70,6 @@ export default class extends BaseView {
   _updateLat() {
     this.latLine.setLat(this.props.lat);
     this.latLongMarker.setLatLong(this.props.lat, this.props.long);
-    console.log('setlat called in orbit view');
   }
 
   _updateLong() {
