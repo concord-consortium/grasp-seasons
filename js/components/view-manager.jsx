@@ -110,6 +110,7 @@ export default class ViewManager extends React.Component {
           <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()}/>
         </div>
         <div className={`view ${this.getViewPosition('raysGround')}`}>
+          <div className="rays-ground-text">Noon</div>
           <RaysViewComp ref='raysGround' type='ground' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
         </div>
         <div className={`view ${this.getViewPosition('raysSpace')}`}>
