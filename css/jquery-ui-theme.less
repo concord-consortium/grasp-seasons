@@ -1,11 +1,17 @@
 .grasp-seasons {
   // Note that bootstrap imports are scoped to .grasp-seasons, so we won't pollute rest of the page.
   // Use (less) to enforce LESS processing. Otherwise, style won't respect scope nesting.
-  @import (less) "../node_modules/jquery-ui/themes/smoothness/jquery-ui.css";
+  @import (less) "../node_modules/jquery-ui/themes/base/slider.css";
 
   .ui-widget {
     font-family: inherit;
     font-size: inherit;
+  }
+
+  .ui-slider{
+    background-color: #fff;
+    border: 1px solid #999;
+    border-radius:4px;
   }
 
   .ui-slider-handle {

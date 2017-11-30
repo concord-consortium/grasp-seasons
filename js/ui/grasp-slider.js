@@ -1,12 +1,16 @@
 import $ from 'jquery';
-import 'jquery-ui/slider';
+import '../../css/jquery-ui-theme.less';
+import 'jquery-ui/ui/widgets/slider';
 
 var TICK_WIDTH = 1;
 
 // Patched jQueryUI slider that can wrap. When user drags slider handle over max (or min) value,
 // it will jump back to min (or max).
 // It also supports 'ticks' option.
-$.widget( "ui.graspSlider", $.ui.slider, {
+$.widget("ui.graspSlider", $.ui.slider, {
+  _create: function () {
+    this._super();
+  },
   _setOption: function (key, value) {
     this._superApply(arguments);
     if (key === 'ticks') {

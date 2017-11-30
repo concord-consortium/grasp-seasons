@@ -1,7 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-import 'jquery-ui/slider';
-import '../../css/jquery-ui-theme.less';
+import 'jquery-ui/ui/widgets/slider';
 
 export default class Slider extends React.Component {
   constructor(props) {
