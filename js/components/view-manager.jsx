@@ -2,6 +2,7 @@ import React from 'react';
 import EarthViewComp from './earth-view-comp.jsx';
 import OrbitViewComp from './orbit-view-comp.jsx';
 import RaysViewComp from './rays-view-comp.jsx';
+import t from '../translate.js';
 
 import '../../css/view-manager.less';
 
@@ -90,11 +91,11 @@ export default class ViewManager extends React.Component {
     return (
       <select className={`form-control view-select ${position}`} name={position}
               value={this.props.view[position]} onChange={this.handleViewChange}>
-        <option value='earth'>Earth</option>
-        <option value='orbit'>Orbit</option>
-        <option value='raysGround'>Ground</option>
-        <option value='raysSpace'>Space</option>
-        <option value='nothing'>Nothing</option>
+        <option value='earth'>{t("~EARTH")}</option>
+        <option value='orbit'>{t("~ORBIT")}</option>
+        <option value='raysGround'>{t("~GROUND")}</option>
+        <option value='raysSpace'>{t("~SPACE")}</option>
+        <option value='nothing'>{t("~NOTHING")}</option>
       </select>
     );
   }

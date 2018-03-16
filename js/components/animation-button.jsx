@@ -1,5 +1,6 @@
 import React from 'react';
 import reactMixin from 'react-mixin';
+import t from '../translate.js';
 
 import animationMixin from './animation-mixin.js';
 
@@ -17,7 +18,7 @@ export default class AnimationButton extends React.Component {
   }
 
   render() {
-    let label = this.state.animationStarted ? 'Stop' : 'Play';
+    let label = this.state.animationStarted ? t("~STOP") : t("~PLAY");
     return (
       <button className='btn btn-default animation-btn' name={label} onClick={this.handleClick} disabled={this.state.disabled}>{label}</button>
     )

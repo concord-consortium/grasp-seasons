@@ -1,5 +1,6 @@
 import React from 'react';
 import CITY_DATA from '../city-data.js';
+import t from '../translate.js';
 
 import '../../css/city-select.less';
 
@@ -7,9 +8,9 @@ export default class CitySelect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      locations: [{name: 'Custom Location (unsaved)', disabled: true}].concat(CITY_DATA),
+      locations: [{name: t("~CUSTOM_LOCATION"), disabled: true}].concat(CITY_DATA),
       customLocationsCount: 0,
-      customLocName: 'Custom Location 1'
+      customLocName: t("~CUSTOM_LOCATION_NAME")
     };
 
     this.selectChange = this.selectChange.bind(this);

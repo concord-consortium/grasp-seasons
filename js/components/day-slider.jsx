@@ -1,9 +1,9 @@
 import $ from 'jquery';
 import Slider from './slider.jsx';
 import '../ui/grasp-slider.js';
+import t from '../translate.js';
 
-const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-                           "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTH_NAMES_SHORT = t("~MONTHS_SHORT");
 
 export default class DaySlider extends Slider {
   constructor(props) {

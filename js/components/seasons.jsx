@@ -7,11 +7,11 @@ import DaySlider from './day-slider.jsx';
 import CitySelect from './city-select.jsx';
 import AnimationCheckbox from './animation-checkbox.jsx';
 import AnimationButton from './animation-button.jsx';
+import t from '../translate.js';
 
 import '../../css/seasons.less';
 
-const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July",
-                     "August", "September", "October", "November", "December"];
+const MONTH_NAMES = t("~MONTHS");
 
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
@@ -242,24 +242,24 @@ export default class Seasons extends React.Component {
         <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log}/>
         <div className='controls clearfix' >
           <div className='pull-right right-col'>
-            <button className='btn btn-default' onClick={this.subpolarButtonClick} name='ViewSubpolarPoint'>View Subsolar Point</button>
+            <button className='btn btn-default' onClick={this.subpolarButtonClick} name='ViewSubpolarPoint'>{t("~VIEW_SUBSOLAR_POINT")}</button>
             <span> </span>
             <label>
               <AnimationCheckbox ref='rotatingButton' speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}
-                                 name='EarthRotation' onChange={this.logCheckboxChange}/> Rotating
+                                 name='EarthRotation' onChange={this.logCheckboxChange}/> {t("~ROTATING")}
             </label>
             <span> </span>
-            <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> Tilted</label>
+            <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> {t("~TILTED")}</label>
             <span> </span>
-            <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> Sun-earth line</label>
+            <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> {t("~SUN_EARTH_LINE")}</label>
 
             <div className='long-lat-sliders pull-right'>
               <div className='form-group'>
-                <label>Latitude: {this.getFormattedLat()}</label>
+                <label>{t("~LATITUDE")}: {this.getFormattedLat()}</label>
                 <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId='Latitude'/>
               </div>
               <div className='form-group'>
-                <label>Longitude: {this.getFormattedLong()}</label>
+                <label>{t("~LONGITUDE")}: {this.getFormattedLong()}</label>
                 <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange} log={this.log} logId='Longitude'/>
               </div>
             </div>
@@ -268,8 +268,8 @@ export default class Seasons extends React.Component {
             <div className='form-group'>
               <AnimationButton ref='playButton' speed={this.getAnimSpeed()} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}
                                onClick={this.logButtonClick}/>
-              <label><input type='checkbox' name='dailyRotation' checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> Daily rotation</label>
-              <label className='day'>Day: {this.getFormattedDay()}</label>
+              <label><input type='checkbox' name='dailyRotation' checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> {t("~DAILY_ROTATION")}</label>
+              <label className='day'>{t("~DAY")}: {this.getFormattedDay()}</label>
               <div className='day-slider'>
                 <DaySlider value={this.state.sim.day} slide={this.daySliderChange} log={this.log} logId='Day'/>
               </div>
