@@ -27,6 +27,8 @@ export default class {
     this.renderer.setSize(width, height);
     parentEl.appendChild(this.renderer.domElement);
 
+    this.lang = props.lang;
+
     // Type is passed to 3D models.
     this.type = modelType;
     this._initScene();

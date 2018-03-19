@@ -88,19 +88,22 @@ export default class ViewManager extends React.Component {
   }
 
   renderViewSelect(position) {
+    let lang = this.props.simulation.lang
     return (
       <select className={`form-control view-select ${position}`} name={position}
               value={this.props.view[position]} onChange={this.handleViewChange}>
-        <option value='earth'>{t("~EARTH")}</option>
-        <option value='orbit'>{t("~ORBIT")}</option>
-        <option value='raysGround'>{t("~GROUND")}</option>
-        <option value='raysSpace'>{t("~SPACE")}</option>
-        <option value='nothing'>{t("~NOTHING")}</option>
+        <option value='earth'>{t("~EARTH", lang)}</option>
+        <option value='orbit'>{t("~ORBIT", lang)}</option>
+        <option value='raysGround'>{t("~GROUND", lang)}</option>
+        <option value='raysSpace'>{t("~SPACE", lang)}</option>
+        <option value='nothing'>{t("~NOTHING", lang)}</option>
       </select>
     );
   }
 
   render() {
+
+    let lang = this.props.simulation.lang
     return (
       <div className='view-manager'>
         <div className={`view ${this.getViewPosition('earth')}`}>
@@ -111,7 +114,7 @@ export default class ViewManager extends React.Component {
           <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()}/>
         </div>
         <div className={`view ${this.getViewPosition('raysGround')}`}>
-          <div className="rays-ground-text">Noon</div>
+          <div className="rays-ground-text">{t("~NOON", lang)}</div>
           <RaysViewComp ref='raysGround' type='ground' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
         </div>
         <div className={`view ${this.getViewPosition('raysSpace')}`}>

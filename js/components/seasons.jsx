@@ -11,8 +11,6 @@ import t from '../translate.js';
 
 import '../../css/seasons.less';
 
-const MONTH_NAMES = t("~MONTHS");
-
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
 const ROTATION_SPEED = 0.0004;
@@ -44,7 +42,7 @@ export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = $.extend(true, {}, DEFAULT_STATE, props.initialState);
-
+    this.state.sim.lang = this.props.lang;
     this.simStateChange = this.simStateChange.bind(this);
     this.viewChange = this.viewChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
@@ -69,27 +67,36 @@ export default class Seasons extends React.Component {
     this.lookAtSubsolarPoint();
   }
 
+  getMonth(date){
+    let lang = this.state.sim.lang;
+    let monthNames = t("~MONTHS", lang);
+    return monthNames[date.getMonth()];
+  }
   getFormattedDay() {
     // Initialize a date in `2015-01-01` (it's not a leap year).
     let date = new Date(2015, 0);
     // Add the number of days.
     date.setDate(this.state.sim.day + 1);
-    return `${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
+    return `${this.getMonth(date)} ${date.getDate()}`;
   }
 
   getFormattedLat() {
     let dir = '';
-    if (this.state.sim.lat > 0) dir = 'N';
-    else if (this.state.sim.lat < 0) dir = 'S';
-    let lat = Math.abs(this.state.sim.lat).toFixed(2);
-    return `${lat}°${dir}`;
+    let lang = this.state.sim.lang;
+    let lat = this.state.sim.lat;
+    if (lat > 0) dir = t("~DIR_NORTH", lang);
+    else if (lat < 0) dir = t("~DIR_SOUTH", lang);
+    let latitude = Math.abs(lat).toFixed(2);
+    return `${latitude}°${dir}`;
   }
 
   getFormattedLong() {
     let dir = '';
-    if (this.state.sim.long > 0) dir = 'E';
-    else if (this.state.sim.long < 0) dir = 'W';
-    let long = Math.abs(this.state.sim.long).toFixed(2);
+    let lang = this.state.sim.lang;
+    let lng = this.state.sim.long;
+    if (lng > 0) dir = t("~DIR_EAST", lang);
+    else if (lng < 0) dir = t("~DIR_WEST", lang);
+    let long = Math.abs(lng).toFixed(2);
     return `${long}°${dir}`;
   }
 
@@ -237,45 +244,46 @@ export default class Seasons extends React.Component {
   }
 
   render() {
+    let lang = this.state.sim.lang;
     return (
       <div className='grasp-seasons'>
         <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log}/>
         <div className='controls clearfix' >
           <div className='pull-right right-col'>
-            <button className='btn btn-default' onClick={this.subpolarButtonClick} name='ViewSubpolarPoint'>{t("~VIEW_SUBSOLAR_POINT")}</button>
+            <button className='btn btn-default' onClick={this.subpolarButtonClick} name='ViewSubpolarPoint'>{t("~VIEW_SUBSOLAR_POINT", lang)}</button>
             <span> </span>
             <label>
               <AnimationCheckbox ref='rotatingButton' speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}
-                                 name='EarthRotation' onChange={this.logCheckboxChange}/> {t("~ROTATING")}
+                                 name='EarthRotation' onChange={this.logCheckboxChange}/> {t("~ROTATING", lang)}
             </label>
             <span> </span>
-            <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> {t("~TILTED")}</label>
+            <label><input type='checkbox' name='earthTilt' checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> {t("~TILTED", lang)}</label>
             <span> </span>
-            <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> {t("~SUN_EARTH_LINE")}</label>
+            <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> {t("~SUN_EARTH_LINE", lang)}</label>
 
             <div className='long-lat-sliders pull-right'>
               <div className='form-group'>
-                <label>{t("~LATITUDE")}: {this.getFormattedLat()}</label>
+                <label>{t("~LATITUDE", lang)}: {this.getFormattedLat()}</label>
                 <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId='Latitude'/>
               </div>
               <div className='form-group'>
-                <label>{t("~LONGITUDE")}: {this.getFormattedLong()}</label>
+                <label>{t("~LONGITUDE", lang)}: {this.getFormattedLong()}</label>
                 <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange} log={this.log} logId='Longitude'/>
               </div>
             </div>
           </div>
           <div className='left-col'>
             <div className='form-group'>
-              <AnimationButton ref='playButton' speed={this.getAnimSpeed()} currentValue={this.state.sim.day} onAnimationStep={this.dayAnimFrame}
+              <AnimationButton ref='playButton' speed={this.getAnimSpeed()} currentValue={this.state.sim.day} lang={lang} onAnimationStep={this.dayAnimFrame}
                                onClick={this.logButtonClick}/>
-              <label><input type='checkbox' name='dailyRotation' checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> {t("~DAILY_ROTATION")}</label>
-              <label className='day'>{t("~DAY")}: {this.getFormattedDay()}</label>
+              <label><input type='checkbox' name='dailyRotation' checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> {t("~DAILY_ROTATION", lang)}</label>
+              <label className='day'>{t("~DAY", lang)}: {this.getFormattedDay()}</label>
               <div className='day-slider'>
-                <DaySlider value={this.state.sim.day} slide={this.daySliderChange} log={this.log} logId='Day'/>
+                <DaySlider value={this.state.sim.day} slide={this.daySliderChange} lang={lang} log={this.log} logId='Day'/>
               </div>
             </div>
             <div className='form-group pull-left'>
-              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} onCityChange={this.citySelectChange}/>
+              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} lang={lang} onCityChange={this.citySelectChange}/>
             </div>
           </div>
         </div>

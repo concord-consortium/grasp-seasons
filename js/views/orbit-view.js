@@ -5,6 +5,7 @@ import LatLongMarker from '../models/lat-long-marker.js';
 import models from '../models/common-models.js';
 import * as data from '../solar-system-data.js';
 import * as THREE from 'three';
+import t from '../translate';
 
 const DEF_PROPERTIES = {
   day: 0,
@@ -78,6 +79,7 @@ export default class extends BaseView {
 
   _initScene() {
     super._initScene();
+    this.monthLabels = t("~MONTHS_MIXED", this.lang);
     this.latLine = new LatitudeLine(false, true);
     this.latLongMarker = new LatLongMarker(true);
     this.earth.earthObject.add(this.latLine.rootObject);
@@ -88,7 +90,8 @@ export default class extends BaseView {
   }
 
   _addLabels() {
-    let months = ["March", "Apr", "May", "June", "Jul", "Aug", "September", "Oct", "Nov", "December", "Jan", "Feb"];
+    let months = this.monthLabels;
+
     let segments = months.length;
     let arc = 2 * Math.PI / segments;
     let labelRadius = data.EARTH_ORBITAL_RADIUS * 1.15;

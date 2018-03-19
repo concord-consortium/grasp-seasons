@@ -18,7 +18,8 @@ export default class AnimationButton extends React.Component {
   }
 
   render() {
-    let label = this.state.animationStarted ? t("~STOP") : t("~PLAY");
+    let lang = this.props.lang;
+    let label = this.state.animationStarted ? t("~STOP", lang) : t("~PLAY", lang);
     return (
       <button className='btn btn-default animation-btn' name={label} onClick={this.handleClick} disabled={this.state.disabled}>{label}</button>
     )

@@ -3,8 +3,6 @@ import Slider from './slider.jsx';
 import '../ui/grasp-slider.js';
 import t from '../translate.js';
 
-const MONTH_NAMES_SHORT = t("~MONTHS_SHORT");
-
 export default class DaySlider extends Slider {
   constructor(props) {
     super(props);
@@ -24,8 +22,9 @@ export default class DaySlider extends Slider {
 
   generateMonthTicks() {
     let ticks = [];
+    let months = t("~MONTHS_SHORT", this.props.lang);
     for (let m = 0; m < 12; m++) {
-      ticks.push({value: m * 30.4, name: MONTH_NAMES_SHORT[m]});
+      ticks.push({value: m * 30.4, name: months[m]});
     }
     this.$slider.graspSlider('option', 'ticks', ticks);
     // Shift tick labels so they are in the middle of the month section on the slider.

@@ -8,9 +8,9 @@ export default class CitySelect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      locations: [{name: t("~CUSTOM_LOCATION"), disabled: true}].concat(CITY_DATA),
+      locations: [{name: t("~CUSTOM_LOCATION", props.lang), disabled: true}].concat(CITY_DATA),
       customLocationsCount: 0,
-      customLocName: t("~CUSTOM_LOCATION_NAME")
+      customLocName: t("~CUSTOM_LOCATION_NAME", props.lang)
     };
 
     this.selectChange = this.selectChange.bind(this);
@@ -69,7 +69,7 @@ export default class CitySelect extends React.Component {
     const { customLocName } = this.state;
     return (
       <div className='city-select'>
-        <label>Select city:</label>
+        <label>{t("~SELECT_CITY", this.props.lang)}</label>
         <select className='form-control' value={this.selectedCity} onChange={this.selectChange}>
           {this.getOptions()}
         </select>
