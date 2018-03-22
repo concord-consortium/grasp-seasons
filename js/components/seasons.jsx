@@ -43,6 +43,7 @@ export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = $.extend(true, {}, DEFAULT_STATE, props.initialState);
+    this.state.sim.lang = props.lang || DEFAULT_STATE.sim.lang;
     this.simStateChange = this.simStateChange.bind(this);
     this.viewChange = this.viewChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
