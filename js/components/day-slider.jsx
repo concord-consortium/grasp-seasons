@@ -17,12 +17,19 @@ export default class DaySlider extends Slider {
       max: 364,
       step: 1
     });
-    this.generateMonthTicks();
+    this.generateMonthTicks(this.props.lang);
   }
 
-  generateMonthTicks() {
+  componentWillReceiveProps(nextProps){
+    if (this.props.lang !== nextProps.lang){
+      $(".ui-slider-tick").remove();
+      this.generateMonthTicks(nextProps.lang);
+    }
+  }
+
+  generateMonthTicks(lang) {
     let ticks = [];
-    let months = t("~MONTHS_SHORT", this.props.lang);
+    let months = t("~MONTHS_SHORT", lang);
     for (let m = 0; m < 12; m++) {
       ticks.push({value: m * 30.4, name: months[m]});
     }

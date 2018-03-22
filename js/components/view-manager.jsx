@@ -88,7 +88,7 @@ export default class ViewManager extends React.Component {
   }
 
   renderViewSelect(position) {
-    let lang = this.props.simulation.lang
+    let lang = this.props.simulation.lang;
     return (
       <select className={`form-control view-select ${position}`} name={position}
               value={this.props.view[position]} onChange={this.handleViewChange}>
@@ -102,8 +102,7 @@ export default class ViewManager extends React.Component {
   }
 
   render() {
-
-    let lang = this.props.simulation.lang
+    let lang = this.props.simulation.lang;
     return (
       <div className='view-manager'>
         <div className={`view ${this.getViewPosition('earth')}`}>
@@ -111,14 +110,14 @@ export default class ViewManager extends React.Component {
                          onCameraChange={this.syncCameraAndViewAxis} log={this.props.log}/>
         </div>
         <div className={`view ${this.getViewPosition('orbit')}`}>
-          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()}/>
+          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()} />
         </div>
         <div className={`view ${this.getViewPosition('raysGround')}`}>
           <div className="rays-ground-text">{t("~NOON", lang)}</div>
-          <RaysViewComp ref='raysGround' type='ground' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
+          <RaysViewComp ref='raysGround' type='ground' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
         </div>
         <div className={`view ${this.getViewPosition('raysSpace')}`}>
-          <RaysViewComp ref='raysSpace' type='space' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}/>
+          <RaysViewComp ref='raysSpace' type='space' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
         </div>
         {this.renderViewSelect('main')}
         {this.renderViewSelect('small-top')}

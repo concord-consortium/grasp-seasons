@@ -68,6 +68,13 @@ export default class extends BaseView {
     this.earth.posObject.add(this.cameraSymbol);
   }
 
+  _updateLang() {
+    for (let i = 0; i < this.monthLabels.length; i++){
+      this.scene.remove(this.monthLabels[i]);
+    }
+    this._addLabels();
+  }
+
   _updateLat() {
     this.latLine.setLat(this.props.lat);
     this.latLongMarker.setLatLong(this.props.lat, this.props.long);
@@ -79,7 +86,6 @@ export default class extends BaseView {
 
   _initScene() {
     super._initScene();
-    this.monthLabels = t("~MONTHS_MIXED", this.lang);
     this.latLine = new LatitudeLine(false, true);
     this.latLongMarker = new LatLongMarker(true);
     this.earth.earthObject.add(this.latLine.rootObject);
@@ -90,11 +96,12 @@ export default class extends BaseView {
   }
 
   _addLabels() {
-    let months = this.monthLabels;
-
+    let months = this.months;
     let segments = months.length;
     let arc = 2 * Math.PI / segments;
     let labelRadius = data.EARTH_ORBITAL_RADIUS * 1.15;
+
+    let monthLabels = [];
 
     for (let i = 0; i < months.length; i++) {
       let monthLbl = models.label(months[i], months[i].length === 3);
@@ -103,6 +110,8 @@ export default class extends BaseView {
       monthLbl.position.z = labelRadius * Math.cos(angle);
       monthLbl.rotateZ(angle);
       this.scene.add(monthLbl);
+      monthLabels.push(monthLbl);
     }
+    this.monthLabels = monthLabels;
   }
 }

@@ -8,6 +8,8 @@ import Earth from '../models/earth.js';
 import SunEarthLine from '../models/sun-earth-line.js';
 import * as data from '../solar-system-data.js';
 
+import t from '../translate';
+
 const DEF_PROPERTIES = {
   day: 0,
   earthTilt: true,
@@ -28,6 +30,8 @@ export default class {
     parentEl.appendChild(this.renderer.domElement);
 
     this.lang = props.lang;
+
+    this.months = t("~MONTHS_MIXED", this.lang);
 
     // Type is passed to 3D models.
     this.type = modelType;
@@ -61,7 +65,8 @@ export default class {
   setProps(newProps) {
     let oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
-
+    this.lang = newProps.lang;
+    this.months = t("~MONTHS_MIXED", this.lang);
     // Iterate over all the properties and call update handles for ones that have been changed.
     for (let key of Object.keys(this.props)) {
       if (this.props[key] !== oldProps[key]) {
@@ -139,6 +144,10 @@ export default class {
     } else if (!this.props.sunEarthLine && mesh.parent) {
       this.scene.remove(mesh);
     }
+  }
+
+  _updateLang() {
+    this.lang = this.props.lang;
   }
 
   _initScene() {

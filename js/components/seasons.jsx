@@ -25,7 +25,8 @@ const DEFAULT_STATE = {
     sunrayColor: '#D8D8AC',
     groundColor: '#4C7F19', // 'auto' will make color different for each season
     sunrayDistMarker: false,
-    dailyRotation: false
+    dailyRotation: false,
+    lang: 'en_us'
   },
   view: {
     'main': 'orbit',
@@ -42,7 +43,6 @@ export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = $.extend(true, {}, DEFAULT_STATE, props.initialState);
-    this.state.sim.lang = this.props.lang;
     this.simStateChange = this.simStateChange.bind(this);
     this.viewChange = this.viewChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
@@ -62,7 +62,11 @@ export default class Seasons extends React.Component {
   log(action, data) {
     this.props.logHandler(action, data);
   }
-
+  componentWillReceiveProps(nextProps){
+    let sim = this.state.sim;
+    sim.lang = nextProps.lang;
+    this.setState({sim});
+  }
   componentDidMount() {
     this.lookAtSubsolarPoint();
   }
@@ -247,7 +251,7 @@ export default class Seasons extends React.Component {
     let lang = this.state.sim.lang;
     return (
       <div className='grasp-seasons'>
-        <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log}/>
+        <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log} />
         <div className='controls clearfix' >
           <div className='pull-right right-col'>
             <button className='btn btn-default' onClick={this.subpolarButtonClick} name='ViewSubpolarPoint'>{t("~VIEW_SUBSOLAR_POINT", lang)}</button>
