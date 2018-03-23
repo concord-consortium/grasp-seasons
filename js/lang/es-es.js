@@ -4,19 +4,19 @@ export default {
     "enero", "febrero", "marzo",
     "abril", "mayo", "junio",
     "julio", "agosto", "septiembre",
-    "octubre", "noviembre", "deciembre"
+    "octubre", "noviembre", "diciembre"
   ],
   "~MONTHS_SHORT": [
     "ene", "feb", "mar",
     "abr", "may", "jun",
     "jul", "ago", "sep",
-    "oct", "nov", "dec"
+    "oct", "nov", "dic"
   ],
   "~MONTHS_MIXED": [
     "marzo", "abr", "may",
     "junio", "jul", "ago",
     "septiembre", "oct", "nov",
-    "deciembre", "ene", "feb",
+    "diciembre", "ene", "feb",
   ],
   "~VIEW_SUBSOLAR_POINT": "Ver punto subsolar",
   "~ROTATING":"Giratorio",
@@ -26,8 +26,8 @@ export default {
   "~LONGITUDE":"Longitud",
   "~DAILY_ROTATION":"Rotación diaria",
   "~DAY":"Día",
-  "~SELECT_CITY":"Selecciona ciudad",
-  "~PLAY":"Jugar",
+  "~SELECT_CITY":"Seleccione una ciudad",
+  "~PLAY":"Empezar",
   "~SETTINGS":"Ajustes",
   "~ABOUT": "Información",
   "~CUSTOM_LOCATION": "Ubicación personalizada (no guardado)",
