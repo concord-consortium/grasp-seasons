@@ -37,6 +37,9 @@ export default class ViewManager extends React.Component {
         this.syncCameraAndViewAxis();
       }
     }
+    if (prevProps.simulation.earthGridlines !== this.props.simulation.earthGridlines){
+      this.refs.earth.toggleGridlines(this.props.simulation.earthGridlines);
+    }
   }
 
   rafCallback(timestamp) {

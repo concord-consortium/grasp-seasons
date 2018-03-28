@@ -56,6 +56,10 @@ export default class extends BaseView {
     this.controls.update();
   }
 
+  toggleGridlines(gridlines) {
+    this.earth.showGridlines(gridlines);
+  }
+
   _updateDay() {
     let oldOrbitRot = this.earth.orbitRotation;
     let oldPos = this.earth.position.clone();

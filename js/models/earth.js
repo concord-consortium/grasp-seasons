@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
-import earthGridImg from '../../images/earth-2k.jpg';//'../../images/earth-grid-2k.jpg';
+import earthLargeImg from '../../images/earth-2k.jpg';//'../../images/earth-grid-2k.jpg';
+import earthLargeGridImg from '../../images/earth-grid-2k.jpg';
 import earthSimpleImg from '../../images/earth-equator-0.5k.jpg';//'../../images/earth-0.5k.jpg';
 import earthBumpImg from '../../images/earth-bump-2k.jpg';
 import earthSpecularImg from '../../images/earth-specular-2k.png';
@@ -17,7 +18,7 @@ export default class {
     let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
     let textureLoader = new THREE.TextureLoader();
-    this._material.map = textureLoader.load(simple ? earthSimpleImg : earthGridImg);
+    this._material.map = textureLoader.load(simple ? earthSimpleImg : earthLargeImg);
     if (true || !simple) {
       this._material.bumpMap = textureLoader.load(earthBumpImg);
       this._material.bumpScale = 100000 * c.SF;
@@ -87,6 +88,15 @@ export default class {
 
   get lat0Long0AxisDir() {
     return new THREE.Vector3(1, 0, 0);
+  }
+
+  showGridlines(show) {
+    let textureLoader = new THREE.TextureLoader();
+    if (!show) {
+      this._material.map = textureLoader.load(earthLargeImg);
+    } else {
+      this._material.map = textureLoader.load(earthLargeGridImg);
+    }
   }
 
   // Rotates earth around its own axis.

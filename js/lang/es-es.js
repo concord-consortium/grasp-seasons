@@ -43,5 +43,6 @@ export default {
   "~DIR_SOUTH": "S",
   "~DIR_EAST": "E",
   "~DIR_WEST": "O",
-  "~NOON":"Mediodía"
+  "~NOON": "Mediodía",
+  "~EARTH_GRIDLINES": "Mostrar líneas de latitud / longitud"
 };

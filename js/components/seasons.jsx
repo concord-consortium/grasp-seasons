@@ -7,6 +7,7 @@ import DaySlider from './day-slider.jsx';
 import CitySelect from './city-select.jsx';
 import AnimationCheckbox from './animation-checkbox.jsx';
 import AnimationButton from './animation-button.jsx';
+import getURLParam from '../utils.js';
 import t from '../translate.js';
 
 import '../../css/seasons.less';
@@ -26,6 +27,7 @@ const DEFAULT_STATE = {
     groundColor: '#4C7F19', // 'auto' will make color different for each season
     sunrayDistMarker: false,
     dailyRotation: false,
+    earthGridlines: false,
     lang: 'en_us'
   },
   view: {
@@ -43,7 +45,7 @@ export default class Seasons extends React.Component {
   constructor(props) {
     super(props);
     this.state = $.extend(true, {}, DEFAULT_STATE, props.initialState);
-    this.state.sim.lang = props.lang || DEFAULT_STATE.sim.lang;
+    this.state.sim.lang = props.lang || getURLParam('lang') || DEFAULT_STATE.sim.lang;
     this.simStateChange = this.simStateChange.bind(this);
     this.viewChange = this.viewChange.bind(this);
     this.daySliderChange = this.daySliderChange.bind(this);
@@ -249,7 +251,9 @@ export default class Seasons extends React.Component {
   }
 
   render() {
-    let lang = this.state.sim.lang;
+    let lang = this.state.sim.lang,
+    earthVisible = Object.values(this.state.view).indexOf("earth") > -1;
+
     return (
       <div className='grasp-seasons'>
         <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log} />
@@ -289,6 +293,11 @@ export default class Seasons extends React.Component {
             </div>
             <div className='form-group pull-left'>
               <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} lang={lang} onCityChange={this.citySelectChange}/>
+              <div className='earth-gridlines-toggle'>
+                { earthVisible &&
+                  <label>{t("~EARTH_GRIDLINES", lang)}<input type='checkbox' name='earthGridlines' checked={this.state.sim.earthGridlines} onChange={this.simCheckboxChange}/></label>
+                }
+              </div>
             </div>
           </div>
         </div>

@@ -43,5 +43,6 @@ export default {
   "~DIR_SOUTH": "S",
   "~DIR_EAST": "E",
   "~DIR_WEST": "W",
-  "~NOON":"Noon"
+  "~NOON": "Noon",
+  "~EARTH_GRIDLINES": "Show Latitude / Longitude Lines"
 };

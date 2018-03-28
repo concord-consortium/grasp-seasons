@@ -17,6 +17,9 @@ export default class EarthViewComp extends CanvasView {
       this.props.onCameraChange();
     });
   }
+  toggleGridlines(gridlines){
+    this.externalView.toggleGridlines(gridlines);
+  }
 
   getCameraEarthVec() {
     return this.externalView.getCameraEarthVec();
