@@ -25,6 +25,8 @@ export default class DaySlider extends Slider {
       $(".ui-slider-tick").remove();
       this.generateMonthTicks(nextProps.lang);
     }
+
+    this.$slider[this.sliderFuncName](this.getSliderOpts(nextProps));
   }
 
   generateMonthTicks(lang) {
