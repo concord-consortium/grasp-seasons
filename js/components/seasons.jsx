@@ -11,6 +11,7 @@ import getURLParam from '../utils.js';
 import t from '../translate.js';
 
 import '../../css/seasons.less';
+import '../../css/seasons-bootstrap.scss';
 
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
