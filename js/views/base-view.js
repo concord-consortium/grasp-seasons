@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import * as THREE from 'three';
-import 'imports?THREE=three!three/examples/js/controls/OrbitControls';
-
+import 'three/examples/js/controls/OrbitControls';
 import EventEmitter from 'eventemitter2';
 import models from '../models/common-models.js';
 import Earth from '../models/earth.js';

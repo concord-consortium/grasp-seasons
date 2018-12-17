@@ -7,7 +7,6 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // WEBPACK_TARGET=lib webpack will build UMD library.
 var lib = process.env.WEBPACK_TARGET === 'lib';
-var optimize = process.env.WEBPACK_OPTIMIZE === 'true';
 
 module.exports = {
   entry: lib ? './js/lib.js' : './js/main.jsx',
@@ -18,50 +17,59 @@ module.exports = {
     libraryTarget: lib ? 'umd' : undefined
   },
   devServer: { inline: true },
+  mode: 'development',
   module: {
-    loaders: [
-      { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader?optional=runtime' },
-      { test: /\.css$/, exclude: /node_modules/, loader: 'style!css' },
-      { test: /\.less$/, exclude: /node_modules/, loader: 'style!css!less' },
-      // inline base64 URLs for <=2MB images, direct URLs for the rest.
-      { test: /\.(png|jpg|gif)$/, loader: 'url-loader?limit=2097152' }
+    rules: [
+      {
+        test: /\.jsx$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react']
+          }
+        }
+      },
+      {
+        // Pass global THREE variable to OrbitControls
+        test: /three\/examples\/js/,
+        loader: 'imports-loader?THREE=three'
+      },
+      {
+        test: /\.json$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'json-loader'
+        }
+      },
+      {
+        test: /\.css$/,
+        use: [{
+          loader: 'css-loader'
+        }]
+      },
+      {
+        test: /\.less$/,
+        use: [{
+          loader: 'style-loader' // creates style nodes from JS strings
+        }, {
+          loader: 'css-loader' // translates CSS into CommonJS
+        }, {
+          loader: 'less-loader' // compiles Less to CSS
+        }]
+      },
+      {
+        test: /\.(png|jpg|gif)$/,
+        // inline base64 URLs for <=4000k images, direct URLs for the rest
+        use: [{
+          loader: 'url-loader?limit=4096000'
+        }]
+      }
     ]
   },
-  plugins: []
-};
-
-if (!lib) {
-  // We don't need .html page in our library.
-  module.exports.plugins.push(new CopyWebpackPlugin([
-    {from: 'public'}
-  ]));
-}
-
-if (lib) {
-  module.exports.externals = [
-    {
-      'react': {
-        root: 'React',
-        commonjs2: 'react',
-        commonjs: 'react',
-        amd: 'react'
-      }
-    },
-    {
-      'react-dom': {
-        root: 'ReactDOM',
-        commonjs2: 'react-dom',
-        commonjs: 'react-dom',
-        amd: 'react-dom'
-      }
-    }
+  plugins: [
+    new CopyWebpackPlugin([
+      { from: 'public' }
+    ])
   ]
-}
-
-if (optimize) {
-  module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin({
-    compress: {
-      warnings: false
-    }
-  }));
-}
+};

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Seasons from './components/seasons.jsx';
-import ScriptingAPI from './scripting-api.js';
-import ParentMessageAPI from './parent-message-api.js';
+import ScriptingAPI from './scripting-api';
+import ParentMessageAPI from './parent-message-api';
 import '../css/main.css';
 
 let seasonsComp = ReactDOM.render(<Seasons/>, document.getElementById('app'));

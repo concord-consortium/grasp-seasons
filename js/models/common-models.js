@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import fontDef from 'raw!./museo-500-regular.json';
+import fontDef from './museo-500-regular';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
 
@@ -85,7 +85,7 @@ export default {
   label: function (txt, small) {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
-    let font = new THREE.Font(JSON.parse(fontDef));
+    let font = new THREE.Font(fontDef);
     let SIZE = 16000000;
     let HEIGHT = 1000000;
     let SIZE_SMALL = SIZE / 2;
