@@ -20,7 +20,7 @@ export default class DaySlider extends Slider {
     this.generateMonthTicks(this.props.lang);
   }
 
-  componentWillReceiveProps(nextProps){
+  UNSAFE_componentWillReceiveProps(nextProps){
     if (this.props.lang !== nextProps.lang){
       $(".ui-slider-tick").remove();
       this.generateMonthTicks(nextProps.lang);

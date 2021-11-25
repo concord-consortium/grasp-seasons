@@ -43,7 +43,7 @@ export default class Slider extends React.Component {
     this.$slider[this.sliderFuncName](this.getSliderOpts(this.props));
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.$slider[this.sliderFuncName](this.getSliderOpts(nextProps));
   }
 

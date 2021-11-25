@@ -10,7 +10,7 @@ export default class CanvasView extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.externalView.setProps(nextProps.simulation);
   }
 

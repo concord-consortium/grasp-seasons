@@ -73,8 +73,7 @@ export default {
       0, 2 * Math.PI, // aStartAngle, aEndAngle
       false // aClockwise
     );
-    let path = new THREE.Path(curve.getPoints(150));
-    let geometry = path.createPointsGeometry(150);
+    let geometry = new THREE.Geometry().setFromPoints(curve.getPoints(150));
     let material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.7 : 0.9, linewidth: 2});
     let mesh = new THREE.Line(geometry, material);
     mesh.rotateX(Math.PI / 2);

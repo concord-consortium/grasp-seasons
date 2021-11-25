@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import React from 'react';
-import update from 'react-addons-update';
+import update from 'immutability-helper';
 import ViewManager from './view-manager.jsx';
 import Slider from './slider.jsx';
 import DaySlider from './day-slider.jsx';
@@ -66,7 +66,7 @@ export default class Seasons extends React.Component {
   log(action, data) {
     this.props.logHandler(action, data);
   }
-  componentWillReceiveProps(nextProps){
+  UNSAFE_componentWillReceiveProps(nextProps){
     let sim = this.state.sim;
     sim.lang = nextProps.lang;
     this.setState({sim});

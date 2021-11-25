@@ -8,7 +8,7 @@ Latest **development** version:
 
 http://models-resources.concord.org/grasp-seasons/branch/master/index.html
 
-Old versions can be accesed via `/version/<tag>` path, e.g.:
+Old versions can be accessed via `/version/<tag>` path, e.g.:
 
 http://models-resources.concord.org/grasp-seasons/version/0.1.0/index.html
 
@@ -45,7 +45,7 @@ This project is automatically deployed to S3 bucket by Travis-CI.
 - other branches are deployed to `/branch/` subdirectories (e.g. http://models-resources.concord.org/grasp-seasons/branch/master/index.html)
 - tags are deployed to `/version/` subdirectories  (e.g. http://models-resources.concord.org/grasp-seasons/version/0.1.0/index.html)
 
-## License 
+## License
 
 [MIT](https://github.com/concord-consortium/grasp-seasons/blob/master/LICENSE)
 
@@ -60,5 +60,3 @@ http://www.shadedrelief.com/natural3/pages/use.html
 > All Natural Earth III data (and images) found on this website are in the public domain. You may use the data in any manner, including modifying the content and design, electronic dissemination, and offset printing. The author, Tom Patterson, renounces all financial claim to the data and invites you to use it for personal, educational, and commercial purposes.
 > No permission is needed to use Natural Earth III. Crediting the author is unnecessary. However, if you wish to cite the data source, simply use: Tom Patterson, www.shadedrelief.com.
 > The author provides Natural Earth III as a public service and is not responsible for any problems relating to accuracy, content, design, and how it is used.
-
-

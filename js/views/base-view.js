@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import * as THREE from 'three';
-import 'three/examples/js/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import EventEmitter from 'eventemitter2';
 import models from '../models/common-models.js';
 import Earth from '../models/earth.js';
@@ -37,7 +37,7 @@ export default class {
     this._initScene();
     this._setInitialCamPos();
 
-    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enablePan = false;
     this.controls.enableZoom = false;
     this.controls.rotateSpeed = 0.5;
