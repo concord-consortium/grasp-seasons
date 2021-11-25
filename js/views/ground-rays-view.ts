@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import {sunrayAngle} from '../solar-system-data.js';
 import {colorInterpolation} from '../utils.js';
@@ -34,7 +35,13 @@ const DEFAULT_PROPS = {
 };
 
 export default class {
-  constructor(parentEl, props = DEFAULT_PROPS) {
+  canvas: any;
+  ctx: any;
+  groundColorFunc: any;
+  height: any;
+  props: any;
+  width: any;
+  constructor(parentEl: any, props = DEFAULT_PROPS) {
     this.canvas = document.createElement('canvas');
     parentEl.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
@@ -46,7 +53,7 @@ export default class {
     this.resize();
   }
 
-  setProps(newProps) {
+  setProps(newProps: any) {
     let oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
 
@@ -109,6 +116,7 @@ export default class {
     }
 
     let dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle));
+    // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
     let yInitial = solarAngle < 90 * DEG_2_RAD ? (dy / 2) : (((x - width) / dx) * dy);
     let xEdge = solarAngle < 90 * DEG_2_RAD ? 0 : width;
     if (isFinite(dy)) {
@@ -140,14 +148,14 @@ export default class {
     this.render();
   }
 
-  drawSky(color) {
+  drawSky(color: any) {
     this.ctx.save();
     this.ctx.fillStyle = color;
     this.ctx.fillRect(0, 0, this.width, this.height);
     this.ctx.restore();
   }
 
-  drawGround(angle, groundFraction) {
+  drawGround(angle: any, groundFraction: any) {
     this.ctx.save();
     this.ctx.translate(this.width * 0.5,  this.height * (1 - groundFraction));
     this.ctx.rotate(angle);
@@ -164,8 +172,8 @@ export default class {
       this.ctx.restore();
     }
   }
-  
-  drawLine(angle, lengthAdjustment, length) {
+
+  drawLine(angle: any, lengthAdjustment: any, length: any) {
     this.ctx.save();
     this.ctx.lineWidth = 4;
     this.ctx.rotate(angle);
@@ -175,8 +183,8 @@ export default class {
     this.ctx.stroke();
     this.ctx.restore();
   }
-  
-  drawArrow(angle, scaleX=1, scaleY=1) {
+
+  drawArrow(angle: any, scaleX=1, scaleY=1) {
     this.ctx.save();
     this.ctx.lineWidth = 1;
     this.ctx.rotate(angle);
@@ -191,7 +199,7 @@ export default class {
     this.ctx.restore();
   }
 
-  drawRaysDistMarker(x, y, len, angle=0) {
+  drawRaysDistMarker(x: any, y: any, len: any, angle=0) {
     let height = DIST_MARKER_HEIGHT_FRACTION * this.height;
     this.ctx.save();
     this.ctx.translate(x, y);
@@ -215,6 +223,6 @@ export default class {
   }
 }
 
-function raysXDiff(solarAngle, width) {
+function raysXDiff(solarAngle: any, width: any) {
   return width / (NUM_BEAMS + 1) / Math.sin(solarAngle);
 }

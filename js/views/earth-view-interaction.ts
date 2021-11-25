@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import * as THREE from 'three';
 import BaseInteraction from './base-interaction.js';
@@ -5,7 +6,10 @@ import BaseInteraction from './base-interaction.js';
 const RAD_2_DEG = 180 / Math.PI;
 
 export default class extends BaseInteraction {
-  constructor(view) {
+  earth: any;
+  latLine: any;
+  latLongMarker: any;
+  constructor(view: any) {
     super(view);
 
     this.latLongMarker = view.latLongMarker;
@@ -17,7 +21,7 @@ export default class extends BaseInteraction {
       test: () => {
         return this.isUserPointing(this.latLongMarker.mesh);
       },
-      setActive: (isActive) => {
+      setActive: (isActive: any) => {
         this.latLongMarker.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';
       },
@@ -35,7 +39,7 @@ export default class extends BaseInteraction {
       test: () => {
         return this.isUserPointing(this.latLine.mesh);
       },
-      setActive: (isActive) => {
+      setActive: (isActive: any) => {
         this.latLine.setHighlighted(isActive);
         this.latLongMarker.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';

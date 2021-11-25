@@ -7,7 +7,12 @@ const DEF_COLOR = 0xffffff;
 const DEF_EMISSIVE = 0x999999;
 
 export default class LatLongMarker {
-  constructor(simple) {
+  earthRadius: any;
+  markerRadius: any;
+  material: any;
+  mesh: any;
+  rootObject: any;
+  constructor(simple: any) {
     this.markerRadius = simple ? c.LATLNG_MARKER_RADIUS * 5 : c.LATLNG_MARKER_RADIUS;
     let geometry = new THREE.SphereGeometry(this.markerRadius, 32, 32);
     let material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
@@ -22,7 +27,7 @@ export default class LatLongMarker {
     this.material = material;
   }
 
-  setLatLong(lat, long) {
+  setLatLong(lat: any, long: any) {
     if (lat != null) {
       lat = lat * DEG_2_RAD;
       this.rootObject.rotation.z = lat;
@@ -33,7 +38,7 @@ export default class LatLongMarker {
     }
   }
 
-  setHighlighted(v) {
+  setHighlighted(v: any) {
     this.material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
     this.material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
   }

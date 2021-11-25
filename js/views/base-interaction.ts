@@ -1,9 +1,21 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import * as THREE from 'three';
 import {mousePosNormalized} from '../utils.js';
 
 export default class {
-  constructor(view) {
+  _firstValue: any;
+  _interactionStartTime: any;
+  _interactions: any;
+  _lastValue: any;
+  camera: any;
+  controls: any;
+  dispatch: any;
+  domElement: any;
+  mouse: any;
+  raycaster: any;
+  view: any;
+  constructor(view: any) {
     this.view = view;
     this.domElement = view.renderer.domElement;
     this.camera = view.camera;
@@ -24,7 +36,7 @@ export default class {
   // - step
   // - setActive
   // - actionName
-  registerInteraction(int) {
+  registerInteraction(int: any) {
     this._interactions.push(int);
   }
 
@@ -53,7 +65,7 @@ export default class {
     this.controls.enableRotate = !anyInteractionActive;
   }
 
-  isUserPointing(mesh) {
+  isUserPointing(mesh: any) {
     this.raycaster.setFromCamera(this.mouse, this.camera);
     let intersects = this.raycaster.intersectObject(mesh);
     if (intersects.length > 0) {
@@ -63,12 +75,12 @@ export default class {
     }
   }
 
-  updateLogValue(value) {
+  updateLogValue(value: any) {
     if (this._firstValue === null) this._firstValue = value;
     this._lastValue = value;
   }
 
-  _setInteractionActive(int, idx, v) {
+  _setInteractionActive(int: any, idx: any, v: any) {
     if (int._active === v) return;
     int._active = v;
     int.setActive(v);
@@ -89,7 +101,7 @@ export default class {
     }
   }
 
-  _log(actionName, duration) {
+  _log(actionName: any, duration: any) {
     this.dispatch.emit('log', actionName, {
       value: this._lastValue,
       prevValue: this._firstValue,
@@ -99,7 +111,7 @@ export default class {
   }
 
   _followMousePosition() {
-    let onMouseMove = (event) => {
+    let onMouseMove = (event: any) => {
       let pos = mousePosNormalized(event, this.domElement);
       this.mouse.x = pos.x;
       this.mouse.y = pos.y;

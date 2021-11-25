@@ -15,12 +15,16 @@ const DEF_PROPERTIES = {
 };
 
 export default class extends BaseView {
-  constructor(parentEl, props = DEF_PROPERTIES) {
+  cameraSymbol: any;
+  latLine: any;
+  latLongMarker: any;
+  monthLabels: any;
+  constructor(parentEl: any, props = DEF_PROPERTIES) {
     super(parentEl, props, 'orbit-view');
     this.registerInteractionHandler(new EarthDraggingInteraction(this));
   }
 
-  setViewAxis(vec3) {
+  setViewAxis(vec3: any) {
     this.cameraSymbol.lookAt(vec3);
     this.cameraSymbol.rotateX(Math.PI * 0.5);
   }
@@ -58,7 +62,7 @@ export default class extends BaseView {
     this.camera.position.z = 0;
   }
 
-  toggleCameraModel(show) {
+  toggleCameraModel(show: any) {
     this.earth.posObject.remove(this.cameraSymbol);
     if (show) {
       this.cameraSymbol = models.cameraSymbol();

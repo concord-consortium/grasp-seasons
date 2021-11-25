@@ -3,7 +3,9 @@ import BaseInteraction from './base-interaction.js';
 import {earthEllipseLocationByDay} from '../solar-system-data.js';
 
 export default class extends BaseInteraction {
-  constructor(view) {
+  _atan2Day0Pos: any;
+  earth: any;
+  constructor(view: any) {
     super(view);
 
     this.earth = view.earth;
@@ -16,7 +18,7 @@ export default class extends BaseInteraction {
       test: () => {
         return this.isUserPointing(this.earth.earthObject);
       },
-      setActive: (isActive) => {
+      setActive: (isActive: any) => {
         this.earth.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';
       },

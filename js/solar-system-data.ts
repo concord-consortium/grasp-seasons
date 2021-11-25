@@ -12,7 +12,7 @@ export const SUN_FOCUS = EARTH_ECCENTRICITY / EARTH_SEMI_MAJOR_AXIS / 2 * AU_2_K
 export const EARTH_TILT = 0.41;
 export const SUMMER_SOLSTICE = 171; // 171 day of year
 
-export function earthEllipseLocationByDay(day) {
+export function earthEllipseLocationByDay(day: any) {
   let index = (SUMMER_SOLSTICE - day) / 365;
   let z = (1 / EARTH_SEMI_MAJOR_AXIS) * Math.sin(index * 2 * Math.PI);
   let x = EARTH_SEMI_MAJOR_AXIS * Math.cos(index * 2 * Math.PI);
@@ -23,7 +23,7 @@ export function earthEllipseLocationByDay(day) {
   return new THREE.Vector3(x, 0, z);
 }
 
-export function sunrayAngle(day, earthTilt, lat) {
+export function sunrayAngle(day: any, earthTilt: any, lat: any) {
   // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
   // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
   let tiltAxisZRadians = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365;
@@ -34,7 +34,7 @@ export function sunrayAngle(day, earthTilt, lat) {
   return 90 - (lat + effectiveTiltDegrees);
 }
 
-export function angleToDay(angle, earthTilt, lat) {
+export function angleToDay(angle: any, earthTilt: any, lat: any) {
   // Inverse sunrayAngle function.
   // If you write out math equation, you can convert sunrayAngle to formula below:
   // angle = 90 - lat + Math.cos(2 * Math.PI * (day - SUMMER_SOLSTICE) / 365) * orbitalTiltDegrees

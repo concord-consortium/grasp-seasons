@@ -1,7 +1,8 @@
 import {sunrayAngle, angleToDay} from './solar-system-data.js';
 
 export default class ScriptingAPI {
-  constructor(seasonsComponent) {
+  _seasons: any;
+  constructor(seasonsComponent: any) {
     this._seasons = seasonsComponent;
   }
 
@@ -9,11 +10,11 @@ export default class ScriptingAPI {
     return this._seasons.state.sim;
   }
 
-  setSimState(newSimState) {
+  setSimState(newSimState: any) {
     this._seasons.setSimState(newSimState, undefined, true);
   }
 
-  onSimStateChange(callback) {
+  onSimStateChange(callback: any) {
     this._seasons.dispatch.on('simState.change', callback);
   }
 
@@ -22,11 +23,11 @@ export default class ScriptingAPI {
     return sunrayAngle(state.day, state.earthTilt, state.lat);
   }
 
-  setPlayBtnDisabled(v) {
+  setPlayBtnDisabled(v: any) {
     this._seasons.setPlayBtnDisabled(v);
   }
 
-  setRotatingBtnDisabled(v) {
+  setRotatingBtnDisabled(v: any) {
     this._seasons.setRotatingBtnDisabled(v);
   }
 }

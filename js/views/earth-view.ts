@@ -17,7 +17,10 @@ const DEF_PROPERTIES = {
 };
 
 export default class extends BaseView {
-  constructor(parentEl, props = DEF_PROPERTIES) {
+  equatorLine: any;
+  latLine: any;
+  latLongMarker: any;
+  constructor(parentEl: any, props = DEF_PROPERTIES) {
     super(parentEl, props, 'earth-view');
     this.registerInteractionHandler(new LatLongDraggingInteraction(this));
   }
@@ -56,7 +59,7 @@ export default class extends BaseView {
     this.controls.update();
   }
 
-  toggleGridlines(gridlines) {
+  toggleGridlines(gridlines: any) {
     this.earth.showGridlines(gridlines);
   }
 
@@ -91,10 +94,13 @@ export default class extends BaseView {
 
   _initScene() {
     super._initScene();
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 0.
     this.latLine = new LatitudeLine();
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
     this.latLongMarker = new LatLongMarker();
     this.earth.earthObject.add(this.latLine.rootObject);
     this.earth.earthObject.add(this.latLongMarker.rootObject);
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     this.equatorLine = new LatitudeLine(true);
     this.equatorLine.setLat(0);
     this.equatorLine.name = 'equator';

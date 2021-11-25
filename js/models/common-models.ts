@@ -1,9 +1,10 @@
 import * as THREE from 'three';
+// @ts-expect-error ts-migrate(2306) FIXME: File '/Users/kswenson/Development/cc-dev/grasp-sea... Remove this comment to see the full error message
 import fontDef from './museo-500-regular';
 import * as data from '../solar-system-data.js';
 import * as c from './constants.js';
 
-function addEdges(mesh) {
+function addEdges(mesh: any) {
   let geometry = new THREE.EdgesGeometry(mesh.geometry);
   let material = new THREE.LineBasicMaterial({color: 0x000000});
   let edges = new THREE.LineSegments(geometry, material);
@@ -48,7 +49,7 @@ export default {
     return light;
   },
 
-  sun: function (params) {
+  sun: function (params: any) {
     let radius = params.type === 'orbit-view' ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
     let geometry = new THREE.SphereGeometry(radius, 32, 32);
     let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR, color: 0x000000});
@@ -56,7 +57,7 @@ export default {
     return mesh;
   },
 
-  earth: function (params) {
+  earth: function (params: any) {
     let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
     let COLORS = { specular: 0x252525 };//simple ? {color: 0x1286CD, emissive: 0x002135} : {specular: 0x252525};
@@ -65,8 +66,9 @@ export default {
     return new THREE.Mesh(geometry, material);
   },
 
-  orbit: function (params) {
+  orbit: function (params: any) {
     let simple = params.type === 'orbit-view';
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 8 arguments, but got 7.
     let curve = new THREE.EllipseCurve(
       data.SUN_FOCUS * 2, 0, // ax, aY
       data.EARTH_SEMI_MAJOR_AXIS * data.EARTH_ORBITAL_RADIUS, data.EARTH_ORBITAL_RADIUS, // xRadius, yRadius
@@ -81,7 +83,7 @@ export default {
     return mesh;
   },
 
-  label: function (txt, small) {
+  label: function (txt: any, small: any) {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
     let font = new THREE.Font(fontDef);
@@ -110,7 +112,7 @@ export default {
     return container;
   },
 
-  grid: function (params) {
+  grid: function (params: any) {
     let simple = params.type === 'orbit-view';
     let COUNT = 24;
     let STEP = 365 / COUNT;
@@ -123,7 +125,7 @@ export default {
     return new THREE.LineSegments(geometry, material);
   },
 
-  earthAxis: function (params) {
+  earthAxis: function (params: any) {
     let simple = params.type === 'orbit-view';
     let HEIGHT = simple ? 35000000 * c.SF : 16000000 * c.SF;
     let RADIUS = simple ? 1200000 * c.SF : 120000 * c.SF;
@@ -151,6 +153,7 @@ export default {
     lens.position.y = DIST_FROM_EARTH;
     addEdges(lens);
 
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'BoxGeometry' is not assignable to type 'Cyli... Remove this comment to see the full error message
     geometry = new THREE.BoxGeometry(RADIUS * 3, RADIUS * 3, RADIUS * 3);
     let box = new THREE.Mesh(geometry, material);
     box.position.y = RADIUS * 2;

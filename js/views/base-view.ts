@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -17,7 +18,20 @@ const DEF_PROPERTIES = {
 };
 
 export default class {
-  constructor(parentEl, props = DEF_PROPERTIES, modelType = 'unknown') {
+  _interactionHandler: any;
+  camera: any;
+  controls: any;
+  dispatch: any;
+  earth: any;
+  earthAxis: any;
+  lang: any;
+  months: any;
+  props: any;
+  renderer: any;
+  scene: any;
+  sunEarthLine: any;
+  type: any;
+  constructor(parentEl: any, props = DEF_PROPERTIES, modelType = 'unknown') {
     let width = parentEl.clientWidth;
     let height = parentEl.clientHeight;
     this.scene = new THREE.Scene();
@@ -28,6 +42,7 @@ export default class {
     this.renderer.setSize(width, height);
     parentEl.appendChild(this.renderer.domElement);
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'lang' does not exist on type '{ day: num... Remove this comment to see the full error message
     this.lang = props.lang;
 
     this.months = t("~MONTHS_MIXED", this.lang);
@@ -42,6 +57,7 @@ export default class {
     this.controls.enableZoom = false;
     this.controls.rotateSpeed = 0.5;
 
+    // @ts-expect-error ts-migrate(2351) FIXME: This expression is not constructable.
     this.dispatch = new EventEmitter();
 
     this.props = {};
@@ -61,7 +77,7 @@ export default class {
     });
   }
 
-  setProps(newProps) {
+  setProps(newProps: any) {
     let oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
     this.lang = newProps.lang;
@@ -72,14 +88,16 @@ export default class {
         // Transform property name to name of the function that handles its update. For example:
         // earthTilt -> _updateEarthTilt.
         let funcName = `_update${key[0].toUpperCase()}${key.substr(1)}`;
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         if (typeof this[funcName] === 'function') {
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           this[funcName]();
         }
       }
     }
   }
 
-  lockCameraRotation(isLocked) {
+  lockCameraRotation(isLocked: any) {
     if (isLocked) {
       this.controls.rotateSpeed = 0;
     }
@@ -94,12 +112,12 @@ export default class {
   }
 
   // Rotates camera around the sun.
-  rotateCam(angle) {
+  rotateCam(angle: any) {
     this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
     this.controls.update();
   }
 
-  render(timestamp) {
+  render(timestamp: any) {
     this.controls.update();
     if (this._interactionHandler) {
       this._interactionHandler.checkInteraction();
@@ -117,7 +135,7 @@ export default class {
     this.renderer.setSize(newWidth, newHeight);
   }
 
-  registerInteractionHandler(handler) {
+  registerInteractionHandler(handler: any) {
     this._interactionHandler = handler;
   }
 
@@ -152,9 +170,13 @@ export default class {
   _initScene() {
     let basicProps = {type: this.type};
 
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.stars(basicProps));
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.ambientLight(basicProps));
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.sunLight(basicProps));
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.sunOnlyLight(basicProps));
     this.scene.add(models.grid(basicProps));
     this.scene.add(models.orbit(basicProps));

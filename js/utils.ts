@@ -1,7 +1,8 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 
 // Mouse position in pixels.
-export function mousePos(event, targetElement) {
+export function mousePos(event: any, targetElement: any) {
   let $targetElement = $(targetElement);
   let parentX = $targetElement.offset().left;
   let parentY = $targetElement.offset().top;
@@ -9,7 +10,7 @@ export function mousePos(event, targetElement) {
 }
 
 // Normalized mouse position [-1, 1].
-export function mousePosNormalized(event, targetElement) {
+export function mousePosNormalized(event: any, targetElement: any) {
   let pos = mousePos(event, targetElement);
   let $targetElement = $(targetElement);
   let parentWidth = $targetElement.width();
@@ -26,12 +27,12 @@ export function mousePosNormalized(event, targetElement) {
 //   0.8: [0, 255, 255]
 // }
 // Returns a function that accepts value between [0, 1] and returns interpolated color (rgb string).
-export function colorInterpolation(colors) {
+export function colorInterpolation(colors: any) {
   const sortedPositions = Object.keys(colors).map(v => parseFloat(v)).sort();
-  function rgbToString(rgb) {
+  function rgbToString(rgb: any) {
     return 'rgb(' + rgb.join(', ') + ')';
   }
-  return function(t) {
+  return function(t: any) {
     let i = 0;
     while (t > sortedPositions[i] && i < sortedPositions.length) {
       i++;
@@ -60,7 +61,7 @@ export function colorInterpolation(colors) {
     return rgbToString(result);
   };
 }
-export default function getURLParam(name, defaultValue = null) {
+export default function getURLParam(name: any, defaultValue = null) {
   const url = window.location.href;
   name = name.replace(/[\[\]]/g, "\\$&");
   const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");

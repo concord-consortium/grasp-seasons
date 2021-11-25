@@ -1,7 +1,9 @@
 import iframePhone from 'iframe-phone';
 
 export default class ParentMessageAPI {
-  constructor(scriptingAPI) {
+  _iframeEndpoint: any;
+  _scriptingAPI: any;
+  constructor(scriptingAPI: any) {
     this._iframeEndpoint = iframePhone.getIFrameEndpoint();
     this._scriptingAPI = scriptingAPI;
   }
@@ -15,8 +17,8 @@ export default class ParentMessageAPI {
     this._iframeEndpoint.disconnect();
   }
 
-  _setupMessages(phone, scriptingAPI) {
-    phone.addListener('setSimState', function (content) {
+  _setupMessages(phone: any, scriptingAPI: any) {
+    phone.addListener('setSimState', function (content: any) {
       scriptingAPI.setSimState(content);
     });
 
@@ -36,11 +38,11 @@ export default class ParentMessageAPI {
       phone.post('sunrayAngle', scriptingAPI.getSunrayAngle());
     });
 
-    phone.addListener('setPlayBtnDisabled', function (content) {
+    phone.addListener('setPlayBtnDisabled', function (content: any) {
       scriptingAPI.setPlayBtnDisabled(content);
     });
 
-    phone.addListener('setRotatingBtnDisabled', function (content) {
+    phone.addListener('setRotatingBtnDisabled', function (content: any) {
       scriptingAPI.setRotatingBtnDisabled(content);
     });
   }

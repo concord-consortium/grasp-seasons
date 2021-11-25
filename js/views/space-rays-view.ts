@@ -41,7 +41,7 @@ export default class extends GroundRaysView {
     this.ctx.restore();
   }
 
-  drawRay(x, y, len) {
+  drawRay(x: any, y: any, len: any) {
     this.ctx.save();
     this.ctx.translate(x, y);
     this.drawLine(RAYS_ANGLE, 5, len);
@@ -59,7 +59,7 @@ export default class extends GroundRaysView {
     }
   }
 
-  rayCoords(idx) {
+  rayCoords(idx: any) {
     let dy = this.height / NUM_BEAMS;
     let y = dy * 0.5 + idx * dy;
     let x;
@@ -76,7 +76,7 @@ export default class extends GroundRaysView {
   }
 }
 
-function length(a, b) {
+function length(a: any, b: any) {
   let x = a.x - b.x;
   let y = a.y - b.y;
   return Math.sqrt(x * x + y * y);

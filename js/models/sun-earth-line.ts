@@ -7,7 +7,13 @@ const POINTER_RADIUS = 200000 * c.SF;
 const POINTER_TUBE = 60000 * c.SF;
 
 export default class {
-  constructor(props) {
+  _arrow: any;
+  _earthRadius: any;
+  _lineMesh: any;
+  _pointerMesh: any;
+  _refVector: any;
+  rootObject: any;
+  constructor(props: any) {
     let simple = props.type === 'orbit-view';
 
     // _refVector is used to calculate angle between it and the current earth position.
@@ -17,7 +23,7 @@ export default class {
     this._init3DObjects(simple);
   }
 
-  setEarthPos(newPos) {
+  setEarthPos(newPos: any) {
     let len = newPos.length() - this._earthRadius;
     let angleDiff = newPos.angleTo(this._refVector);
     if (newPos.z < 0) angleDiff *= -1;
@@ -30,7 +36,7 @@ export default class {
     this._arrow.position.x = -len;
   }
 
-  _init3DObjects(simple) {
+  _init3DObjects(simple: any) {
     this._lineMesh = this._initLine(simple);
     this._arrow = this._initArrow(simple);
 
@@ -65,7 +71,7 @@ export default class {
     return container;
   }
 
-  _initLine(simple) {
+  _initLine(simple: any) {
     let radius = simple ? SIMPLE_LINE_RADIUS : LINE_RADIUS;
     let segments = simple ? 4 : 8;
     let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR});
@@ -75,7 +81,7 @@ export default class {
     return lineMesh;
   }
 
-  _initArrow(simple) {
+  _initArrow(simple: any) {
     let HEIGHT = simple ? 25000000 * c.SF : 2500000 * c.SF;
     let RADIUS = simple ? 1500000 * c.SF : 100000 * c.SF;
     let HEAD_RADIUS = RADIUS * (simple ? 2.5 : 2);

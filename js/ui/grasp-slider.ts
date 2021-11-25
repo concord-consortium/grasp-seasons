@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import '../../css/jquery-ui-theme.less';
 import 'jquery-ui/ui/widgets/slider';
@@ -11,11 +12,11 @@ $.widget("ui.graspSlider", $.ui.slider, {
   _create: function () {
     this._super();
   },
-  _setOption: function (key, value) {
+  _setOption: function (key: any, value: any) {
     this._superApply(arguments);
     if (key === 'ticks') {
       var valueTotal = this._valueMax() - this._valueMin();
-      value.forEach(function (t) {
+      value.forEach(function(this: any, t: any) {
         var percentValue = t.value / valueTotal * 100;
         var tick = $('<div></div>').addClass('ui-slider-tick').css({
           position: 'absolute',
@@ -38,7 +39,7 @@ $.widget("ui.graspSlider", $.ui.slider, {
     }
   },
 
-  _normValueFromMouse: function( position ) {
+  _normValueFromMouse: function( position: any ) {
     var pixelTotal,
       pixelMouse,
       percentMouse,
