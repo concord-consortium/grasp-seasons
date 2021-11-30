@@ -1,11 +1,13 @@
 import * as THREE from 'three';
-import BaseInteraction from './base-interaction.js';
-import {earthEllipseLocationByDay} from '../solar-system-data.js';
+import BaseInteraction from './base-interaction';
+import {earthEllipseLocationByDay} from '../solar-system-data';
+import Earth from '../models/earth';
+import OrbitView from './orbit-view';
 
 export default class extends BaseInteraction {
-  _atan2Day0Pos: any;
-  earth: any;
-  constructor(view: any) {
+  _atan2Day0Pos: number;
+  earth: Earth;
+  constructor(view: OrbitView) {
     super(view);
 
     this.earth = view.earth;
@@ -16,9 +18,9 @@ export default class extends BaseInteraction {
     this.registerInteraction({
       actionName: 'EarthSphereDragged',
       test: () => {
-        return this.isUserPointing(this.earth.earthObject);
+        return !!this.isUserPointing(this.earth.earthObject);
       },
-      setActive: (isActive: any) => {
+      setActive: (isActive: boolean) => {
         this.earth.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';
       },

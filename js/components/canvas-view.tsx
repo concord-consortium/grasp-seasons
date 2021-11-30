@@ -1,21 +1,25 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import React from 'react';
+import { ISimState } from '../types';
 
-export default class CanvasView extends React.Component {
-  ExternalView: any;
-  externalView: any;
-  props: any;
+export interface ICanvasProps {
+  simulation: ISimState;
+  log?: (action: string, data: any) => void;
+  onSimStateChange: (newProps: Partial<ISimState>) => void;
+}
+export default class CanvasView<TProps extends ICanvasProps> extends React.Component<TProps> {
+  ExternalView: any;  // EarthView | GroundRaysView | OrbitView | SpaceRaysView
+  externalView: any;  // instance of above class
   refs: any;
   componentDidMount() {
     this.externalView = new this.ExternalView(this.refs.container, this.props.simulation);
     if (this.externalView.on) {
-      this.externalView.on('log', (action: any, data: any) => {
-        this.props.log(action, data)
+      this.externalView.on('log', (action: string, data: any) => {
+        this.props.log?.(action, data);
       });
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: any) {
+  UNSAFE_componentWillReceiveProps(nextProps: TProps) {
     this.externalView.setProps(nextProps.simulation);
   }
 
@@ -25,20 +29,18 @@ export default class CanvasView extends React.Component {
   }
 
   // requestAnimationFrame callback.
-  rafCallback(timestamp: any) {
-    if (this.externalView.render) this.externalView.render(timestamp);
+  rafCallback(timestamp: number) {
+    this.externalView.render?.(timestamp);
   }
 
   resize() {
-    if (this.externalView.resize) this.externalView.resize();
+    this.externalView.resize?.();
   }
 
   render() {
     return (
-      // @ts-expect-error ts-migrate(7026) FIXME: JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
       <div ref='container' style={{width: '100%', height: '100%'}}>
         {/* Canvas will be inserted here by the external view. */}
-      // @ts-expect-error ts-migrate(7026) FIXME: JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
       </div>
     )
   }

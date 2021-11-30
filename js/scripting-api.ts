@@ -1,4 +1,4 @@
-import {sunrayAngle, angleToDay} from './solar-system-data.js';
+import {sunrayAngle} from './solar-system-data';
 
 export default class ScriptingAPI {
   _seasons: any;

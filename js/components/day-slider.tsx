@@ -1,12 +1,10 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
-// @ts-expect-error ts-migrate(6142) FIXME: Module './slider.jsx' was resolved to '/Users/kswe... Remove this comment to see the full error message
-import Slider from './slider.jsx';
-import '../ui/grasp-slider.js';
-import t from '../translate.js';
+import Slider from './slider';
+import '../ui/grasp-slider';
+import t from '../translate';
 
 export default class DaySlider extends Slider {
-  $slider: any;
+  // $slider: any;
   getSliderOpts: any;
   props: any;
   sliderFuncName: any;
@@ -47,7 +45,7 @@ export default class DaySlider extends Slider {
     this.$slider.find('.ui-slider-tick-label').each(function(this: any) {
       let $label = $(this);
       let labelWidth = $label.width();
-      $label.css('margin-left', -labelWidth * 0.5 + monthWidth * 0.5);
+      labelWidth && $label.css('margin-left', -labelWidth * 0.5 + monthWidth * 0.5);
     });
   }
 }

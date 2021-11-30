@@ -1,11 +1,10 @@
-import BaseView from './base-view.js';
-import EarthDraggingInteraction from './orbit-view-interaction.js';
-import LatitudeLine from '../models/latitude-line.js';
-import LatLongMarker from '../models/lat-long-marker.js';
-import models from '../models/common-models.js';
-import * as data from '../solar-system-data.js';
 import * as THREE from 'three';
-import t from '../translate';
+import BaseView from './base-view';
+import EarthDraggingInteraction from './orbit-view-interaction';
+import LatitudeLine from '../models/latitude-line';
+import LatLongMarker from '../models/lat-long-marker';
+import models from '../models/common-models';
+import * as data from '../solar-system-data';
 
 const DEF_PROPERTIES = {
   day: 0,
@@ -14,17 +13,17 @@ const DEF_PROPERTIES = {
   sunEarthLine: true
 };
 
-export default class extends BaseView {
-  cameraSymbol: any;
-  latLine: any;
-  latLongMarker: any;
-  monthLabels: any;
-  constructor(parentEl: any, props = DEF_PROPERTIES) {
+export default class OrbitView extends BaseView {
+  cameraSymbol!: THREE.Object3D;
+  latLine!: LatitudeLine;
+  latLongMarker!: LatLongMarker;
+  monthLabels!: THREE.Object3D[];
+  constructor(parentEl: HTMLElement, props = DEF_PROPERTIES) {
     super(parentEl, props, 'orbit-view');
     this.registerInteractionHandler(new EarthDraggingInteraction(this));
   }
 
-  setViewAxis(vec3: any) {
+  setViewAxis(vec3: THREE.Vector3) {
     this.cameraSymbol.lookAt(vec3);
     this.cameraSymbol.rotateX(Math.PI * 0.5);
   }
@@ -62,7 +61,7 @@ export default class extends BaseView {
     this.camera.position.z = 0;
   }
 
-  toggleCameraModel(show: any) {
+  toggleCameraModel(show: boolean) {
     this.earth.posObject.remove(this.cameraSymbol);
     if (show) {
       this.cameraSymbol = models.cameraSymbol();
@@ -105,7 +104,7 @@ export default class extends BaseView {
     let arc = 2 * Math.PI / segments;
     let labelRadius = data.EARTH_ORBITAL_RADIUS * 1.15;
 
-    let monthLabels = [];
+    let monthLabels: THREE.Object3D[] = [];
 
     for (let i = 0; i < months.length; i++) {
       let monthLbl = models.label(months[i], months[i].length === 3);

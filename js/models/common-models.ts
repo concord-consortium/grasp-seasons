@@ -1,10 +1,13 @@
 import * as THREE from 'three';
+import { Font } from 'three/examples/jsm/loaders/FontLoader';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 // @ts-expect-error ts-migrate(2306) FIXME: File '/Users/kswenson/Development/cc-dev/grasp-sea... Remove this comment to see the full error message
 import fontDef from './museo-500-regular';
-import * as data from '../solar-system-data.js';
-import * as c from './constants.js';
+import * as data from '../solar-system-data';
+import * as c from './constants';
+import { IModelParams } from '../types';
 
-function addEdges(mesh: any) {
+function addEdges(mesh: THREE.Mesh) {
   let geometry = new THREE.EdgesGeometry(mesh.geometry);
   let material = new THREE.LineBasicMaterial({color: 0x000000});
   let edges = new THREE.LineSegments(geometry, material);
@@ -13,43 +16,48 @@ function addEdges(mesh: any) {
 }
 
 export default {
-  stars: function () {
-    let SIZE = 4000000 * c.SF;
-    let MIN_RADIUS = 500000000 * c.SF;
-    let MAX_RADIUS = 3 * MIN_RADIUS;
-    let geometry = new THREE.Geometry();
+  stars: function (params: IModelParams) {
+    const SIZE = 4000000 * c.SF;
+    const MIN_RADIUS = 500000000 * c.SF;
+    const MAX_RADIUS = 3 * MIN_RADIUS;
+    const geometry = new THREE.BufferGeometry();
+    const vertexCount = 2000;
+    const vertices = new Float32Array(vertexCount * 3);
 
-    for (let i = 0; i < 2000; i++) {
-      let vertex = new THREE.Vector3();
-      let theta = 2 * Math.PI * Math.random();
-      let u = Math.random() * 2 - 1;
+    for (let i = 0; i < vertexCount; i++) {
+      const vertex = new THREE.Vector3();
+      const theta = 2 * Math.PI * Math.random();
+      const u = Math.random() * 2 - 1;
       vertex.x = Math.sqrt(1 - u * u) * Math.cos(theta);
       vertex.y = Math.sqrt(1 - u * u) * Math.sin(theta);
       vertex.z = u;
       vertex.multiplyScalar((MAX_RADIUS - MIN_RADIUS) * Math.random() + MIN_RADIUS);
-      geometry.vertices.push(vertex);
+      vertices[i * 3] = vertex.x;
+      vertices[i * 3 + 1] = vertex.y;
+      vertices[i * 3 + 2] = vertex.z;
     }
-    let material = new THREE.PointsMaterial({size: SIZE, color: 0xffffee});
-    let particles = new THREE.Points(geometry, material);
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    const material = new THREE.PointsMaterial({size: SIZE, color: 0xffffee});
+    const particles = new THREE.Points(geometry, material);
     return particles;
   },
 
-  ambientLight: function () {
+  ambientLight: function (params: IModelParams) {
     return new THREE.AmbientLight(0x202020);
   },
 
-  sunLight: function () {
+  sunLight: function (params: IModelParams) {
     return new THREE.PointLight(0xffffff, 1, 0);
   },
 
   // Light that affects only sun object (due to radius settings).
-  sunOnlyLight: function () {
+  sunOnlyLight: function (params: IModelParams) {
     let light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
     light.position.y = c.SUN_RADIUS * 4;
     return light;
   },
 
-  sun: function (params: any) {
+  sun: function (params: IModelParams) {
     let radius = params.type === 'orbit-view' ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
     let geometry = new THREE.SphereGeometry(radius, 32, 32);
     let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR, color: 0x000000});
@@ -57,7 +65,7 @@ export default {
     return mesh;
   },
 
-  earth: function (params: any) {
+  earth: function (params: IModelParams) {
     let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
     let COLORS = { specular: 0x252525 };//simple ? {color: 0x1286CD, emissive: 0x002135} : {specular: 0x252525};
@@ -66,16 +74,16 @@ export default {
     return new THREE.Mesh(geometry, material);
   },
 
-  orbit: function (params: any) {
+  orbit: function (params: IModelParams) {
     let simple = params.type === 'orbit-view';
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 8 arguments, but got 7.
     let curve = new THREE.EllipseCurve(
       data.SUN_FOCUS * 2, 0, // ax, aY
       data.EARTH_SEMI_MAJOR_AXIS * data.EARTH_ORBITAL_RADIUS, data.EARTH_ORBITAL_RADIUS, // xRadius, yRadius
       0, 2 * Math.PI, // aStartAngle, aEndAngle
-      false // aClockwise
+      false, // aClockwise
+      0 // no rotation
     );
-    let geometry = new THREE.Geometry().setFromPoints(curve.getPoints(150));
+    let geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(150));
     let material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.7 : 0.9, linewidth: 2});
     let mesh = new THREE.Line(geometry, material);
     mesh.rotateX(Math.PI / 2);
@@ -83,10 +91,10 @@ export default {
     return mesh;
   },
 
-  label: function (txt: any, small: any) {
+  label: function (txt: string, small: boolean) {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
-    let font = new THREE.Font(fontDef);
+    let font = new Font(fontDef);
     let SIZE = 16000000;
     let HEIGHT = 1000000;
     let SIZE_SMALL = SIZE / 2;
@@ -95,7 +103,7 @@ export default {
     let COLOR = 0xffff00;
     let COLOR_SMALL = 0x999966;
 
-    let geometry = new THREE.TextGeometry(txt, {
+    let geometry = new TextGeometry(txt, {
       size: small ? SIZE_SMALL * c.SF : SIZE * c.SF,
       height: small ? HEIGHT_SMALL * c.SF : HEIGHT * c.SF,
       font: font
@@ -112,20 +120,28 @@ export default {
     return container;
   },
 
-  grid: function (params: any) {
-    let simple = params.type === 'orbit-view';
-    let COUNT = 24;
-    let STEP = 365 / COUNT;
-    let geometry = new THREE.Geometry();
-    let material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.4 : 0.6});
-    for (let i = 0; i < 365; i += STEP) {
-      geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-      geometry.vertices.push(data.earthEllipseLocationByDay(i));
+  grid: function (params: IModelParams) {
+    const simple = params.type === 'orbit-view';
+    const RAY_COUNT = 24;
+    const DAY_COUNT = 365;
+    const STEP = DAY_COUNT / RAY_COUNT;
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.4 : 0.6});
+    const vertices = new Float32Array(2 * RAY_COUNT * 3);
+    for (let i = 0; i < RAY_COUNT; ++i) {
+      vertices[i * 6] = 0;
+      vertices[i * 6 + 1] = 0;
+      vertices[i * 6 + 2] = 0;
+      const earthLoc = data.earthEllipseLocationByDay(i * STEP);
+      vertices[i * 6 + 3] = earthLoc.x;
+      vertices[i * 6 + 4] = earthLoc.y;
+      vertices[i * 6 + 5] = earthLoc.z;
     }
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     return new THREE.LineSegments(geometry, material);
   },
 
-  earthAxis: function (params: any) {
+  earthAxis: function (params: IModelParams) {
     let simple = params.type === 'orbit-view';
     let HEIGHT = simple ? 35000000 * c.SF : 16000000 * c.SF;
     let RADIUS = simple ? 1200000 * c.SF : 120000 * c.SF;
@@ -145,17 +161,16 @@ export default {
   },
 
   cameraSymbol: function () {
-    let DIST_FROM_EARTH = 60000000 * c.SF;
-    let RADIUS = 6000000 * c.SF;
-    let geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, 1.5 * RADIUS, 12);
-    let material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x007700});
-    let lens = new THREE.Mesh(geometry, material);
+    const DIST_FROM_EARTH = 60000000 * c.SF;
+    const RADIUS = 6000000 * c.SF;
+    const lensGeometry = new THREE.CylinderGeometry(RADIUS, RADIUS, 1.5 * RADIUS, 12);
+    const material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x007700});
+    const lens = new THREE.Mesh(lensGeometry, material);
     lens.position.y = DIST_FROM_EARTH;
     addEdges(lens);
 
-    // @ts-expect-error ts-migrate(2322) FIXME: Type 'BoxGeometry' is not assignable to type 'Cyli... Remove this comment to see the full error message
-    geometry = new THREE.BoxGeometry(RADIUS * 3, RADIUS * 3, RADIUS * 3);
-    let box = new THREE.Mesh(geometry, material);
+    const boxGeometry = new THREE.BoxGeometry(RADIUS * 3, RADIUS * 3, RADIUS * 3);
+    const box = new THREE.Mesh(boxGeometry, material);
     box.position.y = RADIUS * 2;
     addEdges(box);
     lens.add(box);

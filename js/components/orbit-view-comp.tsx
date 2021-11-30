@@ -1,40 +1,38 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
-import React from 'react';
-// @ts-expect-error ts-migrate(6142) FIXME: Module './canvas-view.jsx' was resolved to '/Users... Remove this comment to see the full error message
-import CanvasView from './canvas-view.jsx';
-import OrbitView from '../views/orbit-view.js';
+import CanvasView, { ICanvasProps } from './canvas-view';
+import OrbitView from '../views/orbit-view';
+import { ISimState } from '../types';
 
-export default class OrbitViewComp extends CanvasView {
-  ExternalView: any;
-  _startAngle: any;
-  externalView: any;
-  props: any;
-  constructor(props: any) {
+interface IProps extends ICanvasProps {
+  showCamera: boolean;
+}
+export default class OrbitViewComp extends CanvasView<IProps> {
+  _startAngle?: number;
+  constructor(props: IProps) {
     super(props);
     this.ExternalView = OrbitView;
   }
 
   componentDidMount() {
     super.componentDidMount();
-    this.externalView.on('props.change', (newProps: any) => {
+    this.externalView.on('props.change', (newProps: Partial<ISimState>) => {
       this.props.onSimStateChange(newProps);
     });
     this._setupLogging();
   }
 
-  setViewAxis(vec: any) {
+  setViewAxis(vec: THREE.Vector3) {
     this.externalView.setViewAxis(vec);
   }
 
-  toggleCameraModel(show: any) {
+  toggleCameraModel(show: boolean) {
     this.externalView.toggleCameraModel(show);
   }
 
-  getEarthPosition(){
+  getEarthPosition() {
     return this.externalView.getEarthPosition();
   }
 
-  lockCameraRotation(lock: any){
+  lockCameraRotation(lock: boolean) {
     this.externalView.lockCameraRotation(lock);
   }
 
@@ -43,7 +41,7 @@ export default class OrbitViewComp extends CanvasView {
       this._startAngle = this.externalView.getCameraAngle();
     });
     this.externalView.on('camera.changeEnd', () => {
-      this.props.log('OrbitViewAngleChanged', {
+      this.props.log?.('OrbitViewAngleChanged', {
         value: this.externalView.getCameraAngle(),
         prevValue: this._startAngle
       });

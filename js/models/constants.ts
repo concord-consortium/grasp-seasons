@@ -1,4 +1,4 @@
-import * as data from '../solar-system-data.js';
+import * as data from '../solar-system-data';
 
 // This constants define values used by 3D object, they don't have any physical meaning.
 

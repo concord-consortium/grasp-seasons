@@ -1,25 +1,43 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import React from 'react';
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/slider';
 
-export default class Slider extends React.Component {
-  props: any;
+interface IProps {
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  slide: (event: any, ui: any) => void;
+  logId: string;
+  log: ((action: string, data: any) => void) | null;
+  start?: (event: any, ui: any) => void;
+  stop?: (event: any, ui: any) => void;
+}
+interface IOptions extends IProps {
+  _slideStart: number;
+  _prevValue: any;
+}
+export default class Slider extends React.Component<IProps> {
+  static defaultProps = {
+    logId: '',
+    log: null
+  }
+  // props: any;
   refs: any;
   sliderFuncName: any;
-  constructor(props: any) {
+
+  constructor(props: IProps) {
     super(props);
     // Default jQuery UI plugin.
     this.sliderFuncName = 'slider';
   }
 
   get $slider() {
-    return $(this.refs.container);
+    return $(this.refs.container) as any;
   }
 
-  getSliderOpts(props: any) {
-    const options = Object.assign({}, props);
+  getSliderOpts(props: IProps) {
+    const options = Object.assign({}, props) as IOptions;
     // Enhance options, support logging.
     if (props.log) {
       options.start = function (event: any, ui: any) {
@@ -31,7 +49,7 @@ export default class Slider extends React.Component {
       };
       options.stop = function (event: any, ui: any) {
         const duration = (Date.now() - this._slideStart) / 1000;
-        props.log(props.logId + 'SliderChanged', {
+        props.log?.(props.logId + 'SliderChanged', {
           value: ui.value,
           prevValue: this._prevValue,
           duration
@@ -59,14 +77,7 @@ export default class Slider extends React.Component {
 
   render() {
     return (
-      // @ts-expect-error ts-migrate(7026) FIXME: JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
       <div ref='container'></div>
     )
   }
 }
-
-// @ts-expect-error ts-migrate(2339) FIXME: Property 'defaultProps' does not exist on type 'ty... Remove this comment to see the full error message
-Slider.defaultProps = {
-  log: null, // or function(action, data) { ... }
-  logId: ''
-};

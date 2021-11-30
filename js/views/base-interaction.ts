@@ -1,21 +1,32 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
+import { EventEmitter2 as EventEmitter } from 'eventemitter2';
 import $ from 'jquery';
 import * as THREE from 'three';
-import {mousePosNormalized} from '../utils.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import {mousePosNormalized} from '../utils';
+import BaseView from './base-view';
 
-export default class {
+export interface Interaction {
+  actionName: string;
+  test: () => boolean;
+  setActive: (isActive: boolean) => void;
+  step: () => void;
+  // runtime flags used internally
+  _active?: boolean;
+  _started?: boolean;
+}
+export default class BaseInteraction {
   _firstValue: any;
-  _interactionStartTime: any;
-  _interactions: any;
+  _interactionStartTime: number | null;
+  _interactions: Interaction[];
   _lastValue: any;
-  camera: any;
-  controls: any;
-  dispatch: any;
-  domElement: any;
-  mouse: any;
-  raycaster: any;
-  view: any;
-  constructor(view: any) {
+  camera: THREE.PerspectiveCamera;
+  controls: OrbitControls;
+  dispatch: EventEmitter;
+  domElement: HTMLElement;
+  mouse: THREE.Vector2;
+  raycaster: THREE.Raycaster;
+  view: BaseView;
+  constructor(view: BaseView) {
     this.view = view;
     this.domElement = view.renderer.domElement;
     this.camera = view.camera;
@@ -31,13 +42,8 @@ export default class {
     this._firstValue = this._lastValue = null;
   }
 
-  // Interaction handler interface:
-  // - test
-  // - step
-  // - setActive
-  // - actionName
-  registerInteraction(int: any) {
-    this._interactions.push(int);
+  registerInteraction(interaction: Interaction) {
+    this._interactions.push(interaction);
   }
 
   checkInteraction() {
@@ -65,7 +71,7 @@ export default class {
     this.controls.enableRotate = !anyInteractionActive;
   }
 
-  isUserPointing(mesh: any) {
+  isUserPointing(mesh: THREE.Mesh) {
     this.raycaster.setFromCamera(this.mouse, this.camera);
     let intersects = this.raycaster.intersectObject(mesh);
     if (intersects.length > 0) {
@@ -80,7 +86,7 @@ export default class {
     this._lastValue = value;
   }
 
-  _setInteractionActive(int: any, idx: any, v: any) {
+  _setInteractionActive(int: Interaction, idx: number, v: boolean) {
     if (int._active === v) return;
     int._active = v;
     int.setActive(v);
@@ -93,7 +99,7 @@ export default class {
       });
       $elem.on(`mouseup.${namespace} touchend.${namespace} touchcancel.${namespace}`, () => {
         int._started = false;
-        const duration = (Date.now() - this._interactionStartTime) / 1000; // in seconds
+        const duration = (Date.now() - this._interactionStartTime!) / 1000; // in seconds
         this._log(int.actionName, duration);
       });
     } else {
@@ -101,7 +107,7 @@ export default class {
     }
   }
 
-  _log(actionName: any, duration: any) {
+  _log(actionName: string, duration: number) {
     this.dispatch.emit('log', actionName, {
       value: this._lastValue,
       prevValue: this._firstValue,

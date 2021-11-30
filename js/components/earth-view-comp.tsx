@@ -1,28 +1,26 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
-import React from 'react';
-// @ts-expect-error ts-migrate(6142) FIXME: Module './canvas-view.jsx' was resolved to '/Users... Remove this comment to see the full error message
-import CanvasView from './canvas-view.jsx';
-import EarthView from '../views/earth-view.js';
+import CanvasView, { ICanvasProps } from './canvas-view';
+import EarthView from '../views/earth-view';
+import { ISimState } from '../types';
 
-export default class EarthViewComp extends CanvasView {
-  ExternalView: any;
-  externalView: any;
-  props: any;
-  constructor(props: any) {
+interface IProps extends ICanvasProps {
+  onCameraChange: () => void;
+}
+export default class EarthViewComp extends CanvasView<IProps> {
+  constructor(props: IProps) {
     super(props);
     this.ExternalView = EarthView;
   }
 
   componentDidMount() {
     super.componentDidMount();
-    this.externalView.on('props.change', (newProps: any) => {
+    this.externalView.on('props.change', (newProps: Partial<ISimState>) => {
       this.props.onSimStateChange(newProps);
     });
     this.externalView.on('camera.change', () => {
       this.props.onCameraChange();
     });
   }
-  toggleGridlines(gridlines: any){
+  toggleGridlines(gridlines: boolean){
     this.externalView.toggleGridlines(gridlines);
   }
 

@@ -1,37 +1,39 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import EventEmitter from 'eventemitter2';
-import models from '../models/common-models.js';
-import Earth from '../models/earth.js';
-import SunEarthLine from '../models/sun-earth-line.js';
-import * as data from '../solar-system-data.js';
+import { EventEmitter2 as EventEmitter, ListenerFn } from 'eventemitter2';
+import BaseInteraction from './base-interaction';
+import models from '../models/common-models';
+import Earth from '../models/earth';
+import SunEarthLine from '../models/sun-earth-line';
+import * as data from '../solar-system-data';
 
-import t from '../translate';
+import t, { Language } from '../translate';
+import { ISimState, ModelType } from '../types';
 
 const DEF_PROPERTIES = {
+  lang: 'en_us',
   day: 0,
   earthTilt: true,
   earthRotation: 4.94,
   sunEarthLine: true
-};
+} as const;
 
-export default class {
-  _interactionHandler: any;
-  camera: any;
-  controls: any;
-  dispatch: any;
-  earth: any;
-  earthAxis: any;
-  lang: any;
-  months: any;
-  props: any;
-  renderer: any;
-  scene: any;
-  sunEarthLine: any;
-  type: any;
-  constructor(parentEl: any, props = DEF_PROPERTIES, modelType = 'unknown') {
+export default class BaseView {
+  _interactionHandler: BaseInteraction | null;
+  camera: THREE.PerspectiveCamera;
+  controls: OrbitControls;
+  dispatch: EventEmitter;
+  earth!: Earth;
+  earthAxis!: THREE.Mesh;
+  lang: Language;
+  months: string[];
+  props: Partial<ISimState>;
+  renderer: THREE.WebGLRenderer;
+  scene: THREE.Scene;
+  sunEarthLine!: SunEarthLine;
+  type: ModelType;
+  constructor(parentEl: HTMLElement, props: Partial<ISimState> = DEF_PROPERTIES, modelType: ModelType = 'unknown') {
     let width = parentEl.clientWidth;
     let height = parentEl.clientHeight;
     this.scene = new THREE.Scene();
@@ -42,8 +44,7 @@ export default class {
     this.renderer.setSize(width, height);
     parentEl.appendChild(this.renderer.domElement);
 
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'lang' does not exist on type '{ day: num... Remove this comment to see the full error message
-    this.lang = props.lang;
+    this.lang = props.lang || 'en_us';
 
     this.months = t("~MONTHS_MIXED", this.lang);
 
@@ -57,7 +58,6 @@ export default class {
     this.controls.enableZoom = false;
     this.controls.rotateSpeed = 0.5;
 
-    // @ts-expect-error ts-migrate(2351) FIXME: This expression is not constructable.
     this.dispatch = new EventEmitter();
 
     this.props = {};
@@ -77,27 +77,26 @@ export default class {
     });
   }
 
-  setProps(newProps: any) {
+  setProps(newProps: Partial<ISimState>) {
     let oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
-    this.lang = newProps.lang;
+    (newProps.lang != null) && (this.lang = newProps.lang);
     this.months = t("~MONTHS_MIXED", this.lang);
+    let key: keyof ISimState;
     // Iterate over all the properties and call update handles for ones that have been changed.
-    for (let key of Object.keys(this.props)) {
+    for (key in this.props) {
       if (this.props[key] !== oldProps[key]) {
         // Transform property name to name of the function that handles its update. For example:
         // earthTilt -> _updateEarthTilt.
         let funcName = `_update${key[0].toUpperCase()}${key.substr(1)}`;
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        if (typeof this[funcName] === 'function') {
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-          this[funcName]();
+        if (typeof (this as any)[funcName] === 'function') {
+          (this as any)[funcName]();
         }
       }
     }
   }
 
-  lockCameraRotation(isLocked: any) {
+  lockCameraRotation(isLocked: boolean) {
     if (isLocked) {
       this.controls.rotateSpeed = 0;
     }
@@ -107,17 +106,17 @@ export default class {
   }
 
   // Delegate #on to EventEmitter object.
-  on() {
-    this.dispatch.on.apply(this.dispatch, arguments);
+  on(event: string, listener: ListenerFn) {
+    this.dispatch.on.call(this.dispatch, event, listener);
   }
 
   // Rotates camera around the sun.
-  rotateCam(angle: any) {
+  rotateCam(angle: number) {
     this.camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
     this.controls.update();
   }
 
-  render(timestamp: any) {
+  render(timestamp: number) {
     this.controls.update();
     if (this._interactionHandler) {
       this._interactionHandler.checkInteraction();
@@ -130,18 +129,20 @@ export default class {
     let $parent = $(this.renderer.domElement).parent();
     let newWidth = $parent.width();
     let newHeight = $parent.height();
-    this.camera.aspect = newWidth / newHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(newWidth, newHeight);
+    if (newWidth && newHeight) {
+      this.camera.aspect = newWidth / newHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(newWidth, newHeight);
+    }
   }
 
-  registerInteractionHandler(handler: any) {
+  registerInteractionHandler(handler: BaseInteraction) {
     this._interactionHandler = handler;
   }
 
   // Called automatically when 'day' property is updated.
   _updateDay() {
-    this.earth.setPositionFromDay(this.props.day);
+    (this.props.day != null) && this.earth.setPositionFromDay(this.props.day);
     this.sunEarthLine.setEarthPos(this.earth.position);
   }
 
@@ -151,7 +152,7 @@ export default class {
   }
 
   _updateEarthRotation() {
-    this.earth.rotation = this.props.earthRotation;
+    (this.props.earthRotation != null) && (this.earth.rotation = this.props.earthRotation);
   }
 
   _updateSunEarthLine() {
@@ -164,19 +165,15 @@ export default class {
   }
 
   _updateLang() {
-    this.lang = this.props.lang;
+    this.lang = this.props.lang || 'en_us';
   }
 
   _initScene() {
     let basicProps = {type: this.type};
 
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.stars(basicProps));
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.ambientLight(basicProps));
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.sunLight(basicProps));
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     this.scene.add(models.sunOnlyLight(basicProps));
     this.scene.add(models.grid(basicProps));
     this.scene.add(models.orbit(basicProps));

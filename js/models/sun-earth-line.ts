@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import * as c from './constants.js';
+import { IModelParams } from '../types';
+import * as c from './constants';
 
 const LINE_RADIUS = 20000 * c.SF;
 const SIMPLE_LINE_RADIUS = 650000 * c.SF;
@@ -7,13 +8,13 @@ const POINTER_RADIUS = 200000 * c.SF;
 const POINTER_TUBE = 60000 * c.SF;
 
 export default class {
-  _arrow: any;
-  _earthRadius: any;
-  _lineMesh: any;
-  _pointerMesh: any;
-  _refVector: any;
-  rootObject: any;
-  constructor(props: any) {
+  _arrow!: THREE.Object3D;
+  _earthRadius: number;
+  _lineMesh!: THREE.Mesh;
+  _pointerMesh!: THREE.Object3D;
+  _refVector: THREE.Vector3;
+  rootObject!: THREE.Object3D;
+  constructor(props: IModelParams) {
     let simple = props.type === 'orbit-view';
 
     // _refVector is used to calculate angle between it and the current earth position.
@@ -23,7 +24,7 @@ export default class {
     this._init3DObjects(simple);
   }
 
-  setEarthPos(newPos: any) {
+  setEarthPos(newPos: THREE.Vector3) {
     let len = newPos.length() - this._earthRadius;
     let angleDiff = newPos.angleTo(this._refVector);
     if (newPos.z < 0) angleDiff *= -1;
@@ -36,7 +37,7 @@ export default class {
     this._arrow.position.x = -len;
   }
 
-  _init3DObjects(simple: any) {
+  _init3DObjects(simple: boolean) {
     this._lineMesh = this._initLine(simple);
     this._arrow = this._initArrow(simple);
 
@@ -71,7 +72,7 @@ export default class {
     return container;
   }
 
-  _initLine(simple: any) {
+  _initLine(simple: boolean) {
     let radius = simple ? SIMPLE_LINE_RADIUS : LINE_RADIUS;
     let segments = simple ? 4 : 8;
     let material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR});
@@ -81,7 +82,7 @@ export default class {
     return lineMesh;
   }
 
-  _initArrow(simple: any) {
+  _initArrow(simple: boolean) {
     let HEIGHT = simple ? 25000000 * c.SF : 2500000 * c.SF;
     let RADIUS = simple ? 1500000 * c.SF : 100000 * c.SF;
     let HEAD_RADIUS = RADIUS * (simple ? 2.5 : 2);

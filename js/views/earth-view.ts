@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import BaseView from './base-view.js';
-import LatitudeLine from '../models/latitude-line.js';
-import LatLongMarker from '../models/lat-long-marker.js';
-import LatLongDraggingInteraction from './earth-view-interaction.js';
-import * as data from '../solar-system-data.js';
+import BaseView from './base-view';
+import LatitudeLine from '../models/latitude-line';
+import LatLongMarker from '../models/lat-long-marker';
+import LatLongDraggingInteraction from './earth-view-interaction';
+import * as data from '../solar-system-data';
 
 const DEG_2_RAD = Math.PI / 180;
 
@@ -16,11 +16,11 @@ const DEF_PROPERTIES = {
   long: 0
 };
 
-export default class extends BaseView {
-  equatorLine: any;
-  latLine: any;
-  latLongMarker: any;
-  constructor(parentEl: any, props = DEF_PROPERTIES) {
+export default class EarthView extends BaseView {
+  equatorLine!: LatitudeLine;
+  latLine!: LatitudeLine;
+  latLongMarker!: LatLongMarker;
+  constructor(parentEl: HTMLElement, props = DEF_PROPERTIES) {
     super(parentEl, props, 'earth-view');
     this.registerInteractionHandler(new LatLongDraggingInteraction(this));
   }
@@ -43,9 +43,9 @@ export default class extends BaseView {
     // First, create vector pointing at lat 0, long 0.
     let markerVec = this.earth.lat0Long0AxisDir;
     // Apply latitude.
-    markerVec.applyAxisAngle(this.earth.horizontalAxisDir, this.props.lat * DEG_2_RAD + this.earth.tilt);
+    markerVec.applyAxisAngle(this.earth.horizontalAxisDir, this.props.lat! * DEG_2_RAD + this.earth.tilt);
     // Apply longitude.
-    markerVec.applyAxisAngle(this.earth.verticalAxisDir, this.props.long * DEG_2_RAD + this.earth.overallRotation);
+    markerVec.applyAxisAngle(this.earth.verticalAxisDir, this.props.long! * DEG_2_RAD + this.earth.overallRotation);
     markerVec.normalize();
     // Calculate quaternion that would be applied to camera position vector.
     var quaternion = new THREE.Quaternion();
@@ -59,7 +59,7 @@ export default class extends BaseView {
     this.controls.update();
   }
 
-  toggleGridlines(gridlines: any) {
+  toggleGridlines(gridlines: boolean) {
     this.earth.showGridlines(gridlines);
   }
 
@@ -94,16 +94,13 @@ export default class extends BaseView {
 
   _initScene() {
     super._initScene();
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 0.
     this.latLine = new LatitudeLine();
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
     this.latLongMarker = new LatLongMarker();
     this.earth.earthObject.add(this.latLine.rootObject);
     this.earth.earthObject.add(this.latLongMarker.rootObject);
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     this.equatorLine = new LatitudeLine(true);
     this.equatorLine.setLat(0);
-    this.equatorLine.name = 'equator';
+    (this.equatorLine as any).name = 'equator';
     this.earth.earthObject.add(this.equatorLine.rootObject);
   }
 

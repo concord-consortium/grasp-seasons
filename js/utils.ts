@@ -1,20 +1,19 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 
 // Mouse position in pixels.
-export function mousePos(event: any, targetElement: any) {
+export function mousePos(event: any, targetElement: HTMLElement) {
   let $targetElement = $(targetElement);
-  let parentX = $targetElement.offset().left;
-  let parentY = $targetElement.offset().top;
+  let parentX = $targetElement.offset()?.left || 0;
+  let parentY = $targetElement.offset()?.top || 0;
   return {x: event.pageX - parentX, y: event.pageY - parentY};
 }
 
 // Normalized mouse position [-1, 1].
-export function mousePosNormalized(event: any, targetElement: any) {
+export function mousePosNormalized(event: any, targetElement: HTMLElement) {
   let pos = mousePos(event, targetElement);
   let $targetElement = $(targetElement);
-  let parentWidth = $targetElement.width();
-  let parentHeight = $targetElement.height();
+  let parentWidth = $targetElement.width() || 1;
+  let parentHeight = $targetElement.height() || 1;
   pos.x =  (pos.x / parentWidth) * 2 - 1;
   pos.y = -(pos.y / parentHeight) * 2 + 1;
   return pos;
@@ -27,12 +26,13 @@ export function mousePosNormalized(event: any, targetElement: any) {
 //   0.8: [0, 255, 255]
 // }
 // Returns a function that accepts value between [0, 1] and returns interpolated color (rgb string).
-export function colorInterpolation(colors: any) {
+type RGBTriple = [number, number, number];
+export function colorInterpolation(colors: Record<number, RGBTriple>) {
   const sortedPositions = Object.keys(colors).map(v => parseFloat(v)).sort();
-  function rgbToString(rgb: any) {
+  function rgbToString(rgb: RGBTriple) {
     return 'rgb(' + rgb.join(', ') + ')';
   }
-  return function(t: any) {
+  return function(t: number) {
     let i = 0;
     while (t > sortedPositions[i] && i < sortedPositions.length) {
       i++;
@@ -58,10 +58,10 @@ export function colorInterpolation(colors: any) {
       const right = rightColor[j];
       result.push(Math.round(left < right ? left + (right - left) * ratio : left - (left - right) * ratio));
     }
-    return rgbToString(result);
+    return rgbToString(result as RGBTriple);
   };
 }
-export default function getURLParam(name: any, defaultValue = null) {
+export default function getURLParam(name: string, defaultValue = null) {
   const url = window.location.href;
   name = name.replace(/[\[\]]/g, "\\$&");
   const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");

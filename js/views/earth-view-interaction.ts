@@ -1,15 +1,17 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
-import $ from 'jquery';
 import * as THREE from 'three';
-import BaseInteraction from './base-interaction.js';
+import Earth from '../models/earth';
+import LatLongMarker from '../models/lat-long-marker';
+import LatitudeLine from '../models/latitude-line';
+import BaseInteraction from './base-interaction';
+import EarthView from './earth-view';
 
 const RAD_2_DEG = 180 / Math.PI;
 
 export default class extends BaseInteraction {
-  earth: any;
-  latLine: any;
-  latLongMarker: any;
-  constructor(view: any) {
+  earth: Earth;
+  latLine: LatitudeLine;
+  latLongMarker: LatLongMarker;
+  constructor(view: EarthView) {
     super(view);
 
     this.latLongMarker = view.latLongMarker;
@@ -19,9 +21,9 @@ export default class extends BaseInteraction {
     this.registerInteraction({
       actionName: 'LatLngMarkerDragged',
       test: () => {
-        return this.isUserPointing(this.latLongMarker.mesh);
+        return !!this.isUserPointing(this.latLongMarker.mesh);
       },
-      setActive: (isActive: any) => {
+      setActive: (isActive: boolean) => {
         this.latLongMarker.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';
       },
@@ -37,9 +39,9 @@ export default class extends BaseInteraction {
     this.registerInteraction({
       actionName: 'LatLineDragged',
       test: () => {
-        return this.isUserPointing(this.latLine.mesh);
+        return !!this.isUserPointing(this.latLine.mesh);
       },
-      setActive: (isActive: any) => {
+      setActive: (isActive: boolean) => {
         this.latLine.setHighlighted(isActive);
         this.latLongMarker.setHighlighted(isActive);
         document.body.style.cursor = isActive ? 'move' : '';

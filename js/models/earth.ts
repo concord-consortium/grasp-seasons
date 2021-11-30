@@ -1,27 +1,23 @@
 import * as THREE from 'three';
-import * as data from '../solar-system-data.js';
-import * as c from './constants.js';
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../../images/earth-2k.jpg' or ... Remove this comment to see the full error message
+import * as data from '../solar-system-data';
+import * as c from './constants';
 import earthLargeImg from '../../images/earth-2k.jpg';//'../../images/earth-grid-2k.jpg';
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../../images/earth-grid-2k.jpg... Remove this comment to see the full error message
 import earthLargeGridImg from '../../images/earth-grid-2k.jpg';
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../../images/earth-equator-0.5... Remove this comment to see the full error message
 import earthSimpleImg from '../../images/earth-equator-0.5k.jpg';//'../../images/earth-0.5k.jpg';
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../../images/earth-bump-2k.jpg... Remove this comment to see the full error message
 import earthBumpImg from '../../images/earth-bump-2k.jpg';
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../../images/earth-specular-2k... Remove this comment to see the full error message
-import earthSpecularImg from '../../images/earth-specular-2k.png';
+import { IModelParams } from '../types';
+// import earthSpecularImg from '../../images/earth-specular-2k.png';
 
 const DEF_COLOR = 0xffffff;
 const DEF_EMISSIVE = 0x002135;
 
-export default class {
-  _earthObject: any;
-  _material: any;
-  _orbitRotObject: any;
-  _posObject: any;
-  _tiltObject: any;
-  constructor(params: any) {
+export default class Earth {
+  _earthObject: THREE.Mesh;
+  _material: THREE.MeshPhongMaterial;
+  _orbitRotationObject: THREE.Object3D;
+  _posObject: THREE.Object3D;
+  _tiltObject: THREE.Object3D;
+  constructor(params: IModelParams) {
     let simple = params.type === 'orbit-view';
     let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
     let COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE, specular: 0x000000} : {specular: 0x000000};
@@ -34,10 +30,10 @@ export default class {
       this._material.bumpScale = 100000 * c.SF;
     }
     this._earthObject = new THREE.Mesh(geometry, this._material);
-    this._orbitRotObject = new THREE.Object3D();
-    this._orbitRotObject.add(this._earthObject);
+    this._orbitRotationObject = new THREE.Object3D();
+    this._orbitRotationObject.add(this._earthObject);
     this._tiltObject = new THREE.Object3D();
-    this._tiltObject.add(this._orbitRotObject);
+    this._tiltObject.add(this._orbitRotationObject);
     this._posObject = new THREE.Object3D();
     // Make sure that earth is at day 0 position.
     // This is necessary so angle diff is calculated correctly in _updateDay() method.
@@ -79,7 +75,7 @@ export default class {
   }
 
   get orbitRotation() {
-    return this._orbitRotObject.rotation.y;
+    return this._orbitRotationObject.rotation.y;
   }
 
   get overallRotation() {
@@ -100,7 +96,7 @@ export default class {
     return new THREE.Vector3(1, 0, 0);
   }
 
-  showGridlines(show: any) {
+  showGridlines(show: boolean) {
     let textureLoader = new THREE.TextureLoader();
     if (!show) {
       this._material.map = textureLoader.load(earthLargeImg);
@@ -110,25 +106,25 @@ export default class {
   }
 
   // Rotates earth around its own axis.
-  rotate(angleDiff: any) {
+  rotate(angleDiff: number) {
     this._earthObject.rotation.y += angleDiff;
   }
 
-  setPositionFromDay(day: any) {
+  setPositionFromDay(day: number) {
     let newPos = data.earthEllipseLocationByDay(day);
 
     let angleDiff = Math.atan2(this.position.z, this.position.x) - Math.atan2(newPos.z, newPos.x);
     // Make sure that earth maintains its current rotation.
-    this._orbitRotObject.rotation.y += angleDiff;
+    this._orbitRotationObject.rotation.y += angleDiff;
 
     this.position.copy(newPos);
   }
 
-  setTilted(v: any) {
+  setTilted(v?: boolean) {
     this._tiltObject.rotation.z = v ? data.EARTH_TILT : 0;
   }
 
-  setHighlighted(v: any) {
+  setHighlighted(v: boolean) {
     this._material.color.setHex(v ? c.HIGHLIGHT_COLOR : DEF_COLOR);
     this._material.emissive.setHex(v ? c.HIGHLIGHT_EMISSIVE : DEF_EMISSIVE);
   }

@@ -1,4 +1,3 @@
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'jque... Remove this comment to see the full error message
 import $ from 'jquery';
 import '../../css/jquery-ui-theme.less';
 import 'jquery-ui/ui/widgets/slider';
@@ -8,7 +7,7 @@ var TICK_WIDTH = 1;
 // Patched jQueryUI slider that can wrap. When user drags slider handle over max (or min) value,
 // it will jump back to min (or max).
 // It also supports 'ticks' option.
-$.widget("ui.graspSlider", $.ui.slider, {
+($ as any).widget("ui.graspSlider", ($ as any).ui.slider, {
   _create: function () {
     this._super();
   },
@@ -33,7 +32,8 @@ $.widget("ui.graspSlider", $.ui.slider, {
         label.appendTo(tick);
         tick.appendTo(this.element);
         // We can do it at the very end, when the element is rendered and its width can be calculated.
-        label.css('margin-left', (-0.5 * label.width()) + 'px');
+        var labelWidth = label.width();
+        labelWidth && label.css('margin-left', (-0.5 * labelWidth) + 'px');
       }.bind(this));
       this.element.addClass('ui-slider-with-tick-labels');
     }
