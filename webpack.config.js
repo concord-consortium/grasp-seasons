@@ -33,6 +33,8 @@ module.exports = {
       {
         test: /\.css$/,
         use: [{
+          loader: 'style-loader', // inject CSS to page
+        }, {
           loader: 'css-loader',
           options: {
             esModule: false

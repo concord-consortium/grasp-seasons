@@ -288,7 +288,7 @@ export default class Seasons extends React.Component<IProps, IState> {
       <div className='grasp-seasons'>
         <ViewManager ref='view' view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log} />
         <div className='controls clearfix' >
-          <div className='pull-right right-col'>
+          <div className='float-right right-col'>
             <button className='btn btn-default' onClick={this.subpolarButtonClick} name='ViewSubpolarPoint'>{t("~VIEW_SUBSOLAR_POINT", lang)}</button>
             <span> </span>
             <label>
@@ -300,7 +300,7 @@ export default class Seasons extends React.Component<IProps, IState> {
             <span> </span>
             <label><input type='checkbox' name='sunEarthLine' checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> {t("~SUN_EARTH_LINE", lang)}</label>
 
-            <div className='long-lat-sliders pull-right'>
+            <div className='long-lat-sliders float-right'>
               <div className='form-group'>
                 <label>{t("~LATITUDE", lang)}: {this.getFormattedLat()}</label>
                 <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId='Latitude'/>
