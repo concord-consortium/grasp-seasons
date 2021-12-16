@@ -25,16 +25,15 @@ This project is using [webpack](http://webpack.github.io/) to build the final JS
 First, you need to make sure that webpack is installed and all the NPM packages required by this project are available:
 
 ```
-npm install -g webpack
 npm install
 ```
 Then you can build JavaScript files using:
 ```
-webpack
+npm run build
 ```
 or:
 ```
-webpack --watch
+npm start
 ```
 
 ## Deployment
