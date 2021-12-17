@@ -1,6 +1,3 @@
-// https://github.com/webpack/css-loader/issues/145
-require('es6-promise').polyfill();
-
 var path = require('path');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -8,43 +5,40 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 var lib = process.env.WEBPACK_TARGET === 'lib';
 
 module.exports = {
-  entry: lib ? './js/lib.js' : './js/main.jsx',
+  entry: lib ? './js/lib.ts' : './js/main.tsx',
   output: {
     path: path.join(__dirname, lib ? 'dist-lib' : 'dist'),
     filename: lib ? 'grasp-seasons.js' : 'app.js',
     library: lib ? 'GRASPSeasons' : undefined,
     libraryTarget: lib ? 'umd' : undefined
   },
-  devServer: { inline: true },
+  devServer: {
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+    },
+  },
   mode: 'development',
+  resolve: {
+    extensions: [ '.ts', '.tsx', '.js' ]
+  },
   module: {
     rules: [
       {
-        test: /\.jsx$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', '@babel/preset-react']
-          }
-        }
-      },
-      {
-        // Pass global THREE variable to OrbitControls
-        test: /three\/examples\/js/,
-        loader: 'imports-loader?THREE=three'
-      },
-      {
-        test: /\.json$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'json-loader'
-        }
+        test: /\.tsx?$/,
+        loader: 'ts-loader'
       },
       {
         test: /\.css$/,
         use: [{
-          loader: 'css-loader'
+          loader: 'style-loader', // inject CSS to page
+        }, {
+          loader: 'css-loader',
+          options: {
+            esModule: false
+          }
         }]
       },
       {
@@ -52,7 +46,10 @@ module.exports = {
         use: [{
           loader: 'style-loader' // creates style nodes from JS strings
         }, {
-          loader: 'css-loader' // translates CSS into CommonJS
+          loader: 'css-loader', // translates CSS into CommonJS
+          options: {
+            esModule: false
+          }
         }, {
           loader: 'less-loader' // compiles Less to CSS
         }]
@@ -63,14 +60,16 @@ module.exports = {
           loader: 'style-loader', // inject CSS to page
         }, {
           loader: 'css-loader', // translates CSS into CommonJS modules
+          options: {
+            esModule: false
+          }
         }, {
           loader: 'postcss-loader', // Run post css actions
           options: {
-            plugins: function () { // post css plugins, can be exported to postcss.config.js
-              return [
-                require('precss'),
-                require('autoprefixer')
-              ];
+            postcssOptions: {
+              plugins: [
+                'autoprefixer'
+              ]
             }
           }
         }, {
@@ -79,16 +78,19 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|gif)$/,
+        type: 'asset',
         // inline base64 URLs for <=4000k images, direct URLs for the rest
-        use: [{
-          loader: 'url-loader?limit=4096000'
-        }]
+        parser: {
+          dataUrlCondition: {
+            maxSize: 4096000
+          }
+        }
       }
     ]
   },
   plugins: [
-    new CopyWebpackPlugin([
-      { from: 'public' }
-    ])
+    new CopyWebpackPlugin({
+      patterns: [{ from: 'public' }]
+    })
   ]
 };
