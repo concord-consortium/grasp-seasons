@@ -12,7 +12,6 @@ import t, { Language } from '../translate';
 import { ISimState, IViewState, ViewType } from '../types';
 
 import '../../css/seasons.less';
-import '../../css/seasons-bootstrap.scss';
 
 
 interface IState {
