@@ -43,16 +43,16 @@ export default {
   },
 
   ambientLight: function (params: IModelParams) {
-    return new THREE.AmbientLight(0x202020);
+    return new THREE.AmbientLight(0x202020, 15);
   },
 
   sunLight: function (params: IModelParams) {
-    return new THREE.PointLight(0xffffff, 1, 0);
+    return new THREE.PointLight(0xffffff, 4, 0, 0);
   },
 
   // Light that affects only sun object (due to radius settings).
   sunOnlyLight: function (params: IModelParams) {
-    let light = new THREE.PointLight(0xffffff, 1, c.SUN_RADIUS * 5);
+    let light = new THREE.PointLight(0xffffff, 10, c.SUN_RADIUS * 5);
     light.position.y = c.SUN_RADIUS * 4;
     return light;
   },

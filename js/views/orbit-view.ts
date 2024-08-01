@@ -38,7 +38,7 @@ export default class OrbitView extends BaseView {
   getEarthPosition() {
     let vector = this.earth.posObject.position.clone();
 
-    let container = this.renderer.context.canvas;
+    let container = this.renderer.domElement;
 
     let widthHalf = (container.width/2);
     let heightHalf = (container.height/2);
