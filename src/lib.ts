@@ -1,1 +1,1 @@
-export * as Seasons from './components/seasons';
+export * as Seasons from "./components/seasons";

@@ -1,9 +1,9 @@
-import * as THREE from 'three';
-import BaseView from './base-view';
-import LatitudeLine from '../3d-models/latitude-line';
-import LatLongMarker from '../3d-models/lat-long-marker';
-import LatLongDraggingInteraction from './earth-view-interaction';
-import * as data from '../utils/solar-system-data';
+import * as THREE from "three";
+import BaseView from "./base-view";
+import LatitudeLine from "../3d-models/latitude-line";
+import LatLongMarker from "../3d-models/lat-long-marker";
+import LatLongDraggingInteraction from "./earth-view-interaction";
+import * as data from "../utils/solar-system-data";
 
 const DEG_2_RAD = Math.PI / 180;
 
@@ -21,7 +21,7 @@ export default class EarthView extends BaseView {
   latLine!: LatitudeLine;
   latLongMarker!: LatLongMarker;
   constructor(parentEl: HTMLElement, props = DEF_PROPERTIES) {
-    super(parentEl, props, 'earth-view');
+    super(parentEl, props, "earth-view");
     this.registerInteractionHandler(new LatLongDraggingInteraction(this));
   }
 
@@ -31,9 +31,9 @@ export default class EarthView extends BaseView {
   }
 
   lookAtSubsolarPoint() {
-    let earthPos = this.earth.position;
-    let camEarthDist = this.camera.position.distanceTo(earthPos);
-    let earthSunDist = earthPos.length();
+    const earthPos = this.earth.position;
+    const camEarthDist = this.camera.position.distanceTo(earthPos);
+    const earthSunDist = earthPos.length();
     this.camera.position.copy(earthPos);
     this.camera.position.multiplyScalar((earthSunDist - camEarthDist) / earthSunDist);
     this.controls.update();
@@ -41,17 +41,17 @@ export default class EarthView extends BaseView {
 
   lookAtLatLongMarker() {
     // First, create vector pointing at lat 0, long 0.
-    let markerVec = this.earth.lat0Long0AxisDir;
+    const markerVec = this.earth.lat0Long0AxisDir;
     // Apply latitude.
     markerVec.applyAxisAngle(this.earth.horizontalAxisDir, this.props.lat! * DEG_2_RAD + this.earth.tilt);
     // Apply longitude.
     markerVec.applyAxisAngle(this.earth.verticalAxisDir, this.props.long! * DEG_2_RAD + this.earth.overallRotation);
     markerVec.normalize();
     // Calculate quaternion that would be applied to camera position vector.
-    var quaternion = new THREE.Quaternion();
+    const quaternion = new THREE.Quaternion();
     quaternion.setFromUnitVectors(this.getCameraEarthVec(), markerVec);
     // Note that cameraVec is normalized, the one below is not.
-    let newCameraPos = this.camera.position.clone().sub(this.earth.position);
+    const newCameraPos = this.camera.position.clone().sub(this.earth.position);
     newCameraPos.applyQuaternion(quaternion);
     newCameraPos.add(this.earth.position);
     // Update position and orbit controls.
@@ -64,15 +64,15 @@ export default class EarthView extends BaseView {
   }
 
   _updateDay() {
-    let oldOrbitRot = this.earth.orbitRotation;
-    let oldPos = this.earth.position.clone();
+    const oldOrbitRot = this.earth.orbitRotation;
+    const oldPos = this.earth.position.clone();
     super._updateDay();
-    let newOrbitRot = this.earth.orbitRotation;
-    let newPos = this.earth.position.clone();
+    const newOrbitRot = this.earth.orbitRotation;
+    const newPos = this.earth.position.clone();
 
     // Update camera position, rotate it and adjust its orbit length.
     this.rotateCam(newOrbitRot - oldOrbitRot);
-    let lenRatio = newPos.length() / oldPos.length();
+    const lenRatio = newPos.length() / oldPos.length();
     this.camera.position.x *= lenRatio;
     this.camera.position.z *= lenRatio;
     // Set orbit controls target to new position too.
@@ -100,7 +100,7 @@ export default class EarthView extends BaseView {
     this.earth.earthObject.add(this.latLongMarker.rootObject);
     this.equatorLine = new LatitudeLine(true);
     this.equatorLine.setLat(0);
-    (this.equatorLine as any).name = 'equator';
+    (this.equatorLine as any).name = "equator";
     this.earth.earthObject.add(this.equatorLine.rootObject);
   }
 

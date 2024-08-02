@@ -1,10 +1,10 @@
-import * as THREE from 'three';
-import BaseView from './base-view';
-import EarthDraggingInteraction from './orbit-view-interaction';
-import LatitudeLine from '../3d-models/latitude-line';
-import LatLongMarker from '../3d-models/lat-long-marker';
-import models from '../3d-models/common-models';
-import * as data from '../utils/solar-system-data';
+import * as THREE from "three";
+import BaseView from "./base-view";
+import EarthDraggingInteraction from "./orbit-view-interaction";
+import LatitudeLine from "../3d-models/latitude-line";
+import LatLongMarker from "../3d-models/lat-long-marker";
+import models from "../3d-models/common-models";
+import * as data from "../utils/solar-system-data";
 
 const DEF_PROPERTIES = {
   day: 0,
@@ -19,7 +19,7 @@ export default class OrbitView extends BaseView {
   latLongMarker!: LatLongMarker;
   monthLabels!: THREE.Object3D[];
   constructor(parentEl: HTMLElement, props = DEF_PROPERTIES) {
-    super(parentEl, props, 'orbit-view');
+    super(parentEl, props, "orbit-view");
     this.registerInteractionHandler(new EarthDraggingInteraction(this));
   }
 
@@ -36,12 +36,12 @@ export default class OrbitView extends BaseView {
   }
 
   getEarthPosition() {
-    let vector = this.earth.posObject.position.clone();
+    const vector = this.earth.posObject.position.clone();
 
-    let container = this.renderer.domElement;
+    const container = this.renderer.domElement;
 
-    let widthHalf = (container.width/2);
-    let heightHalf = (container.height/2);
+    const widthHalf = (container.width/2);
+    const heightHalf = (container.height/2);
 
     vector.project(this.camera);
 
@@ -99,16 +99,16 @@ export default class OrbitView extends BaseView {
   }
 
   _addLabels() {
-    let months = this.months;
-    let segments = months.length;
-    let arc = 2 * Math.PI / segments;
-    let labelRadius = data.EARTH_ORBITAL_RADIUS * 1.15;
+    const months = this.months;
+    const segments = months.length;
+    const arc = 2 * Math.PI / segments;
+    const labelRadius = data.EARTH_ORBITAL_RADIUS * 1.15;
 
-    let monthLabels: THREE.Object3D[] = [];
+    const monthLabels: THREE.Object3D[] = [];
 
     for (let i = 0; i < months.length; i++) {
-      let monthLbl = models.label(months[i], months[i].length === 3);
-      let angle = i * arc;
+      const monthLbl = models.label(months[i], months[i].length === 3);
+      const angle = i * arc;
       monthLbl.position.x = labelRadius * Math.sin(angle);
       monthLbl.position.z = labelRadius * Math.cos(angle);
       monthLbl.rotateZ(angle);

@@ -1,8 +1,8 @@
-import React from 'react';
-import reactMixin from 'react-mixin';
-import t from '../translation/translate';
+import React from "react";
+import reactMixin from "react-mixin";
+import t from "../translation/translate";
 
-import animationMixin from './animation-mixin';
+import animationMixin from "./animation-mixin";
 
 export default class AnimationButton extends React.Component {
   props: any;
@@ -21,10 +21,10 @@ export default class AnimationButton extends React.Component {
   }
 
   render() {
-    let lang = this.props.lang;
-    let label = this.state.animationStarted ? t("~STOP", lang) : t("~PLAY", lang);
+    const lang = this.props.lang;
+    const label = this.state.animationStarted ? t("~STOP", lang) : t("~PLAY", lang);
     return (
-      <button className='btn btn-default animation-btn' name={label} onClick={this.handleClick} disabled={this.state.disabled}>{label}</button>
+      <button className="btn btn-default animation-btn" name={label} onClick={this.handleClick} disabled={this.state.disabled}>{label}</button>
     )
   }
 }

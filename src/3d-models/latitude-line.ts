@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import * as c from './constants';
+import * as THREE from "three";
+import * as c from "./constants";
 
 const DEG_2_RAD = Math.PI / 180;
 const DEF_COLOR = 0xffffff;
@@ -14,9 +14,9 @@ export default class LatitudeLine {
     let torusRadius = equator ? c.LAT_LINE_THICKNESS / 5 : c.LAT_LINE_THICKNESS;
     this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.03: c.EARTH_RADIUS;
     if (simple) torusRadius = torusRadius * 6;
-    let geometry = new THREE.TorusGeometry(this.earthRadius, this.earthRadius * torusRadius, 16, 100);
-    let material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
-    let mesh = new THREE.Mesh(geometry, material);
+    const geometry = new THREE.TorusGeometry(this.earthRadius, this.earthRadius * torusRadius, 16, 100);
+    const material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
+    const mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = Math.PI * 0.5;
 
     this.rootObject = mesh;

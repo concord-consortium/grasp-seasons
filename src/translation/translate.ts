@@ -1,4 +1,4 @@
-import translations from '.';
+import translations from ".";
 
 export type Language = keyof typeof translations;
 type Translation = typeof translations.en_us;
@@ -34,7 +34,7 @@ export function translate(key: TranslationKey | string[], lang: Language = defau
     return translateString(key as any, lang);
   } else if (Array.isArray(key)) {
     // cast because variable replacement can't be used with array entries like months
-    let translation = translateString(key[0] as SimpleTranslationKey, lang) as string;
+    const translation = translateString(key[0] as SimpleTranslationKey, lang) as string;
     return translation.replace(varRegExp, (match: string, id: number) =>
       key[++id] ? translateString(key[id] as SimpleTranslationKey, lang) as string : error);
   } else if (key != null) {

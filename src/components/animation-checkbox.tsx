@@ -1,7 +1,7 @@
-import React from 'react';
-import reactMixin from 'react-mixin';
+import React from "react";
+import reactMixin from "react-mixin";
 
-import animationMixin from './animation-mixin';
+import animationMixin from "./animation-mixin";
 
 export default class AnimationCheckbox extends React.Component {
   props: any;
@@ -21,7 +21,7 @@ export default class AnimationCheckbox extends React.Component {
 
   render() {
     return (
-      <input type='checkbox' name={this.props.name} checked={this.state.animationStarted} onChange={this.handleChange} disabled={this.state.disabled}/>
+      <input type="checkbox" name={this.props.name} checked={this.state.animationStarted} onChange={this.handleChange} disabled={this.state.disabled}/>
     )
   }
 }

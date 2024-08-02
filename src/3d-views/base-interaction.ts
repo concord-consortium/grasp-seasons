@@ -1,9 +1,8 @@
-import { EventEmitter2 as EventEmitter } from 'eventemitter2';
-import $ from 'jquery';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import {mousePosNormalized} from '../utils/utils';
-import BaseView from './base-view';
+import { EventEmitter2 as EventEmitter } from "eventemitter2";
+import $ from "jquery";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import {mousePosNormalized} from "../utils/utils";
 
 export interface Interaction {
   actionName: string;
@@ -14,6 +13,14 @@ export interface Interaction {
   _active?: boolean;
   _started?: boolean;
 }
+
+export interface IBaseView {
+  renderer: THREE.WebGLRenderer;
+  camera: THREE.PerspectiveCamera;
+  controls: OrbitControls;
+  dispatch: EventEmitter;
+}
+
 export default class BaseInteraction {
   _firstValue: any;
   _interactionStartTime: number | null;
@@ -25,8 +32,8 @@ export default class BaseInteraction {
   domElement: HTMLElement;
   mouse: THREE.Vector2;
   raycaster: THREE.Raycaster;
-  view: BaseView;
-  constructor(view: BaseView) {
+  view: IBaseView;
+  constructor(view: IBaseView) {
     this.view = view;
     this.domElement = view.renderer.domElement;
     this.camera = view.camera;
@@ -50,7 +57,7 @@ export default class BaseInteraction {
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
     for (let i = 0; i < this._interactions.length; i++) {
-      let int = this._interactions[i];
+      const int = this._interactions[i];
       if (int._started) {
         int.step();
         return;
@@ -59,7 +66,7 @@ export default class BaseInteraction {
 
     let anyInteractionActive = false;
     for (let i = 0; i < this._interactions.length; i++) {
-      let int = this._interactions[i];
+      const int = this._interactions[i];
       if (!anyInteractionActive && int.test()) {
         this._setInteractionActive(int, i, true);
         anyInteractionActive = true;
@@ -73,7 +80,7 @@ export default class BaseInteraction {
 
   isUserPointing(mesh: THREE.Mesh) {
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    let intersects = this.raycaster.intersectObject(mesh);
+    const intersects = this.raycaster.intersectObject(mesh);
     if (intersects.length > 0) {
       return intersects;
     } else {
@@ -90,8 +97,8 @@ export default class BaseInteraction {
     if (int._active === v) return;
     int._active = v;
     int.setActive(v);
-    let $elem = $(this.domElement);
-    let namespace = `interaction-${idx}`;
+    const $elem = $(this.domElement);
+    const namespace = `interaction-${idx}`;
     if (v) {
       $elem.on(`mousedown.${namespace} touchstart.${namespace}`, () => {
         int._started = true;
@@ -108,7 +115,7 @@ export default class BaseInteraction {
   }
 
   _log(actionName: string, duration: number) {
-    this.dispatch.emit('log', actionName, {
+    this.dispatch.emit("log", actionName, {
       value: this._lastValue,
       prevValue: this._firstValue,
       duration
@@ -117,11 +124,11 @@ export default class BaseInteraction {
   }
 
   _followMousePosition() {
-    let onMouseMove = (event: any) => {
-      let pos = mousePosNormalized(event, this.domElement);
+    const onMouseMove = (event: any) => {
+      const pos = mousePosNormalized(event, this.domElement);
       this.mouse.x = pos.x;
       this.mouse.y = pos.y;
     };
-    $(this.domElement).on('mousemove touchmove', onMouseMove);
+    $(this.domElement).on("mousemove touchmove", onMouseMove);
   }
 }

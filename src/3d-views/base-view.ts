@@ -1,17 +1,17 @@
-import $ from 'jquery';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { EventEmitter2 as EventEmitter, ListenerFn } from 'eventemitter2';
-import BaseInteraction from './base-interaction';
-import models from '../3d-models/common-models';
-import Earth from '../3d-models/earth';
-import SunEarthLine from '../3d-models/sun-earth-line';
-import * as data from '../utils/solar-system-data';
-import t, { Language } from '../translation/translate';
-import { ISimState, ModelType } from '../types';
+import $ from "jquery";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { EventEmitter2 as EventEmitter, ListenerFn } from "eventemitter2";
+import BaseInteraction from "./base-interaction";
+import models from "../3d-models/common-models";
+import Earth from "../3d-models/earth";
+import SunEarthLine from "../3d-models/sun-earth-line";
+import * as data from "../utils/solar-system-data";
+import t, { Language } from "../translation/translate";
+import { ISimState, ModelType } from "../types";
 
 const DEF_PROPERTIES = {
-  lang: 'en_us',
+  lang: "en_us",
   day: 0,
   earthTilt: true,
   earthRotation: 4.94,
@@ -32,9 +32,9 @@ export default class BaseView {
   scene: THREE.Scene;
   sunEarthLine!: SunEarthLine;
   type: ModelType;
-  constructor(parentEl: HTMLElement, props: Partial<ISimState> = DEF_PROPERTIES, modelType: ModelType = 'unknown') {
-    let width = parentEl.clientWidth;
-    let height = parentEl.clientHeight;
+  constructor(parentEl: HTMLElement, props: Partial<ISimState> = DEF_PROPERTIES, modelType: ModelType = "unknown") {
+    const width = parentEl.clientWidth;
+    const height = parentEl.clientHeight;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
     this.renderer = new THREE.WebGLRenderer({antialias:true});
@@ -43,7 +43,7 @@ export default class BaseView {
     this.renderer.setSize(width, height);
     parentEl.appendChild(this.renderer.domElement);
 
-    this.lang = props.lang || 'en_us';
+    this.lang = props.lang || "en_us";
 
     this.months = t("~MONTHS_MIXED", this.lang);
 
@@ -65,21 +65,23 @@ export default class BaseView {
     this._interactionHandler = null;
 
     // Emit events when camera is changed.
-    this.controls.addEventListener('change', () => {
-      this.dispatch.emit('camera.change');
+    this.controls.addEventListener("change", () => {
+      this.dispatch.emit("camera.change");
     });
-    this.controls.addEventListener('start', () => {
-      this.dispatch.emit('camera.changeStart');
+    this.controls.addEventListener("start", () => {
+      this.dispatch.emit("camera.changeStart");
     });
-    this.controls.addEventListener('end', () => {
-      this.dispatch.emit('camera.changeEnd');
+    this.controls.addEventListener("end", () => {
+      this.dispatch.emit("camera.changeEnd");
     });
   }
 
   setProps(newProps: Partial<ISimState>) {
-    let oldProps = $.extend(this.props);
+    const oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
-    (newProps.lang != null) && (this.lang = newProps.lang);
+    if (newProps.lang != null) {
+      (this.lang = newProps.lang);
+    }
     this.months = t("~MONTHS_MIXED", this.lang);
     let key: keyof ISimState;
     // Iterate over all the properties and call update handles for ones that have been changed.
@@ -87,8 +89,8 @@ export default class BaseView {
       if (this.props[key] !== oldProps[key]) {
         // Transform property name to name of the function that handles its update. For example:
         // earthTilt -> _updateEarthTilt.
-        let funcName = `_update${key[0].toUpperCase()}${key.substr(1)}`;
-        if (typeof (this as any)[funcName] === 'function') {
+        const funcName = `_update${key[0].toUpperCase()}${key.substr(1)}`;
+        if (typeof (this as any)[funcName] === "function") {
           (this as any)[funcName]();
         }
       }
@@ -106,7 +108,7 @@ export default class BaseView {
 
   // Delegate #on to EventEmitter object.
   on(event: string, listener: ListenerFn) {
-    this.dispatch.on.call(this.dispatch, event, listener);
+    this.dispatch.on(event, listener);
   }
 
   // Rotates camera around the sun.
@@ -125,9 +127,9 @@ export default class BaseView {
 
   // Resizes canvas to fill its parent.
   resize() {
-    let $parent = $(this.renderer.domElement).parent();
-    let newWidth = $parent.width();
-    let newHeight = $parent.height();
+    const $parent = $(this.renderer.domElement).parent();
+    const newWidth = $parent.width();
+    const newHeight = $parent.height();
     if (newWidth && newHeight) {
       this.camera.aspect = newWidth / newHeight;
       this.camera.updateProjectionMatrix();
@@ -141,7 +143,9 @@ export default class BaseView {
 
   // Called automatically when 'day' property is updated.
   _updateDay() {
-    (this.props.day != null) && this.earth.setPositionFromDay(this.props.day);
+    if (this.props.day != null) {
+      this.earth.setPositionFromDay(this.props.day);
+    }
     this.sunEarthLine.setEarthPos(this.earth.position);
   }
 
@@ -151,11 +155,13 @@ export default class BaseView {
   }
 
   _updateEarthRotation() {
-    (this.props.earthRotation != null) && (this.earth.rotation = this.props.earthRotation);
+    if (this.props.earthRotation != null) {
+      this.earth.rotation = this.props.earthRotation;
+    }
   }
 
   _updateSunEarthLine() {
-    let mesh = this.sunEarthLine.rootObject;
+    const mesh = this.sunEarthLine.rootObject;
     if (this.props.sunEarthLine && !mesh.parent) {
       this.scene.add(mesh);
     } else if (!this.props.sunEarthLine && mesh.parent) {
@@ -164,11 +170,11 @@ export default class BaseView {
   }
 
   _updateLang() {
-    this.lang = this.props.lang || 'en_us';
+    this.lang = this.props.lang || "en_us";
   }
 
   _initScene() {
-    let basicProps = {type: this.type};
+    const basicProps = {type: this.type};
 
     this.scene.add(models.stars(basicProps));
     this.scene.add(models.ambientLight(basicProps));

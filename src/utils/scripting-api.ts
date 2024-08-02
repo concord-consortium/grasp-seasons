@@ -1,4 +1,4 @@
-import {sunrayAngle} from './solar-system-data';
+import {sunrayAngle} from "./solar-system-data";
 
 export default class ScriptingAPI {
   _seasons: any;
@@ -15,11 +15,11 @@ export default class ScriptingAPI {
   }
 
   onSimStateChange(callback: any) {
-    this._seasons.dispatch.on('simState.change', callback);
+    this._seasons.dispatch.on("simState.change", callback);
   }
 
   getSunrayAngle() {
-    let state = this.getSimState();
+    const state = this.getSimState();
     return sunrayAngle(state.day, state.earthTilt, state.lat);
   }
 

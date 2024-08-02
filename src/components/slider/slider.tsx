@@ -1,9 +1,9 @@
-import React from 'react';
-import $ from 'jquery';
-import 'jquery-ui/ui/widgets/slider';
+import React from "react";
+import $ from "jquery";
+import "jquery-ui/ui/widgets/slider";
 
-import 'jquery-ui/themes/base/slider.css';
-import './slider.scss';
+import "jquery-ui/themes/base/slider.css";
+import "./slider.scss";
 
 interface IProps {
   value: number;
@@ -22,7 +22,7 @@ interface IOptions extends IProps {
 }
 export default class Slider extends React.Component<IProps> {
   static defaultProps = {
-    logId: '',
+    logId: "",
     log: null
   }
   // props: any;
@@ -32,7 +32,7 @@ export default class Slider extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
     // Default jQuery UI plugin.
-    this.sliderFuncName = 'slider';
+    this.sliderFuncName = "slider";
   }
 
   get $slider() {
@@ -40,7 +40,7 @@ export default class Slider extends React.Component<IProps> {
   }
 
   getSliderOpts(props: IProps) {
-    const options = Object.assign({}, props) as IOptions;
+    const options = ({ ...props}) as IOptions;
     // Enhance options, support logging.
     if (props.log) {
       options.start = function (event: any, ui: any) {
@@ -52,7 +52,7 @@ export default class Slider extends React.Component<IProps> {
       };
       options.stop = function (event: any, ui: any) {
         const duration = (Date.now() - this._slideStart) / 1000;
-        props.log?.(props.logId + 'SliderChanged', {
+        props.log?.(props.logId + "SliderChanged", {
           value: ui.value,
           prevValue: this._prevValue,
           duration
@@ -80,7 +80,7 @@ export default class Slider extends React.Component<IProps> {
 
   render() {
     return (
-      <div ref='container' className='grasp-slider'></div>
+      <div ref="container" className="grasp-slider"></div>
     )
   }
 }

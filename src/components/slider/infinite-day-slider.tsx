@@ -1,8 +1,8 @@
-import $ from 'jquery';
-import Slider from './slider';
-import t from '../../translation/translate';
+import $ from "jquery";
+import Slider from "./slider";
+import t from "../../translation/translate";
 
-import './infinite-slider-jquery-ui-plugin';
+import "./infinite-slider-jquery-ui-plugin";
 
 export default class InfiniteDaySlider extends Slider {
   // $slider: any;
@@ -12,7 +12,7 @@ export default class InfiniteDaySlider extends Slider {
   constructor(props: any) {
     super(props);
     // Custom, tweaked jQuery UI slider (defined in ui/grasp-slider).
-    this.sliderFuncName = 'infiniteSlider';
+    this.sliderFuncName = "infiniteSlider";
   }
 
   componentDidMount() {
@@ -35,18 +35,20 @@ export default class InfiniteDaySlider extends Slider {
   }
 
   generateMonthTicks(lang: any) {
-    let ticks = [];
-    let months = t("~MONTHS_SHORT", lang);
+    const ticks = [];
+    const months = t("~MONTHS_SHORT", lang);
     for (let m = 0; m < 12; m++) {
       ticks.push({value: m * 30.4, name: months[m]});
     }
-    this.$slider.infiniteSlider('option', 'ticks', ticks);
+    this.$slider.infiniteSlider("option", "ticks", ticks);
     // Shift tick labels so they are in the middle of the month section on the slider.
-    let monthWidth = this.$slider.width() / 12;
-    this.$slider.find('.ui-slider-tick-label').each(function(this: any) {
-      let $label = $(this);
-      let labelWidth = $label.width();
-      labelWidth && $label.css('margin-left', -labelWidth * 0.5 + monthWidth * 0.5);
+    const monthWidth = this.$slider.width() / 12;
+    this.$slider.find(".ui-slider-tick-label").each(function(this: any) {
+      const $label = $(this);
+      const labelWidth = $label.width();
+      if (labelWidth) {
+        $label.css("margin-left", -labelWidth * 0.5 + monthWidth * 0.5);
+      }
     });
   }
 }

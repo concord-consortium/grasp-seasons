@@ -1,6 +1,6 @@
-import CanvasView, { ICanvasProps } from './canvas-view';
-import EarthView from '../3d-views/earth-view';
-import { ISimState } from '../types';
+import CanvasView, { ICanvasProps } from "./canvas-view";
+import EarthView from "../3d-views/earth-view";
+import { ISimState } from "../types";
 
 interface IProps extends ICanvasProps {
   onCameraChange: () => void;
@@ -13,10 +13,10 @@ export default class EarthViewComp extends CanvasView<IProps> {
 
   componentDidMount() {
     super.componentDidMount();
-    this.externalView.on('props.change', (newProps: Partial<ISimState>) => {
+    this.externalView.on("props.change", (newProps: Partial<ISimState>) => {
       this.props.onSimStateChange(newProps);
     });
-    this.externalView.on('camera.change', () => {
+    this.externalView.on("camera.change", () => {
       this.props.onCameraChange();
     });
   }

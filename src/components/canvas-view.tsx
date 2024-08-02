@@ -1,5 +1,5 @@
-import React from 'react';
-import { ISimState } from '../types';
+import React from "react";
+import { ISimState } from "../types";
 
 export interface ICanvasProps {
   simulation: ISimState;
@@ -13,7 +13,7 @@ export default class CanvasView<TProps extends ICanvasProps> extends React.Compo
   componentDidMount() {
     this.externalView = new this.ExternalView(this.refs.container, this.props.simulation);
     if (this.externalView.on) {
-      this.externalView.on('log', (action: string, data: any) => {
+      this.externalView.on("log", (action: string, data: any) => {
         this.props.log?.(action, data);
       });
     }
@@ -39,7 +39,7 @@ export default class CanvasView<TProps extends ICanvasProps> extends React.Compo
 
   render() {
     return (
-      <div ref='container' style={{width: '100%', height: '100%'}}>
+      <div ref="container" style={{width: "100%", height: "100%"}}>
         {/* Canvas will be inserted here by the external view. */}
       </div>
     )

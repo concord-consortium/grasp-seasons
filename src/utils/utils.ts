@@ -1,19 +1,19 @@
-import $ from 'jquery';
+import $ from "jquery";
 
 // Mouse position in pixels.
 export function mousePos(event: any, targetElement: HTMLElement) {
-  let $targetElement = $(targetElement);
-  let parentX = $targetElement.offset()?.left || 0;
-  let parentY = $targetElement.offset()?.top || 0;
+  const $targetElement = $(targetElement);
+  const parentX = $targetElement.offset()?.left || 0;
+  const parentY = $targetElement.offset()?.top || 0;
   return {x: event.pageX - parentX, y: event.pageY - parentY};
 }
 
 // Normalized mouse position [-1, 1].
 export function mousePosNormalized(event: any, targetElement: HTMLElement) {
-  let pos = mousePos(event, targetElement);
-  let $targetElement = $(targetElement);
-  let parentWidth = $targetElement.width() || 1;
-  let parentHeight = $targetElement.height() || 1;
+  const pos = mousePos(event, targetElement);
+  const $targetElement = $(targetElement);
+  const parentWidth = $targetElement.width() || 1;
+  const parentHeight = $targetElement.height() || 1;
   pos.x =  (pos.x / parentWidth) * 2 - 1;
   pos.y = -(pos.y / parentHeight) * 2 + 1;
   return pos;
@@ -30,7 +30,7 @@ type RGBTriple = [number, number, number];
 export function colorInterpolation(colors: Record<number, RGBTriple>) {
   const sortedPositions = Object.keys(colors).map(v => parseFloat(v)).sort();
   function rgbToString(rgb: RGBTriple) {
-    return 'rgb(' + rgb.join(', ') + ')';
+    return "rgb(" + rgb.join(", ") + ")";
   }
   return function(t: number) {
     let i = 0;
@@ -40,7 +40,7 @@ export function colorInterpolation(colors: Record<number, RGBTriple>) {
     if (t === sortedPositions[i]) return rgbToString(colors[sortedPositions[i]]);
     const leftIdx = i - 1 >= 0 ? i - 1 : sortedPositions.length - 1;
     const rightIdx = i < sortedPositions.length ? i : 0;
-    let leftPos = sortedPositions[leftIdx];
+    const leftPos = sortedPositions[leftIdx];
     let rightPos = sortedPositions[rightIdx];
     const leftColor = colors[leftPos];
     const rightColor = colors[rightPos];
@@ -63,12 +63,12 @@ export function colorInterpolation(colors: Record<number, RGBTriple>) {
 }
 export default function getURLParam(name: string, defaultValue = null) {
   const url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
+  name = name.replace(/[[\]]/g, "\\$&");
   const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
   const results = regex.exec(url);
   if (!results) return defaultValue;
   if (!results[2]) return true;
   const value = decodeURIComponent(results[2].replace(/\+/g, " "));
-  if (value === 'false') return false;
+  if (value === "false") return false;
   return value;
 }

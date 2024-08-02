@@ -1,4 +1,4 @@
-import iframePhone from 'iframe-phone';
+import iframePhone from "iframe-phone";
 
 export default class ParentMessageAPI {
   _iframeEndpoint: any;
@@ -18,31 +18,31 @@ export default class ParentMessageAPI {
   }
 
   _setupMessages(phone: any, scriptingAPI: any) {
-    phone.addListener('setSimState', function (content: any) {
+    phone.addListener("setSimState", function (content: any) {
       scriptingAPI.setSimState(content);
     });
 
-    phone.addListener('getSimState', function () {
-      phone.post('simState', scriptingAPI.getSimState());
+    phone.addListener("getSimState", function () {
+      phone.post("simState", scriptingAPI.getSimState());
     });
 
-    phone.addListener('observeSimState', function () {
+    phone.addListener("observeSimState", function () {
       scriptingAPI.onSimStateChange(function () {
-        phone.post('simState', scriptingAPI.getSimState());
+        phone.post("simState", scriptingAPI.getSimState());
       });
       // Initial value.
-      phone.post('simState', scriptingAPI.getSimState());
+      phone.post("simState", scriptingAPI.getSimState());
     });
 
-    phone.addListener('getSunrayAngle', function () {
-      phone.post('sunrayAngle', scriptingAPI.getSunrayAngle());
+    phone.addListener("getSunrayAngle", function () {
+      phone.post("sunrayAngle", scriptingAPI.getSunrayAngle());
     });
 
-    phone.addListener('setPlayBtnDisabled', function (content: any) {
+    phone.addListener("setPlayBtnDisabled", function (content: any) {
       scriptingAPI.setPlayBtnDisabled(content);
     });
 
-    phone.addListener('setRotatingBtnDisabled', function (content: any) {
+    phone.addListener("setRotatingBtnDisabled", function (content: any) {
       scriptingAPI.setRotatingBtnDisabled(content);
     });
   }

@@ -1,11 +1,11 @@
-import $ from 'jquery';
-import {sunrayAngle} from '../utils/solar-system-data';
-import {colorInterpolation} from '../utils/utils';
+import $ from "jquery";
+import {sunrayAngle} from "../utils/solar-system-data";
+import {colorInterpolation} from "../utils/utils";
 
 const DEG_2_RAD = Math.PI / 180;
 
-const SKY_COLOR = '#99ADF1';
-const DIST_MARKER_COLOR = '#87C2E8';
+const SKY_COLOR = "#99ADF1";
+const DIST_MARKER_COLOR = "#87C2E8";
 
 const GROUND_FRACTION = 0.2;
 const DIST_MARKER_HEIGHT_FRACTION = 0.1;
@@ -28,8 +28,8 @@ const DEFAULT_PROPS = {
   day: 0,
   lat: 0,
   earthTilt: true,
-  sunrayColor: '#D8D8AC',
-  groundColor: 'auto', // different for each season
+  sunrayColor: "#D8D8AC",
+  groundColor: "auto", // different for each season
   sunrayDistMarker: false
 };
 
@@ -41,9 +41,9 @@ export default class {
   props: any;
   width: any;
   constructor(parentEl: any, props = DEFAULT_PROPS) {
-    this.canvas = document.createElement('canvas');
+    this.canvas = document.createElement("canvas");
     parentEl.appendChild(this.canvas);
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext("2d");
     this.groundColorFunc = colorInterpolation(GROUND_COLORS);
 
     this.props = {};
@@ -53,7 +53,7 @@ export default class {
   }
 
   setProps(newProps: any) {
-    let oldProps = $.extend(this.props);
+    const oldProps = $.extend(this.props);
     this.props = $.extend(this.props, newProps);
 
     if (this.props.day !== oldProps.day ||
@@ -79,24 +79,24 @@ export default class {
   }
 
   get polarNight() {
-    let solarAngle = this.solarAngle;
+    const solarAngle = this.solarAngle;
     return solarAngle < 0 || solarAngle > 180 * DEG_2_RAD;
   }
 
   drawRays() {
-    let solarAngle = this.solarAngle;
+    const solarAngle = this.solarAngle;
     if (solarAngle < 0 || solarAngle > 180 * DEG_2_RAD) return;
 
-    let width = this.width;
-    let height = this.height;
-    let groundHeight = GROUND_FRACTION * height;
-    let skyHeight = height - groundHeight;
+    const width = this.width;
+    const height = this.height;
+    const groundHeight = GROUND_FRACTION * height;
+    const skyHeight = height - groundHeight;
 
     // Longest possible line.
-    let maxLength = Math.sqrt(skyHeight * skyHeight + width * width);
+    const maxLength = Math.sqrt(skyHeight * skyHeight + width * width);
     let x: any;
-    let dx = raysXDiff(solarAngle, width);
-    let lineRotationRadians = 90 * DEG_2_RAD - solarAngle;
+    const dx = raysXDiff(solarAngle, width);
+    const lineRotationRadians = 90 * DEG_2_RAD - solarAngle;
 
     this.ctx.save();
     this.ctx.strokeStyle = this.props.sunrayColor;
@@ -114,9 +114,9 @@ export default class {
       }
     }
 
-    let dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle));
-    let yInitial = solarAngle < 90 * DEG_2_RAD ? (dy / 2) : (((x - width) / dx) * dy);
-    let xEdge = solarAngle < 90 * DEG_2_RAD ? 0 : width;
+    const dy = Math.abs(width / (NUM_BEAMS + 1) / Math.cos(solarAngle));
+    const yInitial = solarAngle < 90 * DEG_2_RAD ? (dy / 2) : (((x - width) / dx) * dy);
+    const xEdge = solarAngle < 90 * DEG_2_RAD ? 0 : width;
     if (isFinite(dy)) {
       for (let y = skyHeight - yInitial; y > 0; y -= dy) {
         this.ctx.save();
@@ -130,14 +130,14 @@ export default class {
 
   drawDistanceBetweenRays() {
     if (this.props.sunrayDistMarker && !this.polarNight) {
-      let dx = raysXDiff(this.solarAngle, this.width);
+      const dx = raysXDiff(this.solarAngle, this.width);
       this.drawRaysDistMarker(dx * 0.5, this.height * (1 - GROUND_FRACTION), dx);
     }
   }
 
   // Resize canvas to fill its parent.
   resize() {
-    let $parent = $(this.canvas).parent();
+    const $parent = $(this.canvas).parent();
     this.width = $parent.width();
     this.height = $parent.height();
     // Update canvas attributes (they can be undefined if canvas size is set using CSS).
@@ -157,7 +157,7 @@ export default class {
     this.ctx.save();
     this.ctx.translate(this.width * 0.5,  this.height * (1 - groundFraction));
     this.ctx.rotate(angle);
-    this.ctx.fillStyle = this.props.groundColor === 'auto' ? this.groundColorFunc(this.props.day / MAX_DAY) : this.props.groundColor;
+    this.ctx.fillStyle = this.props.groundColor === "auto" ? this.groundColorFunc(this.props.day / MAX_DAY) : this.props.groundColor;
     this.ctx.fillRect(-this.width, 0, this.width * 2, this.height);
     this.ctx.restore();
   }
@@ -165,7 +165,7 @@ export default class {
   drawPolarNightOverlay() {
     if (this.solarAngle < 0 || this.solarAngle > 180 * DEG_2_RAD) {
       this.ctx.save();
-      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      this.ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
       this.ctx.fillRect(0, 0, this.width, this.height);
       this.ctx.restore();
     }
@@ -198,7 +198,7 @@ export default class {
   }
 
   drawRaysDistMarker(x: any, y: any, len: any, angle=0) {
-    let height = DIST_MARKER_HEIGHT_FRACTION * this.height;
+    const height = DIST_MARKER_HEIGHT_FRACTION * this.height;
     this.ctx.save();
     this.ctx.translate(x, y);
     this.ctx.rotate(angle);

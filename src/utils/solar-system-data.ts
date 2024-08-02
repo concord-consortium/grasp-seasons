@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 const AU = 149597870.691;
 const AU_2_KM = 149597870.7;
@@ -13,7 +13,7 @@ export const EARTH_TILT = 0.41;
 export const SUMMER_SOLSTICE = 171; // 171 day of year
 
 export function earthEllipseLocationByDay(day: any) {
-  let index = (SUMMER_SOLSTICE - day) / 365;
+  const index = (SUMMER_SOLSTICE - day) / 365;
   let z = (1 / EARTH_SEMI_MAJOR_AXIS) * Math.sin(index * 2 * Math.PI);
   let x = EARTH_SEMI_MAJOR_AXIS * Math.cos(index * 2 * Math.PI);
 
@@ -26,11 +26,11 @@ export function earthEllipseLocationByDay(day: any) {
 export function sunrayAngle(day: number, earthTilt: number, lat: number) {
   // Angle of tilt axis, looked at from above (i.e., projected onto xy plane).
   // June solstice = 0, September equinox = pi/2, December solstice = pi, March equinox = 3pi/2.
-  let tiltAxisZRadians = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365;
+  const tiltAxisZRadians = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365;
   // How much is a given latitude tilted up (+) or down (-) toward the ecliptic?
   // -23.5 degrees on June solstice, 0 degrees at equinoxes, +23.5 degrees on December solstice.
-  let orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
-  let effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
+  const orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
+  const effectiveTiltDegrees = -Math.cos(tiltAxisZRadians) * orbitalTiltDegrees;
   return 90 - (lat + effectiveTiltDegrees);
 }
 
@@ -42,8 +42,8 @@ export function angleToDay(angle: number, earthTilt: number, lat: number) {
   // Math.acos((angle - 90 + lat) / orbitalTiltDegrees)) = 2 * Math.PI * (day - SUMMER_SOLSTICE) / 365
   // 365 * Math.acos((angle - 90 + lat) / orbitalTiltDegrees)) = 2 * Math.PI * (day - SUMMER_SOLSTICE)
   // day - SUMMER_SOLSTICE = 365 * Math.acos((angle - 90 + lat) / orbitalTiltDegrees)) / (2 * Math.PI)
-  let orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
-  let distFromSolstice =  365 * Math.acos((angle - 90 + lat) / orbitalTiltDegrees) / (2 * Math.PI);
+  const orbitalTiltDegrees = earthTilt ? EARTH_TILT * RAD_2_DEG : 0;
+  const distFromSolstice =  365 * Math.acos((angle - 90 + lat) / orbitalTiltDegrees) / (2 * Math.PI);
   if (isNaN(distFromSolstice)) {
     return null;
   }

@@ -1,11 +1,11 @@
-import React, { ChangeEvent } from 'react';
-import EarthViewComp from './earth-view-comp';
-import OrbitViewComp from './orbit-view-comp';
-import RaysViewComp from './rays-view-comp';
-import t from '../translation/translate';
-import { ISimState, IViewState, ViewType } from '../types';
+import React, { ChangeEvent } from "react";
+import EarthViewComp from "./earth-view-comp";
+import OrbitViewComp from "./orbit-view-comp";
+import RaysViewComp from "./rays-view-comp";
+import t from "../translation/translate";
+import { ISimState, IViewState, ViewType } from "../types";
 
-import './view-manager.scss';
+import "./view-manager.scss";
 
 interface IProps {
   simulation: ISimState;
@@ -32,7 +32,9 @@ export default class ViewManager extends React.Component<IProps> {
   }
 
   componentWillUnmount() {
-    this._rafId && cancelAnimationFrame(this._rafId);
+    if (this._rafId) {
+      cancelAnimationFrame(this._rafId);
+    }
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -60,7 +62,7 @@ export default class ViewManager extends React.Component<IProps> {
 
   // When earth view camera is changed, we need to update view axis in the orbit view.
   syncCameraAndViewAxis() {
-    let camVec = this.refs.earth.getCameraEarthVec();
+    const camVec = this.refs.earth.getCameraEarthVec();
     this.refs.orbit.setViewAxis(camVec);
   }
 
@@ -81,7 +83,7 @@ export default class ViewManager extends React.Component<IProps> {
     for (key in this.props.view) {
       if (this.props.view[key] === view) return key;
     }
-    return 'hidden';
+    return "hidden";
   }
 
   showOrbitViewCameraModel(){
@@ -94,7 +96,7 @@ export default class ViewManager extends React.Component<IProps> {
   getEarthScreenPosition(){
     if ((Object.values(this.props.view)).indexOf("orbit") > -1){
       return this.refs.orbit.getEarthPosition();
-    } else return null;
+    } else {return null;}
   }
 
   lockCameraRotation(lock: boolean){
@@ -102,40 +104,40 @@ export default class ViewManager extends React.Component<IProps> {
   }
 
   renderViewSelect(position: keyof IViewState) {
-    let lang = this.props.simulation.lang;
+    const lang = this.props.simulation.lang;
     return (
       <select className={`form-control view-select ${position}`} name={position}
               value={this.props.view[position]} onChange={this.handleViewChange}>
-        <option value='earth'>{t("~EARTH", lang)}</option>
-        <option value='orbit'>{t("~ORBIT", lang)}</option>
-        <option value='raysGround'>{t("~GROUND", lang)}</option>
-        <option value='raysSpace'>{t("~SPACE", lang)}</option>
-        <option value='nothing'>{t("~NOTHING", lang)}</option>
+        <option value="earth">{t("~EARTH", lang)}</option>
+        <option value="orbit">{t("~ORBIT", lang)}</option>
+        <option value="raysGround">{t("~GROUND", lang)}</option>
+        <option value="raysSpace">{t("~SPACE", lang)}</option>
+        <option value="nothing">{t("~NOTHING", lang)}</option>
       </select>
     );
   }
 
   render() {
-    let lang = this.props.simulation.lang;
+    const lang = this.props.simulation.lang;
     return (
-      <div className='view-manager'>
-        <div className={`view ${this.getViewPosition('earth')}`}>
-          <EarthViewComp ref='earth' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
+      <div className="view-manager">
+        <div className={`view ${this.getViewPosition("earth")}`}>
+          <EarthViewComp ref="earth" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
                          onCameraChange={this.syncCameraAndViewAxis} log={this.props.log}/>
         </div>
-        <div className={`view ${this.getViewPosition('orbit')}`}>
-          <OrbitViewComp ref='orbit' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()} />
+        <div className={`view ${this.getViewPosition("orbit")}`}>
+          <OrbitViewComp ref="orbit" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()} />
         </div>
-        <div className={`view ${this.getViewPosition('raysGround')}`}>
+        <div className={`view ${this.getViewPosition("raysGround")}`}>
           <div className="rays-ground-text">{t("~NOON", lang)}</div>
-          <RaysViewComp ref='raysGround' type='ground' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
+          <RaysViewComp ref="raysGround" type="ground" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
         </div>
-        <div className={`view ${this.getViewPosition('raysSpace')}`}>
-          <RaysViewComp ref='raysSpace' type='space' simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
+        <div className={`view ${this.getViewPosition("raysSpace")}`}>
+          <RaysViewComp ref="raysSpace" type="space" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
         </div>
-        {this.renderViewSelect('main')}
-        {this.renderViewSelect('small-top')}
-        {this.renderViewSelect('small-bottom')}
+        {this.renderViewSelect("main")}
+        {this.renderViewSelect("small-top")}
+        {this.renderViewSelect("small-bottom")}
       </div>
     );
   }

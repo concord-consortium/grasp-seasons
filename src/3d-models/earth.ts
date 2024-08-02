@@ -1,11 +1,11 @@
-import * as THREE from 'three';
-import * as data from '../utils/solar-system-data';
-import * as c from './constants';
-import earthLargeImg from '../assets/earth-2k.jpg';//'../assets/earth-grid-2k.jpg';
-import earthLargeGridImg from '../assets/earth-grid-2k.jpg';
-import earthSimpleImg from '../assets/earth-equator-0.5k.jpg';//'../assets/earth-0.5k.jpg';
-import earthBumpImg from '../assets/earth-bump-2k.jpg';
-import { IModelParams } from '../types';
+import * as THREE from "three";
+import * as data from "../utils/solar-system-data";
+import * as c from "./constants";
+import earthLargeImg from "../assets/earth-2k.jpg";//'../assets/earth-grid-2k.jpg';
+import earthLargeGridImg from "../assets/earth-grid-2k.jpg";
+import earthSimpleImg from "../assets/earth-equator-0.5k.jpg";//'../assets/earth-0.5k.jpg';
+import earthBumpImg from "../assets/earth-bump-2k.jpg";
+import { IModelParams } from "../types";
 // import earthSpecularImg from '../assets/earth-specular-2k.png';
 
 const DEF_COLOR = 0xffffff;
@@ -18,14 +18,14 @@ export default class Earth {
   _posObject: THREE.Object3D;
   _tiltObject: THREE.Object3D;
   constructor(params: IModelParams) {
-    let simple = params.type === 'orbit-view';
-    let RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    let COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE, specular: 0x000000} : {specular: 0x000000};
-    let geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
+    const simple = params.type === "orbit-view";
+    const RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
+    const COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE, specular: 0x000000} : {specular: 0x000000};
+    const geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
-    let textureLoader = new THREE.TextureLoader();
+    const textureLoader = new THREE.TextureLoader();
     this._material.map = textureLoader.load(simple ? earthSimpleImg : earthLargeImg);
-    if (true || !simple) {
+    if (!simple) {
       this._material.bumpMap = textureLoader.load(earthBumpImg);
       this._material.bumpScale = 100000 * c.SF;
     }
@@ -37,7 +37,7 @@ export default class Earth {
     this._posObject = new THREE.Object3D();
     // Make sure that earth is at day 0 position.
     // This is necessary so angle diff is calculated correctly in _updateDay() method.
-    let pos = data.earthEllipseLocationByDay(0);
+    const pos = data.earthEllipseLocationByDay(0);
     this._posObject.position.copy(pos);
     this._posObject.add(this._tiltObject);
   }
@@ -83,7 +83,7 @@ export default class Earth {
   }
 
   get verticalAxisDir() {
-    let earthHorizontalAxis = new THREE.Vector3(0, 1, 0);
+    const earthHorizontalAxis = new THREE.Vector3(0, 1, 0);
     earthHorizontalAxis.applyQuaternion(this.tiltObject.quaternion);
     return earthHorizontalAxis;
   }
@@ -97,7 +97,7 @@ export default class Earth {
   }
 
   showGridlines(show: boolean) {
-    let textureLoader = new THREE.TextureLoader();
+    const textureLoader = new THREE.TextureLoader();
     if (!show) {
       this._material.map = textureLoader.load(earthLargeImg);
     } else {
@@ -111,9 +111,9 @@ export default class Earth {
   }
 
   setPositionFromDay(day: number) {
-    let newPos = data.earthEllipseLocationByDay(day);
+    const newPos = data.earthEllipseLocationByDay(day);
 
-    let angleDiff = Math.atan2(this.position.z, this.position.x) - Math.atan2(newPos.z, newPos.x);
+    const angleDiff = Math.atan2(this.position.z, this.position.x) - Math.atan2(newPos.z, newPos.x);
     // Make sure that earth maintains its current rotation.
     this._orbitRotationObject.rotation.y += angleDiff;
 

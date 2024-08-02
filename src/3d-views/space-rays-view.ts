@@ -1,10 +1,10 @@
-import GroundRaysView from './ground-rays-view';
+import GroundRaysView from "./ground-rays-view";
 
 const DEG_2_RAD = Math.PI / 180;
 const GROUND_FRACTION = 0.5;
 const NUM_BEAMS = 8;
 const RAYS_ANGLE = 90 * DEG_2_RAD;
-const SKY_COLOR = '#000';
+const SKY_COLOR = "#000";
 
 export default class extends GroundRaysView {
   render() {
@@ -19,10 +19,10 @@ export default class extends GroundRaysView {
     this.ctx.save();
     this.ctx.strokeStyle = this.props.sunrayColor;
     this.ctx.fillStyle = this.props.sunrayColor;
-    let solarAngle = this.solarAngle;
-    let width = this.width;
-    let height = this.height;
-    let rayLength = width * 2;
+    const solarAngle = this.solarAngle;
+    const width = this.width;
+    const height = this.height;
+    const rayLength = width * 2;
     let cutOffHeight = null;
     let south = null;
     if (this.polarNight) {
@@ -32,7 +32,7 @@ export default class extends GroundRaysView {
       south = solarAngle > 180 * DEG_2_RAD;
     }
     for (let i = 0; i < NUM_BEAMS; i++) {
-      let coords = this.rayCoords(i);
+      const coords = this.rayCoords(i);
       if (cutOffHeight !== null && (south && coords.y < cutOffHeight || !south && coords.y > cutOffHeight)) {
         continue;
       }
@@ -51,17 +51,17 @@ export default class extends GroundRaysView {
 
   drawDistanceBetweenRays() {
     if (this.props.sunrayDistMarker && !this.polarNight) {
-      let solarAngle = this.solarAngle;
-      let idx = Math.floor(NUM_BEAMS / 2) - 1;
-      let ray1 = this.rayCoords(idx);
-      let ray2 = this.rayCoords(idx + 1);
+      const solarAngle = this.solarAngle;
+      const idx = Math.floor(NUM_BEAMS / 2) - 1;
+      const ray1 = this.rayCoords(idx);
+      const ray2 = this.rayCoords(idx + 1);
       this.drawRaysDistMarker(ray1.x, ray1.y, length(ray1, ray2), solarAngle);
     }
   }
 
   rayCoords(idx: any) {
-    let dy = this.height / NUM_BEAMS;
-    let y = dy * 0.5 + idx * dy;
+    const dy = this.height / NUM_BEAMS;
+    const y = dy * 0.5 + idx * dy;
     let x;
     if (this.polarNight) {
       x = 0;
@@ -77,7 +77,7 @@ export default class extends GroundRaysView {
 }
 
 function length(a: any, b: any) {
-  let x = a.x - b.x;
-  let y = a.y - b.y;
+  const x = a.x - b.x;
+  const y = a.y - b.y;
   return Math.sqrt(x * x + y * y);
 }

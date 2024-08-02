@@ -1,8 +1,8 @@
-import React from 'react';
-import CITY_DATA from '../utils/city-data';
-import t, { Language } from '../translation/translate';
+import React from "react";
+import CITY_DATA from "../utils/city-data";
+import t, { Language } from "../translation/translate";
 
-import './city-select.scss';
+import "./city-select.scss";
 
 interface IProps {
   lang: Language;
@@ -39,15 +39,17 @@ export default class CitySelect extends React.Component<IProps> {
   selectChange(event: any) {
     const { onCityChange } = this.props;
     const { locations } = this.state;
-    let city = locations[event.target.value];
-    city.lat && city.long && onCityChange(city.lat, city.long, city.name);
+    const city = locations[event.target.value];
+    if (city.lat && city.long) {
+      onCityChange(city.lat, city.long, city.name);
+    }
   }
 
   getOptions() {
     const { locations } = this.state;
-    let options = [];
+    const options = [];
     for (let i = 0; i < locations.length; i++) {
-      let loc = locations[i];
+      const loc = locations[i];
       options.push(<option key={i} value={i} disabled={loc.disabled}>{loc.name}</option>);
     }
     return options;
@@ -86,14 +88,14 @@ export default class CitySelect extends React.Component<IProps> {
   render() {
     const { customLocName } = this.state;
     return (
-      <div className='city-select'>
+      <div className="city-select">
         <label>{t("~SELECT_CITY", this.props.lang)}</label>
-        <select className='form-control' value={this.selectedCity} onChange={this.selectChange}>
+        <select className="form-control" value={this.selectedCity} onChange={this.selectChange}>
           {this.getOptions()}
         </select>
-        <span className={`custom-location ${this.isLocationCustom ? 'visible' : ''}`}>
-          <input type='text' value={customLocName} onChange={this.handleCustomLocNameChange}/>
-          <button className='btn btn-small' onClick={this.saveCustomLocation}>Save Location</button>
+        <span className={`custom-location ${this.isLocationCustom ? "visible" : ""}`}>
+          <input type="text" value={customLocName} onChange={this.handleCustomLocNameChange}/>
+          <button className="btn btn-small" onClick={this.saveCustomLocation}>Save Location</button>
         </span>
       </div>
     );

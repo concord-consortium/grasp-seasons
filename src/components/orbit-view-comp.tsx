@@ -1,7 +1,7 @@
-import * as THREE from 'three';
-import CanvasView, { ICanvasProps } from './canvas-view';
-import OrbitView from '../3d-views/orbit-view';
-import { ISimState } from '../types';
+import * as THREE from "three";
+import CanvasView, { ICanvasProps } from "./canvas-view";
+import OrbitView from "../3d-views/orbit-view";
+import { ISimState } from "../types";
 
 interface IProps extends ICanvasProps {
   showCamera: boolean;
@@ -15,7 +15,7 @@ export default class OrbitViewComp extends CanvasView<IProps> {
 
   componentDidMount() {
     super.componentDidMount();
-    this.externalView.on('props.change', (newProps: Partial<ISimState>) => {
+    this.externalView.on("props.change", (newProps: Partial<ISimState>) => {
       this.props.onSimStateChange(newProps);
     });
     this._setupLogging();
@@ -38,11 +38,11 @@ export default class OrbitViewComp extends CanvasView<IProps> {
   }
 
   _setupLogging() {
-    this.externalView.on('camera.changeStart', () => {
+    this.externalView.on("camera.changeStart", () => {
       this._startAngle = this.externalView.getCameraAngle();
     });
-    this.externalView.on('camera.changeEnd', () => {
-      this.props.log?.('OrbitViewAngleChanged', {
+    this.externalView.on("camera.changeEnd", () => {
+      this.props.log?.("OrbitViewAngleChanged", {
         value: this.externalView.getCameraAngle(),
         prevValue: this._startAngle
       });

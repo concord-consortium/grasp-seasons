@@ -1,49 +1,47 @@
-import $ from 'jquery';
-import 'jquery-ui/ui/widgets/slider';
+import $ from "jquery";
+import "jquery-ui/ui/widgets/slider";
 
-var TICK_WIDTH = 1;
+const TICK_WIDTH = 1;
 
 // Patched jQueryUI slider that can wrap. When user drags slider handle over max (or min) value,
 // it will jump back to min (or max).
 // It also supports 'ticks' option.
 ($ as any).widget("ui.infiniteSlider", ($ as any).ui.slider, {
-  _create: function () {
+  _create () {
     this._super();
   },
-  _setOption: function (key: any, value: any) {
-    this._superApply(arguments);
-    if (key === 'ticks') {
-      var valueTotal = this._valueMax() - this._valueMin();
+  _setOption (key: any, value: any) {
+    this._superApply(key, value);
+    if (key === "ticks") {
+      const valueTotal = this._valueMax() - this._valueMin();
       value.forEach(function(this: any, t: any) {
-        var percentValue = t.value / valueTotal * 100;
-        var tick = $('<div></div>').addClass('ui-slider-tick').css({
-          position: 'absolute',
-          left: percentValue + '%'
+        const percentValue = t.value / valueTotal * 100;
+        const tick = $("<div></div>").addClass("ui-slider-tick").css({
+          position: "absolute",
+          left: percentValue + "%"
         });
-        var mark = $('<div></div>').addClass('ui-slider-tick-mark').css({
+        const mark = $("<div></div>").addClass("ui-slider-tick-mark").css({
           height: this.element.height(),
-          width: TICK_WIDTH + 'px',
-          'margin-left': (-0.5 * TICK_WIDTH) + 'px',
-          background: '#aaaaaa'
+          width: TICK_WIDTH + "px",
+          "margin-left": (-0.5 * TICK_WIDTH) + "px",
+          background: "#aaaaaa"
         });
-        var label = $('<div></div>').addClass('ui-slider-tick-label').text(t.name);
+        const label = $("<div></div>").addClass("ui-slider-tick-label").text(t.name);
         mark.appendTo(tick);
         label.appendTo(tick);
         tick.appendTo(this.element);
         // We can do it at the very end, when the element is rendered and its width can be calculated.
-        var labelWidth = label.width();
-        labelWidth && label.css('margin-left', (-0.5 * labelWidth) + 'px');
+        const labelWidth = label.width();
+        if (labelWidth) {
+          label.css("margin-left", (-0.5 * labelWidth) + "px");
+        }
       }.bind(this));
-      this.element.addClass('ui-slider-with-tick-labels');
+      this.element.addClass("ui-slider-with-tick-labels");
     }
   },
 
-  _normValueFromMouse: function( position: any ) {
-    var pixelTotal,
-      pixelMouse,
-      percentMouse,
-      valueTotal,
-      valueMouse;
+  _normValueFromMouse( position: any ) {
+    let pixelTotal, pixelMouse, percentMouse;
 
     if ( this.orientation === "horizontal" ) {
       pixelTotal = this.elementSize.width;
@@ -71,8 +69,8 @@ var TICK_WIDTH = 1;
       percentMouse = 1 - percentMouse;
     }
 
-    valueTotal = this._valueMax() - this._valueMin();
-    valueMouse = this._valueMin() + percentMouse * valueTotal;
+    const valueTotal = this._valueMax() - this._valueMin();
+    const valueMouse = this._valueMin() + percentMouse * valueTotal;
 
     return this._trimAlignValue( valueMouse );
   }

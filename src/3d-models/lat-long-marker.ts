@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import * as c from './constants';
+import * as THREE from "three";
+import * as c from "./constants";
 
 const DEG_2_RAD = Math.PI / 180;
 const DEF_COLOR = 0xffffff;
@@ -13,12 +13,12 @@ export default class LatLongMarker {
   rootObject: THREE.Object3D;
   constructor(simple?: boolean) {
     this.markerRadius = simple ? c.LATLNG_MARKER_RADIUS * 5 : c.LATLNG_MARKER_RADIUS;
-    let geometry = new THREE.SphereGeometry(this.markerRadius, 32, 32);
-    let material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
-    let mesh = new THREE.Mesh(geometry, material);
+    const geometry = new THREE.SphereGeometry(this.markerRadius, 32, 32);
+    const material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
+    const mesh = new THREE.Mesh(geometry, material);
     this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.02 : c.EARTH_RADIUS;
     mesh.position.x = this.earthRadius;
-    let pivot = new THREE.Object3D();
+    const pivot = new THREE.Object3D();
     pivot.add(mesh);
 
     this.rootObject = pivot;
