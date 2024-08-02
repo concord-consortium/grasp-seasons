@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import '../../css/jquery-ui-theme.less';
+import '../css/jquery-ui-theme.less';
 import 'jquery-ui/ui/widgets/slider';
 
 var TICK_WIDTH = 1;

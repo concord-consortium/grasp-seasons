@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { Font } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-// @ts-expect-error ts-migrate(2306) FIXME: File '/Users/kswenson/Development/cc-dev/grasp-sea... Remove this comment to see the full error message
-import fontDef from './museo-500-regular';
+import { museo500FontDef } from './museo-500-regular';
 import * as data from '../solar-system-data';
 import * as c from './constants';
 import { IModelParams } from '../types';
@@ -94,7 +93,7 @@ export default {
   label: function (txt: string, small: boolean) {
     // Load font in a sync way, using webpack raw-loader. Based on async THREE JS loader:
     // https://github.com/mrdoob/three.js/blob/ddab1fda4fd1e21babf65aa454fc0fe15bfabc33/src/loaders/FontLoader.js#L20
-    let font = new Font(fontDef);
+    let font = new Font(museo500FontDef as any);
     let SIZE = 16000000;
     let HEIGHT = 1000000;
     let SIZE_SMALL = SIZE / 2;

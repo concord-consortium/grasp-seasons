@@ -11,7 +11,7 @@ const DEPLOY_PATH = process.env.DEPLOY_PATH;
 var lib = process.env.WEBPACK_TARGET === 'lib';
 
 module.exports = {
-  entry: lib ? './js/lib.ts' : './js/main.tsx',
+  entry: lib ? './src/lib.ts' : './src/main.tsx',
   output: {
     path: path.join(__dirname, lib ? 'dist-lib' : 'dist'),
     filename: lib ? 'grasp-seasons.js' : 'app.js',

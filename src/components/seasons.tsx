@@ -10,9 +10,9 @@ import AnimationButton from './animation-button';
 import getURLParam from '../utils';
 import t, { Language } from '../translate';
 import { ISimState, IViewState, ViewType } from '../types';
-import CCLogoImg from '../../images/concord-consortium.png';
+import CCLogoImg from '../images/concord-consortium.png';
 
-import '../../css/seasons.less';
+import '../css/seasons.less';
 
 interface IState {
   sim: ISimState;

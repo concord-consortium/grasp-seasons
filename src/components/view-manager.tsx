@@ -5,7 +5,7 @@ import RaysViewComp from './rays-view-comp';
 import t from '../translate';
 import { ISimState, IViewState, ViewType } from '../types';
 
-import '../../css/view-manager.less';
+import '../css/view-manager.less';
 
 interface IProps {
   simulation: ISimState;
