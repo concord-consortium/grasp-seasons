@@ -131,18 +131,29 @@ export default class ViewManager extends Component<IProps> {
     return (
       <div className="view-manager">
         <div className={`view ${this.getViewPosition("earth")}`}>
-          <EarthViewComp ref={this.earthRef} simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
-                         onCameraChange={this.syncCameraAndViewAxis} log={this.props.log}/>
+          <EarthViewComp
+            ref={this.earthRef} simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
+            onCameraChange={this.syncCameraAndViewAxis} log={this.props.log}
+          />
         </div>
         <div className={`view ${this.getViewPosition("orbit")}`}>
-          <OrbitViewComp ref={this.orbitRef} simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()} />
+          <OrbitViewComp
+            ref={this.orbitRef} simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
+            log={this.props.log} showCamera={this.showOrbitViewCameraModel()}
+          />
         </div>
         <div className={`view ${this.getViewPosition("raysGround")}`}>
           <div className="rays-ground-text">{ t("~NOON", lang) }</div>
-          <RaysViewComp ref={this.raysGroundRef} type="ground" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
+          <RaysViewComp
+            ref={this.raysGroundRef} type="ground" simulation={this.props.simulation}
+            onSimStateChange={this.props.onSimStateChange}
+          />
         </div>
         <div className={`view ${this.getViewPosition("raysSpace")}`}>
-          <RaysViewComp ref={this.raysSpaceRef} type="space" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
+          <RaysViewComp
+            ref={this.raysSpaceRef} type="space" simulation={this.props.simulation}
+            onSimStateChange={this.props.onSimStateChange}
+          />
         </div>
         { this.renderViewSelect("main") }
         { this.renderViewSelect("small-top") }

@@ -21,7 +21,13 @@ export default class AnimationCheckbox extends Component {
 
   render() {
     return (
-      <input type="checkbox" name={this.props.name} checked={this.state.animationStarted} onChange={this.handleChange} disabled={this.state.disabled}/>
+      <input
+        type="checkbox"
+        name={this.props.name}
+        checked={this.state.animationStarted}
+        onChange={this.handleChange}
+        disabled={this.state.disabled}
+      />
     )
   }
 }

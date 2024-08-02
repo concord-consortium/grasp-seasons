@@ -157,7 +157,8 @@ export default class {
     this.ctx.save();
     this.ctx.translate(this.width * 0.5,  this.height * (1 - groundFraction));
     this.ctx.rotate(angle);
-    this.ctx.fillStyle = this.props.groundColor === "auto" ? this.groundColorFunc(this.props.day / MAX_DAY) : this.props.groundColor;
+    this.ctx.fillStyle = this.props.groundColor === "auto" ?
+      this.groundColorFunc(this.props.day / MAX_DAY) : this.props.groundColor;
     this.ctx.fillRect(-this.width, 0, this.width * 2, this.height);
     this.ctx.restore();
   }

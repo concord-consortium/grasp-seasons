@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export default {
   getInitialState (props: any) {
     return {
@@ -60,3 +61,4 @@ export default {
     }
   }
 }
+/* eslint-enable max-len */

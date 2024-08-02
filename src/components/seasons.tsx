@@ -292,47 +292,93 @@ export default class Seasons extends Component<IProps, IState> {
 
     return (
       <div className="grasp-seasons">
-        <ViewManager ref={this.viewRef} view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log} />
+        <ViewManager
+          ref={this.viewRef}
+          view={this.state.view}
+          simulation={this.state.sim}
+          onSimStateChange={this.simStateChange}
+          onViewChange={this.viewChange}
+          log={this.log}
+        />
         <div className="controls" >
           <div className="left-col">
             <div className="form-group">
-              <AnimationButton ref={this.playButtonRef} speed={this.getAnimSpeed()} currentValue={this.state.sim.day} lang={lang} onAnimationStep={this.dayAnimFrame}
-                               onClick={this.logButtonClick}/>
-              <label><input type="checkbox" name="dailyRotation" checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> { t("~DAILY_ROTATION", lang) }</label>
+              <AnimationButton ref={this.playButtonRef} speed={this.getAnimSpeed()} currentValue={this.state.sim.day}
+                lang={lang} onAnimationStep={this.dayAnimFrame} onClick={this.logButtonClick}
+              />
+              <label>
+                <input
+                  type="checkbox" name="dailyRotation" checked={this.state.sim.dailyRotation}
+                  onChange={this.simCheckboxChange}
+                />
+                { t("~DAILY_ROTATION", lang) }
+              </label>
               <label className="day">{ t("~DAY", lang) }: { this.getFormattedDay() }</label>
               <div className="day-slider">
-                <InfiniteDaySlider value={this.state.sim.day} slide={this.daySliderChange} lang={lang} log={this.log} logId="Day"/>
+                <InfiniteDaySlider
+                  value={this.state.sim.day} slide={this.daySliderChange} lang={lang} log={this.log} logId="Day"
+                />
               </div>
             </div>
             <div className="form-group pull-left">
-              <CitySelect lat={this.state.sim.lat} long={this.state.sim.long} lang={lang} onCityChange={this.citySelectChange}/>
+              <CitySelect
+                lat={this.state.sim.lat} long={this.state.sim.long} lang={lang} onCityChange={this.citySelectChange}
+              />
               <div className="earth-gridlines-toggle">
 
               </div>
             </div>
           </div>
           <div className="right-col">
-            <button className="btn btn-default" onClick={this.subpolarButtonClick} name="ViewSubpolarPoint">{ t("~VIEW_SUBSOLAR_POINT", lang) }</button>
+            <button className="btn btn-default" onClick={this.subpolarButtonClick} name="ViewSubpolarPoint">
+              { t("~VIEW_SUBSOLAR_POINT", lang) }
+            </button>
             <div className="long-lat-sliders">
               <div className="form-group">
                 <label>{ t("~LATITUDE", lang) }: { this.getFormattedLat() }</label>
-                <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId="Latitude"/>
+                <Slider
+                  value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange}
+                  log={this.log} logId="Latitude"
+                />
               </div>
               <div className="form-group">
                 <label>{ t("~LONGITUDE", lang) }: { this.getFormattedLong() }</label>
-                <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange} log={this.log} logId="Longitude"/>
+                <Slider
+                  value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange}
+                  log={this.log} logId="Longitude"
+                />
               </div>
             </div>
             <div className="checkboxes">
               <label>
-                <AnimationCheckbox ref={this.rotatingButtonRef} speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}
-                                  name="EarthRotation" onChange={this.logCheckboxChange}/> { t("~ROTATING", lang) }
+                <AnimationCheckbox
+                  ref={this.rotatingButtonRef} speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation}
+                  onAnimationStep={this.earthRotationAnimFrame} name="EarthRotation" onChange={this.logCheckboxChange}
+                />
+                { t("~ROTATING", lang) }
               </label>
-              <label><input type="checkbox" name="earthTilt" checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> { t("~TILTED", lang) }</label>
-              <label><input type="checkbox" name="sunEarthLine" checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> { t("~SUN_EARTH_LINE", lang) }</label>
+              <label>
+                <input
+                  type="checkbox" name="earthTilt" checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}
+                />
+                { t("~TILTED", lang) }
+              </label>
+              <label>
+                <input
+                type="checkbox" name="sunEarthLine" checked={this.state.sim.sunEarthLine}
+                onChange={this.simCheckboxChange}
+                />
+                { t("~SUN_EARTH_LINE", lang) }
+              </label>
               {
                 earthVisible &&
-                <label><input type="checkbox" name="earthGridlines" checked={this.state.sim.earthGridlines} onChange={this.simCheckboxChange}/>{ t("~EARTH_GRIDLINES", lang) }</label>
+                <label>
+                  <input
+                    type="checkbox" name="earthGridlines" checked={this.state.sim.earthGridlines}
+                    onChange={this.simCheckboxChange}
+                  />
+                  { t("~EARTH_GRIDLINES", lang) }
+                </label>
               }
             </div>
           </div>

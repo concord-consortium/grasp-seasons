@@ -83,7 +83,9 @@ export default {
       0 // no rotation
     );
     const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(150));
-    const material = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: simple ? 0.7 : 0.9, linewidth: 2 });
+    const material = new THREE.LineBasicMaterial({
+      color: 0xffff00, transparent: true, opacity: simple ? 0.7 : 0.9, linewidth: 2
+    });
     const mesh = new THREE.Line(geometry, material);
     mesh.rotateX(Math.PI / 2);
 
