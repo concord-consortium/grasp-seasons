@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import Earth from '../models/earth';
-import LatLongMarker from '../models/lat-long-marker';
-import LatitudeLine from '../models/latitude-line';
+import Earth from '../3d-models/earth';
+import LatLongMarker from '../3d-models/lat-long-marker';
+import LatitudeLine from '../3d-models/latitude-line';
 import BaseInteraction from './base-interaction';
 import EarthView from './earth-view';
 

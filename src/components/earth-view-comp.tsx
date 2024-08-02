@@ -1,5 +1,5 @@
 import CanvasView, { ICanvasProps } from './canvas-view';
-import EarthView from '../views/earth-view';
+import EarthView from '../3d-views/earth-view';
 import { ISimState } from '../types';
 
 interface IProps extends ICanvasProps {

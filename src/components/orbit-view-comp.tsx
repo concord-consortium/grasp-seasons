@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import CanvasView, { ICanvasProps } from './canvas-view';
-import OrbitView from '../views/orbit-view';
+import OrbitView from '../3d-views/orbit-view';
 import { ISimState } from '../types';
 
 interface IProps extends ICanvasProps {

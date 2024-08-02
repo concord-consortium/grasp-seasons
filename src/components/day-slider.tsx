@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import Slider from './slider';
-import '../ui/grasp-slider';
-import t from '../translate';
+import './grasp-slider';
+import t from '../translation/translate';
 
 export default class DaySlider extends Slider {
   // $slider: any;

@@ -1,6 +1,6 @@
 import CanvasView, { ICanvasProps } from './canvas-view';
-import GroundRaysView from '../views/ground-rays-view';
-import SpaceRaysView from '../views/space-rays-view';
+import GroundRaysView from '../3d-views/ground-rays-view';
+import SpaceRaysView from '../3d-views/space-rays-view';
 
 const VIEW = {
   ground: GroundRaysView,

@@ -1,6 +1,6 @@
 import $ from 'jquery';
-import {sunrayAngle} from '../solar-system-data';
-import {colorInterpolation} from '../utils';
+import {sunrayAngle} from '../utils/solar-system-data';
+import {colorInterpolation} from '../utils/utils';
 
 const DEG_2_RAD = Math.PI / 180;
 

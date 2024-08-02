@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Font } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { museo500FontDef } from './museo-500-regular';
-import * as data from '../solar-system-data';
+import * as data from '../utils/solar-system-data';
 import * as c from './constants';
 import { IModelParams } from '../types';
 

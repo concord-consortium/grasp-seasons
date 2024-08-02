@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import * as data from '../solar-system-data';
+import * as data from '../utils/solar-system-data';
 import * as c from './constants';
-import earthLargeImg from '../images/earth-2k.jpg';//'../images/earth-grid-2k.jpg';
-import earthLargeGridImg from '../images/earth-grid-2k.jpg';
-import earthSimpleImg from '../images/earth-equator-0.5k.jpg';//'../images/earth-0.5k.jpg';
-import earthBumpImg from '../images/earth-bump-2k.jpg';
+import earthLargeImg from '../assets/earth-2k.jpg';//'../assets/earth-grid-2k.jpg';
+import earthLargeGridImg from '../assets/earth-grid-2k.jpg';
+import earthSimpleImg from '../assets/earth-equator-0.5k.jpg';//'../assets/earth-0.5k.jpg';
+import earthBumpImg from '../assets/earth-bump-2k.jpg';
 import { IModelParams } from '../types';
-// import earthSpecularImg from '../images/earth-specular-2k.png';
+// import earthSpecularImg from '../assets/earth-specular-2k.png';
 
 const DEF_COLOR = 0xffffff;
 const DEF_EMISSIVE = 0x002135;

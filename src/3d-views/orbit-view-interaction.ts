@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import BaseInteraction from './base-interaction';
-import {earthEllipseLocationByDay} from '../solar-system-data';
-import Earth from '../models/earth';
+import {earthEllipseLocationByDay} from '../utils/solar-system-data';
+import Earth from '../3d-models/earth';
 import OrbitView from './orbit-view';
 
 export default class extends BaseInteraction {

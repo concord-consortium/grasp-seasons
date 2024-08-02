@@ -1,6 +1,6 @@
 import React from 'react';
 import reactMixin from 'react-mixin';
-import t from '../translate';
+import t from '../translation/translate';
 
 import animationMixin from './animation-mixin';
 

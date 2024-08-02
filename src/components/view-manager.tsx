@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import EarthViewComp from './earth-view-comp';
 import OrbitViewComp from './orbit-view-comp';
 import RaysViewComp from './rays-view-comp';
-import t from '../translate';
+import t from '../translation/translate';
 import { ISimState, IViewState, ViewType } from '../types';
 
 import '../css/view-manager.less';

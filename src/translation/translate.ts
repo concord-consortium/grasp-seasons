@@ -1,4 +1,4 @@
-import translations from './lang';
+import translations from '.';
 
 export type Language = keyof typeof translations;
 type Translation = typeof translations.en_us;

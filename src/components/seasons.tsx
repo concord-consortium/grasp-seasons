@@ -7,10 +7,10 @@ import DaySlider from './day-slider';
 import CitySelect from './city-select';
 import AnimationCheckbox from './animation-checkbox';
 import AnimationButton from './animation-button';
-import getURLParam from '../utils';
-import t, { Language } from '../translate';
+import getURLParam from '../utils/utils';
+import t, { Language } from '../translation/translate';
 import { ISimState, IViewState, ViewType } from '../types';
-import CCLogoImg from '../images/concord-consortium.png';
+import CCLogoImg from '../assets/concord-consortium.png';
 
 import '../css/seasons.less';
 

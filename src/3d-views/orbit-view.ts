@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import BaseView from './base-view';
 import EarthDraggingInteraction from './orbit-view-interaction';
-import LatitudeLine from '../models/latitude-line';
-import LatLongMarker from '../models/lat-long-marker';
-import models from '../models/common-models';
-import * as data from '../solar-system-data';
+import LatitudeLine from '../3d-models/latitude-line';
+import LatLongMarker from '../3d-models/lat-long-marker';
+import models from '../3d-models/common-models';
+import * as data from '../utils/solar-system-data';
 
 const DEF_PROPERTIES = {
   day: 0,

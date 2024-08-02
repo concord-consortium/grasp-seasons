@@ -1,4 +1,4 @@
-import { Language } from "./translate";
+import { Language } from "./translation/translate";
 
 export interface ISimState {
   day: number;

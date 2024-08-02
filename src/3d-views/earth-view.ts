@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import BaseView from './base-view';
-import LatitudeLine from '../models/latitude-line';
-import LatLongMarker from '../models/lat-long-marker';
+import LatitudeLine from '../3d-models/latitude-line';
+import LatLongMarker from '../3d-models/lat-long-marker';
 import LatLongDraggingInteraction from './earth-view-interaction';
-import * as data from '../solar-system-data';
+import * as data from '../utils/solar-system-data';
 
 const DEG_2_RAD = Math.PI / 180;
 

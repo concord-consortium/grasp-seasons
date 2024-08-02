@@ -3,12 +3,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EventEmitter2 as EventEmitter, ListenerFn } from 'eventemitter2';
 import BaseInteraction from './base-interaction';
-import models from '../models/common-models';
-import Earth from '../models/earth';
-import SunEarthLine from '../models/sun-earth-line';
-import * as data from '../solar-system-data';
-
-import t, { Language } from '../translate';
+import models from '../3d-models/common-models';
+import Earth from '../3d-models/earth';
+import SunEarthLine from '../3d-models/sun-earth-line';
+import * as data from '../utils/solar-system-data';
+import t, { Language } from '../translation/translate';
 import { ISimState, ModelType } from '../types';
 
 const DEF_PROPERTIES = {

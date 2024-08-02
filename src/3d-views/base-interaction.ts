@@ -2,7 +2,7 @@ import { EventEmitter2 as EventEmitter } from 'eventemitter2';
 import $ from 'jquery';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import {mousePosNormalized} from '../utils';
+import {mousePosNormalized} from '../utils/utils';
 import BaseView from './base-view';
 
 export interface Interaction {
