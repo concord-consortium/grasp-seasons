@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import CanvasView, { ICanvasProps } from './canvas-view';
 import OrbitView from '../views/orbit-view';
 import { ISimState } from '../types';
