@@ -10,8 +10,8 @@ const TICK_WIDTH = 1;
   _create () {
     this._super();
   },
-  _setOption (key: any, value: any) {
-    this._superApply(key, value);
+  _setOption (key: any, value: any, ...args: any[]) {
+    this._superApply([key, value, ...args]);
     if (key === "ticks") {
       const valueTotal = this._valueMax() - this._valueMin();
       value.forEach(function(this: any, t: any) {

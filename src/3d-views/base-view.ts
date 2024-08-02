@@ -37,7 +37,7 @@ export default class BaseView {
     const height = parentEl.clientHeight;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, data.EARTH_ORBITAL_RADIUS * 100);
-    this.renderer = new THREE.WebGLRenderer({antialias:true});
+    this.renderer = new THREE.WebGLRenderer({ antialias:true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setClearColor(0x000000, 1);
     this.renderer.setSize(width, height);
@@ -174,7 +174,7 @@ export default class BaseView {
   }
 
   _initScene() {
-    const basicProps = {type: this.type};
+    const basicProps = { type: this.type };
 
     this.scene.add(models.stars(basicProps));
     this.scene.add(models.ambientLight(basicProps));

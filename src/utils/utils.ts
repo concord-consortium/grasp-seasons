@@ -5,7 +5,7 @@ export function mousePos(event: any, targetElement: HTMLElement) {
   const $targetElement = $(targetElement);
   const parentX = $targetElement.offset()?.left || 0;
   const parentY = $targetElement.offset()?.top || 0;
-  return {x: event.pageX - parentX, y: event.pageY - parentY};
+  return { x: event.pageX - parentX, y: event.pageY - parentY };
 }
 
 // Normalized mouse position [-1, 1].

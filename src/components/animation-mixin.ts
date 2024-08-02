@@ -26,7 +26,7 @@ export default {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'rafId' does not exist on type '{ getInit... Remove this comment to see the full error message
     this.rafId = requestAnimationFrame(this._animate);
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'setState' does not exist on type '{ getI... Remove this comment to see the full error message
-    this.setState({animationStarted: true});
+    this.setState({ animationStarted: true });
   },
 
   stopAnimation () {
@@ -35,7 +35,7 @@ export default {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'prevTimestamp' does not exist on type '{... Remove this comment to see the full error message
     this.prevTimestamp = null;
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'setState' does not exist on type '{ getI... Remove this comment to see the full error message
-    this.setState({animationStarted: false});
+    this.setState({ animationStarted: false });
   },
 
   animate (timestamp: any) {
@@ -53,7 +53,7 @@ export default {
 
   setDisabled (v: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'setState' does not exist on type '{ getI... Remove this comment to see the full error message
-    this.setState({disabled: v});
+    this.setState({ disabled: v });
     if (v) {
       // Stop animation if we just disabled the component.
       this.stopAnimation();

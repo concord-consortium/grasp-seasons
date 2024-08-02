@@ -20,7 +20,7 @@ export default class Earth {
   constructor(params: IModelParams) {
     const simple = params.type === "orbit-view";
     const RADIUS = simple ? c.SIMPLE_EARTH_RADIUS : c.EARTH_RADIUS;
-    const COLORS = simple ? {color: DEF_COLOR, emissive: DEF_EMISSIVE, specular: 0x000000} : {specular: 0x000000};
+    const COLORS = simple ? { color: DEF_COLOR, emissive: DEF_EMISSIVE, specular: 0x000000 } : { specular: 0x000000 };
     const geometry = new THREE.SphereGeometry(RADIUS, 64, 64);
     this._material = new THREE.MeshPhongMaterial(COLORS);
     const textureLoader = new THREE.TextureLoader();

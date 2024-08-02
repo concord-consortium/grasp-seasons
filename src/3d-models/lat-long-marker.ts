@@ -14,7 +14,7 @@ export default class LatLongMarker {
   constructor(simple?: boolean) {
     this.markerRadius = simple ? c.LATLNG_MARKER_RADIUS * 5 : c.LATLNG_MARKER_RADIUS;
     const geometry = new THREE.SphereGeometry(this.markerRadius, 32, 32);
-    const material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
+    const material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
     const mesh = new THREE.Mesh(geometry, material);
     this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.02 : c.EARTH_RADIUS;
     mesh.position.x = this.earthRadius;

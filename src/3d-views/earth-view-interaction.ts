@@ -2,11 +2,11 @@ import * as THREE from "three";
 import Earth from "../3d-models/earth";
 import LatLongMarker from "../3d-models/lat-long-marker";
 import LatitudeLine from "../3d-models/latitude-line";
-import BaseInteraction from "./base-interaction";
+import BaseInteraction, { IBaseView } from "./base-interaction";
 
 const RAD_2_DEG = 180 / Math.PI;
 
-interface IEarthView {
+interface IEarthView extends IBaseView{
   earth: Earth;
   latLongMarker: LatLongMarker;
   latLine: LatitudeLine;
@@ -36,7 +36,7 @@ export default class extends BaseInteraction {
         const coords = this._getPointerLatLong();
         if (coords != null) {
           // coords can be equal to null if user isn't pointing earth anymore.
-          this.dispatch.emit("props.change", {lat: coords.lat, long: coords.long});
+          this.dispatch.emit("props.change", { lat: coords.lat, long: coords.long });
           this.updateLogValue(coords);
         }
       }
@@ -55,7 +55,7 @@ export default class extends BaseInteraction {
         const coords = this._getPointerLatLong();
         if (coords != null) {
           // coords can be equal to null if user isn't pointing earth anymore.
-          this.dispatch.emit("props.change", {lat: coords.lat});
+          this.dispatch.emit("props.change", { lat: coords.lat });
           this.updateLogValue(coords);
         }
       }
@@ -83,6 +83,6 @@ export default class extends BaseInteraction {
     // Longitude calculations.
     let long = this.earth.lat0Long0AxisDir.angleTo(xzVec) * RAD_2_DEG;
     if (intVec.z > 0) long *= -1;
-    return {lat, long};
+    return { lat, long };
   }
 }

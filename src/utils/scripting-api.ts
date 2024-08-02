@@ -1,4 +1,4 @@
-import {sunrayAngle} from "./solar-system-data";
+import { sunrayAngle } from "./solar-system-data";
 
 export default class ScriptingAPI {
   _seasons: any;

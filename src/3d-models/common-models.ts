@@ -8,7 +8,7 @@ import { IModelParams } from "../types";
 
 function addEdges(mesh: THREE.Mesh) {
   const geometry = new THREE.EdgesGeometry(mesh.geometry);
-  const material = new THREE.LineBasicMaterial({color: 0x000000});
+  const material = new THREE.LineBasicMaterial({ color: 0x000000 });
   const edges = new THREE.LineSegments(geometry, material);
   edges.scale.x = edges.scale.y = edges.scale.z = 1.02; // so edges are more visible
   mesh.add(edges);
@@ -36,7 +36,7 @@ export default {
       vertices[i * 3 + 2] = vertex.z;
     }
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    const material = new THREE.PointsMaterial({size: SIZE, color: 0xffffee});
+    const material = new THREE.PointsMaterial({ size: SIZE, color: 0xffffee });
     const particles = new THREE.Points(geometry, material);
     return particles;
   },
@@ -59,7 +59,7 @@ export default {
   sun (params: IModelParams) {
     const radius = params.type === "orbit-view" ? c.SIMPLE_SUN_RADIUS : c.SUN_RADIUS;
     const geometry = new THREE.SphereGeometry(radius, 32, 32);
-    const material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR, color: 0x000000});
+    const material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR, color: 0x000000 });
     const mesh = new THREE.Mesh(geometry, material);
     return mesh;
   },
@@ -83,7 +83,7 @@ export default {
       0 // no rotation
     );
     const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(150));
-    const material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.7 : 0.9, linewidth: 2});
+    const material = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: simple ? 0.7 : 0.9, linewidth: 2 });
     const mesh = new THREE.Line(geometry, material);
     mesh.rotateX(Math.PI / 2);
 
@@ -107,7 +107,7 @@ export default {
       height: small ? HEIGHT_SMALL * c.SF : HEIGHT * c.SF,
       font
     });
-    const material = new THREE.LineBasicMaterial({color: small ? COLOR_SMALL : COLOR});
+    const material = new THREE.LineBasicMaterial({ color: small ? COLOR_SMALL : COLOR });
     const mesh = new THREE.Mesh(geometry, material);
     // Center labels.
     const bbox = new THREE.Box3().setFromObject(mesh);
@@ -125,7 +125,7 @@ export default {
     const DAY_COUNT = 365;
     const STEP = DAY_COUNT / RAY_COUNT;
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.LineBasicMaterial({color: 0xffff00, transparent: true, opacity: simple ? 0.4 : 0.6});
+    const material = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: simple ? 0.4 : 0.6 });
     const vertices = new Float32Array(2 * RAY_COUNT * 3);
     for (let i = 0; i < RAY_COUNT; ++i) {
       vertices[i * 6] = 0;
@@ -147,7 +147,7 @@ export default {
     const HEAD_RADIUS = RADIUS * (simple ? 2.5 : 2.2);
     const EMISSIVE_COL = simple ? 0x770000 : 0x330000;
     const geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-    const material = new THREE.MeshPhongMaterial({color: 0xff0000, emissive: EMISSIVE_COL});
+    const material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: EMISSIVE_COL });
     const mesh = new THREE.Mesh(geometry, material);
 
     const arrowHeadGeo = new THREE.SphereGeometry(HEAD_RADIUS, 32, 32);
@@ -162,7 +162,7 @@ export default {
     const DIST_FROM_EARTH = 60000000 * c.SF;
     const RADIUS = 6000000 * c.SF;
     const lensGeometry = new THREE.CylinderGeometry(RADIUS, RADIUS, 1.5 * RADIUS, 12);
-    const material = new THREE.MeshPhongMaterial({color: 0x00ff00, emissive: 0x007700});
+    const material = new THREE.MeshPhongMaterial({ color: 0x00ff00, emissive: 0x007700 });
     const lens = new THREE.Mesh(lensGeometry, material);
     lens.position.y = DIST_FROM_EARTH;
     addEdges(lens);

@@ -47,5 +47,5 @@ export function angleToDay(angle: number, earthTilt: number, lat: number) {
   if (isNaN(distFromSolstice)) {
     return null;
   }
-  return {day1: SUMMER_SOLSTICE - distFromSolstice, day2: SUMMER_SOLSTICE + distFromSolstice};
+  return { day1: SUMMER_SOLSTICE - distFromSolstice, day2: SUMMER_SOLSTICE + distFromSolstice };
 }

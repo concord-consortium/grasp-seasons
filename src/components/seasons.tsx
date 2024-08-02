@@ -157,7 +157,7 @@ export default class Seasons extends React.Component<IProps, IState> {
     let key: keyof ISimState;
     for (key in newSimState) {
       if (newSimState[key] !== this.state.sim[key]) {
-        updateStruct[key] = {$set: newSimState[key]} as any;
+        updateStruct[key] = { $set: newSimState[key] } as any;
       }
     }
     if (Object.keys(updateStruct).length === 0) {
@@ -166,7 +166,7 @@ export default class Seasons extends React.Component<IProps, IState> {
     }
     this.setState(prevState => {
       const newState = update(prevState.sim, updateStruct);
-      return {sim: newState};
+      return { sim: newState };
     }, () => {
       if (callback) callback();
       if (!skipEvent) {
@@ -182,19 +182,19 @@ export default class Seasons extends React.Component<IProps, IState> {
 
   viewChange(viewPosition: keyof IViewState, viewName: ViewType) {
     const updateStruct: Spec<IViewState> = {};
-    updateStruct[viewPosition] = {$set: viewName};
+    updateStruct[viewPosition] = { $set: viewName };
     // Swap views if needed.
     if (viewName !== "nothing") {
       const oldView = this.state.view[viewPosition];
       for (const key in this.state.view) {
         if (this.state.view[key as keyof IViewState] === viewName) {
-          updateStruct[key as keyof IViewState] = {$set: oldView};
+          updateStruct[key as keyof IViewState] = { $set: oldView };
         }
       }
     }
     this.setState(prevState => {
       const newState = update(prevState.view, updateStruct);
-      return {view: newState};
+      return { view: newState };
     }, () => {
       this.log("ViewsRearranged", this.state.view);
       this.props.onViewStateChange(this.state.view);
@@ -202,16 +202,16 @@ export default class Seasons extends React.Component<IProps, IState> {
   }
 
   daySliderChange(event: any, ui: any) {
-    this.setSimState({day: ui.value});
+    this.setSimState({ day: ui.value });
   }
 
   daySliderStop(event: any, ui: any) {
-    this.log("DaySliderChanged", {day: ui.value});
+    this.log("DaySliderChanged", { day: ui.value });
   }
 
   dayAnimFrame(newDay: number) {
     // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
-    const state: Partial<ISimState> = {day: newDay % 365};
+    const state: Partial<ISimState> = { day: newDay % 365 };
     if (this.state.sim.dailyRotation) {
       state.earthRotation = (newDay % 1) * 2 * Math.PI;
     }
@@ -220,7 +220,7 @@ export default class Seasons extends React.Component<IProps, IState> {
 
   earthRotationAnimFrame(newAngle: number) {
     // Again, animation simply increases value so make sure that angle has reasonable value.
-    this.setSimState({earthRotation: newAngle % (2 * Math.PI)});
+    this.setSimState({ earthRotation: newAngle % (2 * Math.PI) });
   }
 
   simCheckboxChange(event: any) {
@@ -241,11 +241,11 @@ export default class Seasons extends React.Component<IProps, IState> {
   }
 
   latSliderChange(event: any, ui: any) {
-    this.setSimState({lat: ui.value});
+    this.setSimState({ lat: ui.value });
   }
 
   longSliderChange(event: any, ui: any) {
-    this.setSimState({long: ui.value});
+    this.setSimState({ long: ui.value });
   }
 
   citySelectChange(lat: number, long: number, city: string) {
@@ -253,7 +253,7 @@ export default class Seasons extends React.Component<IProps, IState> {
     // - rotate earth so the new point is on the bright side of earth,
     // - update camera position to look at this point.
     const rot = -long * Math.PI / 180;
-    this.setSimState({lat, long, earthRotation: rot}, () => {
+    this.setSimState({ lat, long, earthRotation: rot }, () => {
       // .setState is an async operation!
       this.refs.view.lookAtLatLongMarker();
     });
@@ -269,7 +269,7 @@ export default class Seasons extends React.Component<IProps, IState> {
     // Clicking the subsolar button should also turn the Earth such that the longitude of
     // the selected city or point is visible. 11.5 deg shift ensures that the point is perfectly
     // positioned. I can't explain why we need it.
-    this.setSimState({earthRotation: (11.5 - this.state.sim.long) * Math.PI / 180});
+    this.setSimState({ earthRotation: (11.5 - this.state.sim.long) * Math.PI / 180 });
   }
 
   subpolarButtonClick(event: any) {
@@ -297,8 +297,8 @@ export default class Seasons extends React.Component<IProps, IState> {
             <div className="form-group">
               <AnimationButton ref="playButton" speed={this.getAnimSpeed()} currentValue={this.state.sim.day} lang={lang} onAnimationStep={this.dayAnimFrame}
                                onClick={this.logButtonClick}/>
-              <label><input type="checkbox" name="dailyRotation" checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> {t("~DAILY_ROTATION", lang)}</label>
-              <label className="day">{t("~DAY", lang)}: {this.getFormattedDay()}</label>
+              <label><input type="checkbox" name="dailyRotation" checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> { t("~DAILY_ROTATION", lang) }</label>
+              <label className="day">{ t("~DAY", lang) }: { this.getFormattedDay() }</label>
               <div className="day-slider">
                 <InfiniteDaySlider value={this.state.sim.day} slide={this.daySliderChange} lang={lang} log={this.log} logId="Day"/>
               </div>
@@ -311,27 +311,27 @@ export default class Seasons extends React.Component<IProps, IState> {
             </div>
           </div>
           <div className="right-col">
-            <button className="btn btn-default" onClick={this.subpolarButtonClick} name="ViewSubpolarPoint">{t("~VIEW_SUBSOLAR_POINT", lang)}</button>
+            <button className="btn btn-default" onClick={this.subpolarButtonClick} name="ViewSubpolarPoint">{ t("~VIEW_SUBSOLAR_POINT", lang) }</button>
             <div className="long-lat-sliders">
               <div className="form-group">
-                <label>{t("~LATITUDE", lang)}: {this.getFormattedLat()}</label>
+                <label>{ t("~LATITUDE", lang) }: { this.getFormattedLat() }</label>
                 <Slider value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange} log={this.log} logId="Latitude"/>
               </div>
               <div className="form-group">
-                <label>{t("~LONGITUDE", lang)}: {this.getFormattedLong()}</label>
+                <label>{ t("~LONGITUDE", lang) }: { this.getFormattedLong() }</label>
                 <Slider value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange} log={this.log} logId="Longitude"/>
               </div>
             </div>
             <div className="checkboxes">
               <label>
                 <AnimationCheckbox ref="rotatingButton" speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}
-                                  name="EarthRotation" onChange={this.logCheckboxChange}/> {t("~ROTATING", lang)}
+                                  name="EarthRotation" onChange={this.logCheckboxChange}/> { t("~ROTATING", lang) }
               </label>
-              <label><input type="checkbox" name="earthTilt" checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> {t("~TILTED", lang)}</label>
-              <label><input type="checkbox" name="sunEarthLine" checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> {t("~SUN_EARTH_LINE", lang)}</label>
+              <label><input type="checkbox" name="earthTilt" checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> { t("~TILTED", lang) }</label>
+              <label><input type="checkbox" name="sunEarthLine" checked={this.state.sim.sunEarthLine} onChange={this.simCheckboxChange}/> { t("~SUN_EARTH_LINE", lang) }</label>
               {
                 earthVisible &&
-                <label><input type="checkbox" name="earthGridlines" checked={this.state.sim.earthGridlines} onChange={this.simCheckboxChange}/>{t("~EARTH_GRIDLINES", lang)}</label>
+                <label><input type="checkbox" name="earthGridlines" checked={this.state.sim.earthGridlines} onChange={this.simCheckboxChange}/>{ t("~EARTH_GRIDLINES", lang) }</label>
               }
             </div>
           </div>

@@ -39,8 +39,8 @@ export default class CanvasView<TProps extends ICanvasProps> extends React.Compo
 
   render() {
     return (
-      <div ref="container" style={{width: "100%", height: "100%"}}>
-        {/* Canvas will be inserted here by the external view. */}
+      <div ref="container" style={{ width: "100%", height: "100%" }}>
+        { /* Canvas will be inserted here by the external view. */ }
       </div>
     )
   }

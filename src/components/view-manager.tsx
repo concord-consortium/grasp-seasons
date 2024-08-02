@@ -108,11 +108,11 @@ export default class ViewManager extends React.Component<IProps> {
     return (
       <select className={`form-control view-select ${position}`} name={position}
               value={this.props.view[position]} onChange={this.handleViewChange}>
-        <option value="earth">{t("~EARTH", lang)}</option>
-        <option value="orbit">{t("~ORBIT", lang)}</option>
-        <option value="raysGround">{t("~GROUND", lang)}</option>
-        <option value="raysSpace">{t("~SPACE", lang)}</option>
-        <option value="nothing">{t("~NOTHING", lang)}</option>
+        <option value="earth">{ t("~EARTH", lang) }</option>
+        <option value="orbit">{ t("~ORBIT", lang) }</option>
+        <option value="raysGround">{ t("~GROUND", lang) }</option>
+        <option value="raysSpace">{ t("~SPACE", lang) }</option>
+        <option value="nothing">{ t("~NOTHING", lang) }</option>
       </select>
     );
   }
@@ -129,15 +129,15 @@ export default class ViewManager extends React.Component<IProps> {
           <OrbitViewComp ref="orbit" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} log={this.props.log} showCamera={this.showOrbitViewCameraModel()} />
         </div>
         <div className={`view ${this.getViewPosition("raysGround")}`}>
-          <div className="rays-ground-text">{t("~NOON", lang)}</div>
+          <div className="rays-ground-text">{ t("~NOON", lang) }</div>
           <RaysViewComp ref="raysGround" type="ground" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
         </div>
         <div className={`view ${this.getViewPosition("raysSpace")}`}>
           <RaysViewComp ref="raysSpace" type="space" simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange} />
         </div>
-        {this.renderViewSelect("main")}
-        {this.renderViewSelect("small-top")}
-        {this.renderViewSelect("small-bottom")}
+        { this.renderViewSelect("main") }
+        { this.renderViewSelect("small-top") }
+        { this.renderViewSelect("small-bottom") }
       </div>
     );
   }

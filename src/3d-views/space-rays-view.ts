@@ -72,7 +72,7 @@ export default class extends GroundRaysView {
       positionShift = Math.max(-this.width * 0.5, Math.min(this.width * 0.5, positionShift));
       x = this.width * 0.5 + positionShift;
     }
-    return {x, y};
+    return { x, y };
   }
 }
 

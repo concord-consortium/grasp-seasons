@@ -40,7 +40,7 @@ export default class Slider extends React.Component<IProps> {
   }
 
   getSliderOpts(props: IProps) {
-    const options = ({ ...props}) as IOptions;
+    const options = ({ ...props }) as IOptions;
     // Enhance options, support logging.
     if (props.log) {
       options.start = function (event: any, ui: any) {

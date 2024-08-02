@@ -38,7 +38,7 @@ export default class InfiniteDaySlider extends Slider {
     const ticks = [];
     const months = t("~MONTHS_SHORT", lang);
     for (let m = 0; m < 12; m++) {
-      ticks.push({value: m * 30.4, name: months[m]});
+      ticks.push({ value: m * 30.4, name: months[m] });
     }
     this.$slider.infiniteSlider("option", "ticks", ticks);
     // Shift tick labels so they are in the middle of the month section on the slider.

@@ -60,7 +60,7 @@ export default class {
 
     for (let i = 2; i < 8; i++) {
       const radius = POINTER_RADIUS * Math.pow(i, 1.5);
-      const material = new THREE.MeshPhongMaterial({color: c.SUN_COLOR, transparent: true, opacity: 1 - i * 0.125});
+      const material = new THREE.MeshPhongMaterial({ color: c.SUN_COLOR, transparent: true, opacity: 1 - i * 0.125 });
       const geometry = new THREE.TorusGeometry(radius, POINTER_TUBE, 6, 16 * i);
       const mesh = new THREE.Mesh(geometry, material);
       mesh.rotation.y = Math.PI * 0.5;
@@ -75,7 +75,7 @@ export default class {
   _initLine(simple: boolean) {
     const radius = simple ? SIMPLE_LINE_RADIUS : LINE_RADIUS;
     const segments = simple ? 4 : 8;
-    const material = new THREE.MeshPhongMaterial({emissive: c.SUN_COLOR});
+    const material = new THREE.MeshPhongMaterial({ emissive: c.SUN_COLOR });
     const geometry = new THREE.CylinderGeometry(radius, radius, 1, segments);
     const lineMesh = new THREE.Mesh(geometry, material);
     lineMesh.rotation.z = Math.PI * 0.5;
@@ -88,7 +88,7 @@ export default class {
     const HEAD_RADIUS = RADIUS * (simple ? 2.5 : 2);
     const HEAD_HEIGHT = HEIGHT * 0.2;
     const geometry = new THREE.CylinderGeometry(RADIUS, RADIUS, HEIGHT, 32);
-    const material = new THREE.MeshPhongMaterial({color: 0xff0000, emissive: c.SUN_COLOR});
+    const material = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: c.SUN_COLOR });
     const mesh = new THREE.Mesh(geometry, material);
 
     const arrowHeadGeo = new THREE.CylinderGeometry(0, HEAD_RADIUS, HEAD_HEIGHT, 32);

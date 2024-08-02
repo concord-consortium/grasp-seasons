@@ -15,7 +15,7 @@ export default class LatitudeLine {
     this.earthRadius = simple ? c.SIMPLE_EARTH_RADIUS * 1.03: c.EARTH_RADIUS;
     if (simple) torusRadius = torusRadius * 6;
     const geometry = new THREE.TorusGeometry(this.earthRadius, this.earthRadius * torusRadius, 16, 100);
-    const material = new THREE.MeshPhongMaterial({emissive: DEF_EMISSIVE});
+    const material = new THREE.MeshPhongMaterial({ emissive: DEF_EMISSIVE });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = Math.PI * 0.5;
 

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import BaseInteraction, { IBaseView } from "./base-interaction";
-import {earthEllipseLocationByDay} from "../utils/solar-system-data";
+import { earthEllipseLocationByDay } from "../utils/solar-system-data";
 import Earth from "../3d-models/earth";
 
 interface IOrbitView extends IBaseView {
@@ -32,8 +32,8 @@ export default class extends BaseInteraction {
         const angleDiff = this._atan2Day0Pos - Math.atan2(coords.z, coords.x);
         let newDay = angleDiff / (Math.PI * 2) * 364;
         if (newDay < 0) newDay += 364;
-        this.dispatch.emit("props.change", {day: newDay});
-        this.updateLogValue({day: newDay});
+        this.dispatch.emit("props.change", { day: newDay });
+        this.updateLogValue({ day: newDay });
       }
     });
   }

@@ -26,7 +26,7 @@ export default class CitySelect extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      locations: [{name: t("~CUSTOM_LOCATION", props.lang), disabled: true} as ILocation].concat(CITY_DATA),
+      locations: [{ name: t("~CUSTOM_LOCATION", props.lang), disabled: true } as ILocation].concat(CITY_DATA),
       customLocationsCount: 0,
       customLocName: t("~CUSTOM_LOCATION_NAME", props.lang)
     };
@@ -50,7 +50,7 @@ export default class CitySelect extends React.Component<IProps> {
     const options = [];
     for (let i = 0; i < locations.length; i++) {
       const loc = locations[i];
-      options.push(<option key={i} value={i} disabled={loc.disabled}>{loc.name}</option>);
+      options.push(<option key={i} value={i} disabled={loc.disabled}>{ loc.name }</option>);
     }
     return options;
   }
@@ -71,13 +71,13 @@ export default class CitySelect extends React.Component<IProps> {
   }
 
   handleCustomLocNameChange(event: any) {
-    this.setState({customLocName: event.target.value});
+    this.setState({ customLocName: event.target.value });
   }
 
   saveCustomLocation() {
     const { lat, long } = this.props;
     const { customLocName, customLocationsCount, locations } = this.state;
-    const newLocations = locations.concat({name: customLocName, lat, long});
+    const newLocations = locations.concat({ name: customLocName, lat, long });
     this.setState({
       customLocationsCount: customLocationsCount + 1,
       customLocName: `Custom Location ${customLocationsCount + 2}`,
@@ -89,9 +89,9 @@ export default class CitySelect extends React.Component<IProps> {
     const { customLocName } = this.state;
     return (
       <div className="city-select">
-        <label>{t("~SELECT_CITY", this.props.lang)}</label>
+        <label>{ t("~SELECT_CITY", this.props.lang) }</label>
         <select className="form-control" value={this.selectedCity} onChange={this.selectChange}>
-          {this.getOptions()}
+          { this.getOptions() }
         </select>
         <span className={`custom-location ${this.isLocationCustom ? "visible" : ""}`}>
           <input type="text" value={customLocName} onChange={this.handleCustomLocNameChange}/>
