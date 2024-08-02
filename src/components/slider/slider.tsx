@@ -2,6 +2,9 @@ import React from 'react';
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/slider';
 
+import 'jquery-ui/themes/base/slider.css';
+import './slider.scss';
+
 interface IProps {
   value: number;
   min: number;
@@ -77,7 +80,7 @@ export default class Slider extends React.Component<IProps> {
 
   render() {
     return (
-      <div ref='container'></div>
+      <div ref='container' className='grasp-slider'></div>
     )
   }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import CITY_DATA from '../utils/city-data';
 import t, { Language } from '../translation/translate';
 
-import '../css/city-select.less';
+import './city-select.scss';
 
 interface IProps {
   lang: Language;

@@ -1,9 +1,10 @@
 import $ from 'jquery';
 import Slider from './slider';
-import './grasp-slider';
-import t from '../translation/translate';
+import t from '../../translation/translate';
 
-export default class DaySlider extends Slider {
+import './infinite-slider-jquery-ui-plugin';
+
+export default class InfiniteDaySlider extends Slider {
   // $slider: any;
   getSliderOpts: any;
   props: any;
@@ -11,12 +12,12 @@ export default class DaySlider extends Slider {
   constructor(props: any) {
     super(props);
     // Custom, tweaked jQuery UI slider (defined in ui/grasp-slider).
-    this.sliderFuncName = 'graspSlider';
+    this.sliderFuncName = 'infiniteSlider';
   }
 
   componentDidMount() {
     super.componentDidMount();
-    this.$slider.graspSlider({
+    this.$slider.infiniteSlider({
       min: 0,
       max: 364,
       step: 1
@@ -39,7 +40,7 @@ export default class DaySlider extends Slider {
     for (let m = 0; m < 12; m++) {
       ticks.push({value: m * 30.4, name: months[m]});
     }
-    this.$slider.graspSlider('option', 'ticks', ticks);
+    this.$slider.infiniteSlider('option', 'ticks', ticks);
     // Shift tick labels so they are in the middle of the month section on the slider.
     let monthWidth = this.$slider.width() / 12;
     this.$slider.find('.ui-slider-tick-label').each(function(this: any) {

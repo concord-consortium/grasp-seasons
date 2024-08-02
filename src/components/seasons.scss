@@ -92,12 +92,7 @@ body {
     -webkit-border-radius: 4px;
     border-radius: 4px;
     box-shadow: 0 3px 0 #e16a3e;
-    background: -moz-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
-    background: -ms-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
-    background: -o-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
-    background: -webkit-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
-    background: linear-gradient(top, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
-
+    background: linear-gradient(to bottom, rgb(244, 182, 38) 0%, rgb(235, 135, 35) 100%);
   }
 
   .btn-small {
@@ -109,11 +104,7 @@ body {
     background: #eb8723;
     border: none;
     color: #fff !important;
-    background: -moz-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(244, 182, 38) 100%);
-    background: -ms-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(244, 182, 38) 100%);
-    background: -o-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(244, 182, 38) 100%);
-    background: -webkit-linear-gradient(top, rgb(244, 182, 38) 0%, rgb(244, 182, 38) 100%);
-    background: linear-gradient(top, rgb(244, 182, 38) 0%, rgb(244, 182, 38) 100%);
+    background: rgb(244, 182, 38);
   }
 
   .rays-ground-text{

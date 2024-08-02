@@ -2,8 +2,8 @@ import $ from 'jquery';
 import React from 'react';
 import update, { Spec } from 'immutability-helper';
 import ViewManager from './view-manager';
-import Slider from './slider';
-import DaySlider from './day-slider';
+import Slider from './slider/slider';
+import InfiniteDaySlider from './slider/infinite-day-slider';
 import CitySelect from './city-select';
 import AnimationCheckbox from './animation-checkbox';
 import AnimationButton from './animation-button';
@@ -12,7 +12,7 @@ import t, { Language } from '../translation/translate';
 import { ISimState, IViewState, ViewType } from '../types';
 import CCLogoImg from '../assets/concord-consortium.png';
 
-import '../css/seasons.less';
+import './seasons.scss';
 
 interface IState {
   sim: ISimState;
@@ -294,7 +294,7 @@ export default class Seasons extends React.Component<IProps, IState> {
               <label><input type='checkbox' name='dailyRotation' checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> {t("~DAILY_ROTATION", lang)}</label>
               <label className='day'>{t("~DAY", lang)}: {this.getFormattedDay()}</label>
               <div className='day-slider'>
-                <DaySlider value={this.state.sim.day} slide={this.daySliderChange} lang={lang} log={this.log} logId='Day'/>
+                <InfiniteDaySlider value={this.state.sim.day} slide={this.daySliderChange} lang={lang} log={this.log} logId='Day'/>
               </div>
             </div>
             <div className='form-group pull-left'>

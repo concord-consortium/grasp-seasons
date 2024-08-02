@@ -2,6 +2,7 @@
   .custom-location {
     opacity: 0;
     margin-left: 1.5em;
+    transition: opacity 1s;
     input {
       color: #666666;
     }
@@ -11,6 +12,5 @@
     &.visible {
       opacity: 1;
     }
-    transition: opacity 1s;
   }
 }
