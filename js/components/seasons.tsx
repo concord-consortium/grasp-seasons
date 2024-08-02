@@ -10,9 +10,9 @@ import AnimationButton from './animation-button';
 import getURLParam from '../utils';
 import t, { Language } from '../translate';
 import { ISimState, IViewState, ViewType } from '../types';
+import CCLogoImg from '../../images/concord-consortium.png';
 
 import '../../css/seasons.less';
-
 
 interface IState {
   sim: ISimState;
@@ -330,6 +330,12 @@ export default class Seasons extends React.Component<IProps, IState> {
             </div>
           </div>
         </div>
+        <footer className='page-footer'>
+          <section>
+            <a className='cc-brand' href="http://concord.org/" target="_blank" title="The Concord Consortium - Revolutionary digital learning for science, math and engineering"><img src={CCLogoImg} alt="The Concord Consortium" /></a>
+            <p>&copy; Copyright 2024 The Concord Consortium</p>
+          </section>
+        </footer>
       </div>
     );
   }

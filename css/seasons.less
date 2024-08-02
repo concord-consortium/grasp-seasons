@@ -1,5 +1,9 @@
-.grasp-seasons {
+body {
+  margin: 0;
+  background: #f6f6f6;
+}
 
+.grasp-seasons {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
@@ -38,7 +42,8 @@
 
   .day {
     margin-left: 140px;
-    font: 2em 'museo-slab', georgia, 'times new roman', serif;
+    font-size: 2em;
+    font-family: 'Lato', arial, helvetica, sans-serif;
   }
 
   .day-slider {
@@ -78,7 +83,7 @@
     border: none;
     color: #fff;
     cursor: pointer;
-    font-family: bold 1em lato, arial, helvetica, sans-serif;
+    font-family: bold 1em 'Lato', arial, helvetica, sans-serif;
     margin: -4px 0 0 0;
     padding: .375em .625em;
     text-align: center;
@@ -124,6 +129,37 @@
     height: 25px;
     input {
       margin-left:6px;
+    }
+  }
+
+  .page-footer {
+    background: #a3dde7;
+    clear: both;
+    color: #0093b0;
+    font-size: .9em;
+    height: 140px;
+    margin-top: 3em;
+    padding: 1em 0;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+
+    section {
+      margin: 0 auto;
+      width: 1200px;
+    }
+
+    .cc-brand {
+      display: block;
+      height: auto;
+      margin: 1em auto 1.5em;
+      width: 200px;
+    }
+
+    .cc-brand img {
+      height: auto;
+      width: 100%;
     }
   }
 }
