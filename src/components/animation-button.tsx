@@ -1,10 +1,10 @@
-import React from "react";
+import React, { Component } from "react";
 import reactMixin from "react-mixin";
 import t from "../translation/translate";
 
 import animationMixin from "./animation-mixin";
 
-export default class AnimationButton extends React.Component {
+export default class AnimationButton extends Component {
   props: any;
   state: any;
   toggleState: any;

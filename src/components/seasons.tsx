@@ -1,5 +1,5 @@
 import $ from "jquery";
-import React from "react";
+import React, { Component, createRef } from "react";
 import update, { Spec } from "immutability-helper";
 import ViewManager from "./view-manager";
 import Slider from "./slider/slider";
@@ -55,7 +55,7 @@ interface IProps {
   onSimStateChange: (change: ISimState) => void;
   onViewStateChange: (change: IViewState) => void;
 }
-export default class Seasons extends React.Component<IProps, IState> {
+export default class Seasons extends Component<IProps, IState> {
   static defaultProps: IProps = {
     lang: "en_us",
     // Can be used to overwrite default initial state.
@@ -68,7 +68,10 @@ export default class Seasons extends React.Component<IProps, IState> {
     }
   };
 
-  refs: any;
+  playButtonRef = createRef<AnimationButton>();
+  rotatingButtonRef = createRef<AnimationCheckbox>();
+  viewRef = createRef<ViewManager>();
+
   state: IState;
   constructor(props: IProps) {
     super(props);
@@ -143,13 +146,11 @@ export default class Seasons extends React.Component<IProps, IState> {
   }
 
   setPlayBtnDisabled(v: boolean) {
-    if (!this.refs.playButton) return;
-    this.refs.playButton.setDisabled(v);
+    (this.playButtonRef.current as any)?.setDisabled(v);
   }
 
   setRotatingBtnDisabled(v: boolean) {
-    if (!this.refs.rotatingButton) return;
-    this.refs.rotatingButton.setDisabled(v);
+    (this.rotatingButtonRef.current as any)?.setDisabled(v);
   }
 
   setSimState(newSimState: Partial<ISimState>, callback?: () => void, skipEvent=false) {
@@ -255,7 +256,7 @@ export default class Seasons extends React.Component<IProps, IState> {
     const rot = -long * Math.PI / 180;
     this.setSimState({ lat, long, earthRotation: rot }, () => {
       // .setState is an async operation!
-      this.refs.view.lookAtLatLongMarker();
+      this.viewRef.current?.lookAtLatLongMarker();
     });
     this.log("CityPulldownChanged", {
       value: city,
@@ -265,7 +266,7 @@ export default class Seasons extends React.Component<IProps, IState> {
   }
 
   lookAtSubsolarPoint() {
-    this.refs.view.lookAtSubsolarPoint();
+    this.viewRef.current?.lookAtSubsolarPoint();
     // Clicking the subsolar button should also turn the Earth such that the longitude of
     // the selected city or point is visible. 11.5 deg shift ensures that the point is perfectly
     // positioned. I can't explain why we need it.
@@ -278,11 +279,11 @@ export default class Seasons extends React.Component<IProps, IState> {
   }
 
   getEarthScreenPosition(){
-    return this.refs.view.getEarthScreenPosition();
+    return this.viewRef.current?.getEarthScreenPosition();
   }
 
   lockCameraRotation(lock: boolean) {
-    this.refs.view.lockCameraRotation(lock);
+    this.viewRef.current?.lockCameraRotation(lock);
   }
 
   render() {
@@ -291,11 +292,11 @@ export default class Seasons extends React.Component<IProps, IState> {
 
     return (
       <div className="grasp-seasons">
-        <ViewManager ref="view" view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log} />
+        <ViewManager ref={this.viewRef} view={this.state.view} simulation={this.state.sim} onSimStateChange={this.simStateChange} onViewChange={this.viewChange} log={this.log} />
         <div className="controls" >
           <div className="left-col">
             <div className="form-group">
-              <AnimationButton ref="playButton" speed={this.getAnimSpeed()} currentValue={this.state.sim.day} lang={lang} onAnimationStep={this.dayAnimFrame}
+              <AnimationButton ref={this.playButtonRef} speed={this.getAnimSpeed()} currentValue={this.state.sim.day} lang={lang} onAnimationStep={this.dayAnimFrame}
                                onClick={this.logButtonClick}/>
               <label><input type="checkbox" name="dailyRotation" checked={this.state.sim.dailyRotation} onChange={this.simCheckboxChange}/> { t("~DAILY_ROTATION", lang) }</label>
               <label className="day">{ t("~DAY", lang) }: { this.getFormattedDay() }</label>
@@ -324,7 +325,7 @@ export default class Seasons extends React.Component<IProps, IState> {
             </div>
             <div className="checkboxes">
               <label>
-                <AnimationCheckbox ref="rotatingButton" speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}
+                <AnimationCheckbox ref={this.rotatingButtonRef} speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation} onAnimationStep={this.earthRotationAnimFrame}
                                   name="EarthRotation" onChange={this.logCheckboxChange}/> { t("~ROTATING", lang) }
               </label>
               <label><input type="checkbox" name="earthTilt" checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}/> { t("~TILTED", lang) }</label>

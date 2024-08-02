@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component, createRef } from "react";
 import $ from "jquery";
 import "jquery-ui/ui/widgets/slider";
 
@@ -20,13 +20,13 @@ interface IOptions extends IProps {
   _slideStart: number;
   _prevValue: any;
 }
-export default class Slider extends React.Component<IProps> {
+export default class Slider extends Component<IProps> {
   static defaultProps = {
     logId: "",
     log: null
   }
   // props: any;
-  refs: any;
+  containerRef = createRef<HTMLDivElement>();
   sliderFuncName: any;
 
   constructor(props: IProps) {
@@ -36,7 +36,7 @@ export default class Slider extends React.Component<IProps> {
   }
 
   get $slider() {
-    return $(this.refs.container) as any;
+    return $(this.containerRef.current as HTMLDivElement) as any;
   }
 
   getSliderOpts(props: IProps) {
@@ -80,7 +80,7 @@ export default class Slider extends React.Component<IProps> {
 
   render() {
     return (
-      <div ref="container" className="grasp-slider"></div>
+      <div ref={this.containerRef} className="grasp-slider"></div>
     )
   }
 }

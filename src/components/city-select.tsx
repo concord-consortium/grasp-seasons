@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import CITY_DATA from "../utils/city-data";
 import t, { Language } from "../translation/translate";
 
@@ -21,7 +21,7 @@ interface IState {
   customLocationsCount: number;
   customLocName: string;
 }
-export default class CitySelect extends React.Component<IProps> {
+export default class CitySelect extends Component<IProps> {
   state: IState;
   constructor(props: IProps) {
     super(props);

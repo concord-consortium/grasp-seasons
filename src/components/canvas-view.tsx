@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component, createRef } from "react";
 import { ISimState } from "../types";
 
 export interface ICanvasProps {
@@ -6,12 +6,14 @@ export interface ICanvasProps {
   log?: (action: string, data: any) => void;
   onSimStateChange: (newProps: Partial<ISimState>) => void;
 }
-export default class CanvasView<TProps extends ICanvasProps> extends React.Component<TProps> {
+export default class CanvasView<TProps extends ICanvasProps> extends Component<TProps> {
   ExternalView: any;  // EarthView | GroundRaysView | OrbitView | SpaceRaysView
   externalView: any;  // instance of above class
   refs: any;
+  containerRef = createRef<HTMLDivElement>();
+
   componentDidMount() {
-    this.externalView = new this.ExternalView(this.refs.container, this.props.simulation);
+    this.externalView = new this.ExternalView(this.containerRef.current, this.props.simulation);
     if (this.externalView.on) {
       this.externalView.on("log", (action: string, data: any) => {
         this.props.log?.(action, data);
@@ -39,7 +41,7 @@ export default class CanvasView<TProps extends ICanvasProps> extends React.Compo
 
   render() {
     return (
-      <div ref="container" style={{ width: "100%", height: "100%" }}>
+      <div ref={this.containerRef} style={{ width: "100%", height: "100%" }}>
         { /* Canvas will be inserted here by the external view. */ }
       </div>
     )

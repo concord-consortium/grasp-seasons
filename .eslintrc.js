@@ -37,10 +37,6 @@ module.exports = {
     "plugin:react/recommended"
   ],
   rules: {
-    // GRASP Specific overrides
-    "import/no-named-as-default-member": "off",
-    "react/no-string-refs": "off",
-    // END OF GRASP Specific overrides
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-confusing-non-null-assertion": "error",
     "@typescript-eslint/no-empty-interface": "off",

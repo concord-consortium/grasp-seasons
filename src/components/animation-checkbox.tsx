@@ -1,9 +1,9 @@
-import React from "react";
+import React, { Component } from "react";
 import reactMixin from "react-mixin";
 
 import animationMixin from "./animation-mixin";
 
-export default class AnimationCheckbox extends React.Component {
+export default class AnimationCheckbox extends Component {
   props: any;
   state: any;
   toggleState: any;
