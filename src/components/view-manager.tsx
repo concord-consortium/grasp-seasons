@@ -7,6 +7,11 @@ import { ISimState, IViewState, ViewType } from "../types";
 
 import "./view-manager.scss";
 
+export interface ViewManagerHandles {
+  lookAtSubsolarPoint: () => void;
+  lookAtLatLongMarker: () => void;
+}
+
 interface IProps {
   simulation: ISimState;
   view: IViewState;
@@ -15,7 +20,9 @@ interface IProps {
   onViewChange: (viewPosition: keyof IViewState, viewName: ViewType) => void;
 }
 
-const ViewManager = forwardRef(({ simulation, view, log, onSimStateChange, onViewChange }: IProps, ref) => {
+const ViewManager = forwardRef<ViewManagerHandles, IProps>(({
+  simulation, view, log, onSimStateChange, onViewChange
+}, ref) => {
   const lang = simulation.lang;
 
   const earthRef = useRef<EarthViewComp>(null);

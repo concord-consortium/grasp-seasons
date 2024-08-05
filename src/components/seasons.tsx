@@ -1,46 +1,39 @@
 import React, { useState, useEffect, useRef, ChangeEvent } from "react";
-import update, { Spec } from "immutability-helper";
-import ViewManager from "./view-manager";
+import ViewManager, { ViewManagerHandles } from "./view-manager";
 import Slider from "./slider/slider";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
 import CitySelect from "./city-select";
-import AnimationCheckbox from "./animation-checkbox";
-import AnimationButton from "./animation-button";
 import getURLParam from "../utils/utils";
 import t, { Language } from "../translation/translate";
 import { ISimState, IViewState, ViewType } from "../types";
+import { useAnimation } from "../hooks/use-animation";
 import CCLogoImg from "../assets/concord-consortium.png";
 
 import "./seasons.scss";
 
-interface IState {
-  sim: ISimState;
-  view: IViewState;
-}
-
 const ANIM_SPEED = 0.02;
 const DAILY_ROTATION_ANIM_SPEED = 0.0003;
 const ROTATION_SPEED = 0.0004;
-const DEFAULT_STATE: IState = {
-  sim: {
-    day: 171,
-    earthTilt: true,
-    earthRotation: 1.539,
-    sunEarthLine: true,
-    lat: 40.11,
-    long: -88.2,
-    sunrayColor: "#D8D8AC",
-    groundColor: "#4C7F19", // 'auto' will make color different for each season
-    sunrayDistMarker: false,
-    dailyRotation: false,
-    earthGridlines: false,
-    lang: "en_us"
-  },
-  view: {
-    "main": "orbit",
-    "small-top": "raysGround",
-    "small-bottom": "nothing"
-  }
+
+const DEFAULT_SIM_STATE: ISimState = {
+  day: 171,
+  earthTilt: true,
+  earthRotation: 1.539,
+  sunEarthLine: true,
+  lat: 40.11,
+  long: -88.2,
+  sunrayColor: "#D8D8AC",
+  groundColor: "#4C7F19", // 'auto' will make color different for each season
+  sunrayDistMarker: false,
+  dailyRotation: false,
+  earthGridlines: false,
+  lang: "en_us"
+};
+
+const DEFAULT_VIEW_STATE: IViewState = {
+  "main": "orbit",
+  "small-top": "raysGround",
+  "small-bottom": "nothing"
 };
 
 function capitalize(string: string) {
@@ -49,143 +42,67 @@ function capitalize(string: string) {
 
 interface IProps {
   lang?: Language;
-  initialState?: Partial<IState>;
+  initialState?: Partial<ISimState>;
   logHandler?: (action: string, data: any) => void;
 }
 
 const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandler }) => {
-  const playButtonRef = useRef<AnimationButton>(null);
-  const rotatingButtonRef = useRef<AnimationCheckbox>(null);
-  const viewRef = useRef<any>(null);
+  const viewRef = useRef<ViewManagerHandles>(null);
 
-  const [state, setState] = useState<IState>({
-    ...DEFAULT_STATE,
+  // State
+  const [simState, setSimState] = useState<ISimState>({
+    ...DEFAULT_SIM_STATE,
     ...initialState,
-    sim: {
-      ...DEFAULT_STATE.sim,
-      ...initialState.sim,
-      lang: lang || (getURLParam("lang") as Language) || DEFAULT_STATE.sim.lang
-    }
+    lang: lang || (getURLParam("lang") as Language) || DEFAULT_SIM_STATE.lang
+  });
+  const [viewState, setViewState] = useState<IViewState>(DEFAULT_VIEW_STATE);
+
+  // Earth rotation animation controlled by "Play" button
+  const { animationStarted: mainAnimationStarted, toggleState: toggleMainAnimation } = useAnimation({
+    value: simState.day,
+    setValue: (newDay: number) => {
+      const stateUpdate: Partial<ISimState> = { day: newDay % 365 };
+      if (simState.dailyRotation) {
+        stateUpdate.earthRotation = (newDay % 1) * 2 * Math.PI;
+      }
+      setSimState(prevState => ({ ...prevState, ...stateUpdate }));
+    },
+    speed: simState.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED
   });
 
-  const simLang = state.sim.lang;
-  const earthVisible = Object.values(state.view).indexOf("earth") > -1;
-
-  const log = (action: string, data?: any) => {
-    logHandler?.(action, data);
-  };
-
-  useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      sim: {
-        ...prevState.sim,
-        lang
+  // Rotation animation controlled by "Rotating" checkbox
+  const { animationStarted: rotationAnimationStarted, toggleState: toggleRotationAnimation } = useAnimation({
+    value: simState.earthRotation,
+    setValue: (newAngle: number) => {
+      if (!mainAnimationStarted) {
+        setSimState(prevState => ({ ...prevState, earthRotation: newAngle % (2 * Math.PI) }));
       }
-    }));
-  }, [lang]);
+    },
+    speed: ROTATION_SPEED
+  });
 
+  // Derived state
+  const simLang = simState.lang;
+  const earthVisible = Object.values(viewState).indexOf("earth") > -1;
+  const playStopLabel = mainAnimationStarted ? t("~STOP", simLang) : t("~PLAY", simLang);
+
+  // Setup initial view to look at subsolar point
   useEffect(() => {
     lookAtSubsolarPoint();
   }, []);
 
+  // Keep updating lang in simState when lang prop changes
   useEffect(() => {
-    log("ViewsRearranged", state.view);
-  }, [state.view]);
+    setSimState(prevState => ({ ...prevState, lang }));
+  }, [lang]);
 
-  const getMonth = (date: Date) => {
-    const monthNames = t("~MONTHS", lang);
-    return monthNames[date.getMonth()];
-  };
+  useEffect(() => {
+    log("ViewsRearranged", viewState);
+  }, [viewState]);
 
-  const getFormattedDay = () => {
-    const date = new Date(2015, 0);
-    date.setDate(state.sim.day + 1);
-    return `${getMonth(date)} ${date.getDate()}`;
-  };
-
-  const getFormattedLat = () => {
-    let dir = "";
-    const lat = state.sim.lat;
-    if (lat > 0) dir = t("~DIR_NORTH", simLang);
-    else if (lat < 0) dir = t("~DIR_SOUTH", simLang);
-    const latitude = Math.abs(lat).toFixed(2);
-    return `${latitude}°${dir}`;
-  };
-
-  const getFormattedLong = () => {
-    let dir = "";
-    const lng = state.sim.long;
-    if (lng > 0) dir = t("~DIR_EAST", simLang);
-    else if (lng < 0) dir = t("~DIR_WEST", simLang);
-    const long = Math.abs(lng).toFixed(2);
-    return `${long}°${dir}`;
-  };
-
-  const getAnimSpeed = () => {
-    return state.sim.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED;
-  };
-
-  const setSimState = (newSimState: Partial<ISimState>, callback?: () => void, skipEvent = false) => {
-    const updateStruct: Spec<ISimState> = {};
-    let key: keyof ISimState;
-    for (key in newSimState) {
-      if (newSimState[key] !== state.sim[key]) {
-        updateStruct[key] = { $set: newSimState[key] } as any;
-      }
-    }
-    if (Object.keys(updateStruct).length === 0) {
-      return;
-    }
-    setState(prevState => {
-      const newState = update(prevState.sim, updateStruct);
-      return { ...prevState, sim: newState };
-    });
-  };
-
-  const simStateChange = (newState: Partial<ISimState>) => {
-    setSimState(newState);
-  };
-
-  const viewChange = (viewPosition: keyof IViewState, viewName: ViewType) => {
-    const updateStruct: Spec<IViewState> = {};
-    updateStruct[viewPosition] = { $set: viewName };
-    if (viewName !== "nothing") {
-      const oldView = state.view[viewPosition];
-      for (const key in state.view) {
-        if (state.view[key as keyof IViewState] === viewName) {
-          updateStruct[key as keyof IViewState] = { $set: oldView };
-        }
-      }
-    }
-    setState(prevState => {
-      const newState = update(prevState.view, updateStruct);
-      return { ...prevState, view: newState };
-    });
-  };
-
-  const daySliderChange = (event: any, ui: any) => {
-    setSimState({ day: ui.value });
-  };
-
-  const dayAnimFrame = (newDay: number) => {
-    const stateUpdate: Partial<ISimState> = { day: newDay % 365 };
-    if (state.sim.dailyRotation) {
-      stateUpdate.earthRotation = (newDay % 1) * 2 * Math.PI;
-    }
-    setSimState(stateUpdate);
-  };
-
-  const earthRotationAnimFrame = (newAngle: number) => {
-    setSimState({ earthRotation: newAngle % (2 * Math.PI) });
-  };
-
-  const simCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newSimState: Partial<ISimState> = {
-      [event.target.name as any as keyof ISimState]: event.target.checked
-    };
-    setSimState(newSimState);
-    logCheckboxChange(event);
+  // Helper functions
+  const log = (action: string, data?: any) => {
+    logHandler?.(action, data);
   };
 
   const logCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -198,19 +115,84 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
     log(capitalize(event.currentTarget.name) + "ButtonClicked");
   };
 
-  const latSliderChange = (event: any, ui: any) => {
-    setSimState({ lat: ui.value });
+  const lookAtSubsolarPoint = () => {
+    viewRef.current?.lookAtSubsolarPoint();
+    setSimState(prevState => ({ ...prevState, earthRotation: (11.5 - simState.long) * Math.PI / 180 }));
   };
 
-  const longSliderChange = (event: any, ui: any) => {
-    setSimState({ long: ui.value });
+  const getMonth = (date: Date) => {
+    const monthNames = t("~MONTHS", simLang);
+    return monthNames[date.getMonth()];
   };
 
-  const citySelectChange = (lat: number, long: number, city: string) => {
+  const getFormattedDay = () => {
+    const date = new Date(2024, 0);
+    date.setDate(simState.day + 1);
+    return `${getMonth(date)} ${date.getDate()}`;
+  };
+
+  const getFormattedLat = () => {
+    let dir = "";
+    const lat = simState.lat;
+    if (lat > 0) dir = t("~DIR_NORTH", simLang);
+    else if (lat < 0) dir = t("~DIR_SOUTH", simLang);
+    const latitude = Math.abs(lat).toFixed(2);
+    return `${latitude}°${dir}`;
+  };
+
+  const getFormattedLong = () => {
+    let dir = "";
+    const lng = simState.long;
+    if (lng > 0) dir = t("~DIR_EAST", simLang);
+    else if (lng < 0) dir = t("~DIR_WEST", simLang);
+    const long = Math.abs(lng).toFixed(2);
+    return `${long}°${dir}`;
+  };
+
+  // Event handlers
+  const handleSimStateChange = (newState: Partial<ISimState>) => {
+    setSimState(prevState => ({ ...prevState, ...newState }));
+  };
+
+  const handleViewStateChange = (viewPosition: keyof IViewState, viewName: ViewType) => {
+    const newViewState: Partial<IViewState> = {};
+    newViewState[viewPosition] = viewName;
+    if (viewName !== "nothing") {
+      const oldView = viewState[viewPosition];
+      for (const key in viewState) {
+        if (viewState[key as keyof IViewState] === viewName) {
+          newViewState[key as keyof IViewState] = oldView;
+        }
+      }
+    }
+    setViewState(prevState => ({ ...prevState, ...newViewState }));
+  };
+
+  const handleDaySliderChange = (event: any, ui: any) => {
+    setSimState(prevState => ({ ...prevState, day: ui.value }));
+  };
+
+  const handleSimCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSimState(prevState => ({ ...prevState, [event.target.name as any as keyof ISimState]: event.target.checked }));
+    logCheckboxChange(event);
+  };
+
+  const handleLatSliderChange = (event: any, ui: any) => {
+    setSimState(prevState => ({ ...prevState, lat: ui.value }));
+  };
+
+  const handleLongSliderChange = (event: any, ui: any) => {
+    setSimState(prevState => ({ ...prevState, long: ui.value }));
+  };
+
+  const handleCitySelectChange = (lat: number, long: number, city: string) => {
     const rot = -long * Math.PI / 180;
-    setSimState({ lat, long, earthRotation: rot }, () => {
+    setSimState(prevState => ({ ...prevState, lat, long, earthRotation: rot }));
+
+    setTimeout(() => {
       viewRef.current?.lookAtLatLongMarker();
-    });
+    }, 250);
+
     log("CityPulldownChanged", {
       value: city,
       lat,
@@ -218,12 +200,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
     });
   };
 
-  const lookAtSubsolarPoint = () => {
-    viewRef.current?.lookAtSubsolarPoint();
-    setSimState({ earthRotation: (11.5 - state.sim.long) * Math.PI / 180 });
-  };
-
-  const subpolarButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubpolarButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     lookAtSubsolarPoint();
     logButtonClick(event);
   };
@@ -232,37 +209,36 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
     <div className="grasp-seasons">
       <ViewManager
         ref={viewRef}
-        view={state.view}
-        simulation={state.sim}
-        onSimStateChange={simStateChange}
-        onViewChange={viewChange}
+        view={viewState}
+        simulation={simState}
+        onSimStateChange={handleSimStateChange}
+        onViewChange={handleViewStateChange}
         log={log}
       />
       <div className="controls">
         <div className="left-col">
           <div className="form-group">
-            <AnimationButton
-              ref={playButtonRef}
-              speed={getAnimSpeed()}
-              currentValue={state.sim.day}
-              lang={simLang}
-              onAnimationStep={dayAnimFrame}
-              onClick={logButtonClick}
-            />
+            <button
+              className="btn btn-default animation-btn"
+              name={playStopLabel}
+              onClick={toggleMainAnimation}
+            >
+              { playStopLabel }
+            </button>
             <label>
               <input
                 type="checkbox"
                 name="dailyRotation"
-                checked={state.sim.dailyRotation}
-                onChange={simCheckboxChange}
+                checked={simState.dailyRotation}
+                onChange={handleSimCheckboxChange}
               />
               { t("~DAILY_ROTATION", simLang) }
             </label>
             <label className="day">{ t("~DAY", simLang) }: { getFormattedDay() }</label>
             <div className="day-slider">
               <InfiniteDaySlider
-                value={state.sim.day}
-                slide={daySliderChange}
+                value={simState.day}
+                slide={handleDaySliderChange}
                 lang={simLang}
                 log={log}
                 logId="Day"
@@ -271,27 +247,27 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
           </div>
           <div className="form-group pull-left">
             <CitySelect
-              lat={state.sim.lat}
-              long={state.sim.long}
+              lat={simState.lat}
+              long={simState.long}
               lang={simLang}
-              onCityChange={citySelectChange}
+              onCityChange={handleCitySelectChange}
             />
             <div className="earth-gridlines-toggle"></div>
           </div>
         </div>
         <div className="right-col">
-          <button className="btn btn-default" onClick={subpolarButtonClick} name="ViewSubpolarPoint">
+          <button className="btn btn-default" onClick={handleSubpolarButtonClick} name="ViewSubpolarPoint">
             { t("~VIEW_SUBSOLAR_POINT", simLang) }
           </button>
           <div className="long-lat-sliders">
             <div className="form-group">
               <label>{ t("~LATITUDE", simLang) }: { getFormattedLat() }</label>
               <Slider
-                value={state.sim.lat}
+                value={simState.lat}
                 min={-90}
                 max={90}
                 step={1}
-                slide={latSliderChange}
+                slide={handleLatSliderChange}
                 log={log}
                 logId="Latitude"
               />
@@ -299,11 +275,11 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
             <div className="form-group">
               <label>{ t("~LONGITUDE", simLang) }: { getFormattedLong() }</label>
               <Slider
-                value={state.sim.long}
+                value={simState.long}
                 min={-180}
                 max={180}
                 step={1}
-                slide={longSliderChange}
+                slide={handleLongSliderChange}
                 log={log}
                 logId="Longitude"
               />
@@ -311,13 +287,11 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
           </div>
           <div className="checkboxes">
             <label>
-              <AnimationCheckbox
-                ref={rotatingButtonRef}
-                speed={ROTATION_SPEED}
-                currentValue={state.sim.earthRotation}
-                onAnimationStep={earthRotationAnimFrame}
+              <input
+                type="checkbox"
                 name="EarthRotation"
-                onChange={logCheckboxChange}
+                checked={rotationAnimationStarted}
+                onChange={toggleRotationAnimation}
               />
               { t("~ROTATING", simLang) }
             </label>
@@ -325,8 +299,8 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
               <input
                 type="checkbox"
                 name="earthTilt"
-                checked={state.sim.earthTilt}
-                onChange={simCheckboxChange}
+                checked={simState.earthTilt}
+                onChange={handleSimCheckboxChange}
               />
               { t("~TILTED", simLang) }
             </label>
@@ -334,22 +308,23 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
               <input
                 type="checkbox"
                 name="sunEarthLine"
-                checked={state.sim.sunEarthLine}
-                onChange={simCheckboxChange}
+                checked={simState.sunEarthLine}
+                onChange={handleSimCheckboxChange}
               />
               { t("~SUN_EARTH_LINE", simLang) }
             </label>
-            { earthVisible && (
+            {
+              earthVisible &&
               <label>
                 <input
                   type="checkbox"
                   name="earthGridlines"
-                  checked={state.sim.earthGridlines}
-                  onChange={simCheckboxChange}
+                  checked={simState.earthGridlines}
+                  onChange={handleSimCheckboxChange}
                 />
                 { t("~EARTH_GRIDLINES", simLang) }
               </label>
-            ) }
+            }
           </div>
         </div>
       </div>
