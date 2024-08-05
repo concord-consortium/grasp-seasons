@@ -1,4 +1,4 @@
-var path = require('path');
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // DEPLOY_PATH is set by the s3-deploy-action its value will be:
@@ -7,16 +7,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 // https://github.com/concord-consortium/s3-deploy-action/blob/main/README.md#top-branch-example
 const DEPLOY_PATH = process.env.DEPLOY_PATH;
 
-// WEBPACK_TARGET=lib webpack will build UMD library.
-var lib = process.env.WEBPACK_TARGET === 'lib';
-
 module.exports = {
-  entry: lib ? './src/lib.ts' : './src/index.tsx',
+  entry: './src/index.tsx',
   output: {
-    path: path.join(__dirname, lib ? 'dist-lib' : 'dist'),
-    filename: lib ? 'grasp-seasons.js' : 'app.js',
-    library: lib ? 'GRASPSeasons' : undefined,
-    libraryTarget: lib ? 'umd' : undefined
+    path: path.join(__dirname, 'dist'),
+    filename: 'app.js'
   },
   devServer: {
     client: {

@@ -2,17 +2,11 @@
   "name": "grasp-seasons",
   "version": "0.14.0",
   "description": "",
-  "main": "dist-lib/grasp-seasons.js",
-  "files": [
-    "dist-lib"
-  ],
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
     "build": "webpack",
-    "build:lib": "WEBPACK_TARGET=lib webpack",
-    "prepublishOnly": "WEBPACK_TARGET=lib webpack",
     "start": "webpack serve",
     "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
     "lint:build": "eslint -c \".eslintrc.build.js\" \"./src/**/*.{js,jsx,ts,tsx}\"",
