@@ -24,7 +24,7 @@ export default class Slider extends Component<IProps> {
   static defaultProps = {
     logId: "",
     log: null
-  }
+  };
   // props: any;
   containerRef = createRef<HTMLDivElement>();
   sliderFuncName: any;
@@ -81,6 +81,6 @@ export default class Slider extends Component<IProps> {
   render() {
     return (
       <div ref={this.containerRef} className="grasp-slider"></div>
-    )
+    );
   }
 }

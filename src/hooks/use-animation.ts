@@ -65,4 +65,4 @@ export const useAnimation = ({ value, setValue, speed }: IOptions) => {
     animationStarted,
     toggleState
   };
-}
+};

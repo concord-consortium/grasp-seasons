@@ -5,7 +5,7 @@ module.exports = {
     sourceType: "module",
     project: ["tsconfig.json"]
   },
-  plugins: ["@typescript-eslint", "react", "react-hooks"],
+  plugins: ["@typescript-eslint", "react", "react-hooks", "@stylistic"],
   env: {
     browser: true,
     es6: true

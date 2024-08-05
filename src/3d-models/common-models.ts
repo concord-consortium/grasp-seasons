@@ -183,4 +183,4 @@ export default {
   hiddenCameraSymbol () {
     return new THREE.Object3D();
   }
-}
+};
