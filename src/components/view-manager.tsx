@@ -1,4 +1,4 @@
-import React, { Component, ChangeEvent, createRef } from "react";
+import React, { useEffect, useRef, useImperativeHandle, forwardRef, ChangeEvent } from "react";
 import EarthViewComp from "./earth-view-comp";
 import OrbitViewComp from "./orbit-view-comp";
 import RaysViewComp from "./rays-view-comp";
@@ -14,109 +14,92 @@ interface IProps {
   onSimStateChange: (change: Partial<ISimState>) => void;
   onViewChange: (viewPosition: keyof IViewState, viewName: ViewType) => void;
 }
-export default class ViewManager extends Component<IProps> {
-  private earthRef = createRef<EarthViewComp>();
-  private orbitRef = createRef<OrbitViewComp>();
-  private raysGroundRef = createRef<RaysViewComp>();
-  private raysSpaceRef = createRef<RaysViewComp>();
 
-  _rafId?: number;
+const ViewManager = forwardRef(({ simulation, view, log, onSimStateChange, onViewChange }: IProps, ref) => {
+  const lang = simulation.lang;
 
-  constructor(props: IProps) {
-    super(props);
-    this.rafCallback = this.rafCallback.bind(this);
-    this.syncCameraAndViewAxis = this.syncCameraAndViewAxis.bind(this);
-    this.handleViewChange = this.handleViewChange.bind(this);
-    this.showOrbitViewCameraModel = this.showOrbitViewCameraModel.bind(this);
-  }
+  const earthRef = useRef<EarthViewComp>(null);
+  const orbitRef = useRef<OrbitViewComp>(null);
+  const raysGroundRef = useRef<RaysViewComp>(null);
+  const raysSpaceRef = useRef<RaysViewComp>(null);
 
-  componentDidMount() {
-    this._rafId = requestAnimationFrame(this.rafCallback);
-    this.orbitRef.current?.toggleCameraModel(this.showOrbitViewCameraModel());
-    this.syncCameraAndViewAxis();
-  }
+  const rafId = useRef<number | undefined>(undefined);
 
-  componentWillUnmount() {
-    if (this._rafId) {
-      cancelAnimationFrame(this._rafId);
-    }
-  }
+  const rafCallback = (timestamp: number) => {
+    earthRef.current?.rafCallback(timestamp);
+    orbitRef.current?.rafCallback(timestamp);
+    rafId.current = requestAnimationFrame(rafCallback);
+  };
 
-  componentDidUpdate(prevProps: IProps) {
-    if (prevProps.view !== this.props.view) {
-      this.earthRef.current?.resize();
-      this.orbitRef.current?.resize();
-      this.raysGroundRef.current?.resize();
-      this.raysSpaceRef.current?.resize();
-
-      this.orbitRef.current?.toggleCameraModel(this.showOrbitViewCameraModel());
-
-      if (this.showOrbitViewCameraModel()) {
-        this.syncCameraAndViewAxis();
-      }
-    }
-    if (prevProps.simulation.earthGridlines !== this.props.simulation.earthGridlines) {
-      this.earthRef.current?.toggleGridlines(this.props.simulation.earthGridlines);
-    }
-  }
-
-  rafCallback(timestamp: number) {
-    this.earthRef.current?.rafCallback(timestamp);
-    this.orbitRef.current?.rafCallback(timestamp);
-    this._rafId = requestAnimationFrame(this.rafCallback);
-  }
   // When earth view camera is changed, we need to update view axis in the orbit view.
-  syncCameraAndViewAxis() {
-    if (this.earthRef.current && this.orbitRef.current) {
-      const camVec = this.earthRef.current.getCameraEarthVec();
-      this.orbitRef.current.setViewAxis(camVec);
+  const syncCameraAndViewAxis = () => {
+    if (earthRef.current && orbitRef.current) {
+      const camVec = earthRef.current.getCameraEarthVec();
+      orbitRef.current.setViewAxis(camVec);
     }
-  }
+  };
 
-  lookAtSubsolarPoint() {
-    this.earthRef.current?.lookAtSubsolarPoint();
-  }
+  const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    onViewChange(event.target.name as keyof IViewState, event.target.value as ViewType);
+  };
 
-  lookAtLatLongMarker() {
-    this.earthRef.current?.lookAtLatLongMarker();
-  }
-
-  handleViewChange(event: ChangeEvent<HTMLSelectElement>) {
-    this.props.onViewChange(event.target.name as keyof IViewState, event.target.value as ViewType);
-  }
-
-  getViewPosition(view: ViewType) {
-    let key: keyof IViewState;
-    for (key in this.props.view) {
-      if (this.props.view[key] === view) return key;
-    }
-    return "hidden";
-  }
-
-  showOrbitViewCameraModel() {
+  const showOrbitViewCameraModel = () => {
     // Hiding camera model for now, retaining functionality for future.
     // If Earth is visible in another view, Orbit view will show camera model
     // return (Object.values(this.props.view)).indexOf("earth") > -1;
     return false;
-  }
+  };
 
-  getEarthScreenPosition() {
-    if ((Object.values(this.props.view)).indexOf("orbit") > -1){
-      return this.orbitRef.current?.getEarthPosition() || null;
-    } else {
-      return null;
+  const getViewPosition = (_view: ViewType) => {
+    let key: keyof IViewState;
+    for (key in view) {
+      if (view[key] === _view) return key;
     }
-  }
+    return "hidden";
+  };
 
-  lockCameraRotation(lock: boolean) {
-    this.orbitRef.current?.lockCameraRotation(lock);
-  }
+  useEffect(() => {
+    rafId.current = requestAnimationFrame(rafCallback);
+    orbitRef.current?.toggleCameraModel(showOrbitViewCameraModel());
+    syncCameraAndViewAxis();
 
-  renderViewSelect(position: keyof IViewState) {
-    const lang = this.props.simulation.lang;
+    return () => {
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    earthRef.current?.resize();
+    orbitRef.current?.resize();
+    raysGroundRef.current?.resize();
+    raysSpaceRef.current?.resize();
+
+    orbitRef.current?.toggleCameraModel(showOrbitViewCameraModel());
+
+    if (showOrbitViewCameraModel()) {
+      syncCameraAndViewAxis();
+    }
+  }, [view]);
+
+  useEffect(() => {
+    earthRef.current?.toggleGridlines(simulation.earthGridlines);
+  }, [simulation.earthGridlines]);
+
+  useImperativeHandle(ref, () => ({
+    lookAtSubsolarPoint: () => {
+      earthRef.current?.lookAtSubsolarPoint();
+    },
+    lookAtLatLongMarker: () => {
+      earthRef.current?.lookAtLatLongMarker();
+    }
+  }));
+
+  const renderViewSelect = (position: keyof IViewState) => {
     return (
       <select className={`form-control view-select ${position}`} name={position}
-              value={this.props.view[position]} onChange={this.handleViewChange}>
+        value={view[position]} onChange={handleViewChange}>
         <option value="earth">{ t("~EARTH", lang) }</option>
         <option value="orbit">{ t("~ORBIT", lang) }</option>
         <option value="raysGround">{ t("~GROUND", lang) }</option>
@@ -124,41 +107,41 @@ export default class ViewManager extends Component<IProps> {
         <option value="nothing">{ t("~NOTHING", lang) }</option>
       </select>
     );
-  }
+  };
 
-  render() {
-    const lang = this.props.simulation.lang;
-    return (
-      <div className="view-manager">
-        <div className={`view ${this.getViewPosition("earth")}`}>
-          <EarthViewComp
-            ref={this.earthRef} simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
-            onCameraChange={this.syncCameraAndViewAxis} log={this.props.log}
-          />
-        </div>
-        <div className={`view ${this.getViewPosition("orbit")}`}>
-          <OrbitViewComp
-            ref={this.orbitRef} simulation={this.props.simulation} onSimStateChange={this.props.onSimStateChange}
-            log={this.props.log} showCamera={this.showOrbitViewCameraModel()}
-          />
-        </div>
-        <div className={`view ${this.getViewPosition("raysGround")}`}>
-          <div className="rays-ground-text">{ t("~NOON", lang) }</div>
-          <RaysViewComp
-            ref={this.raysGroundRef} type="ground" simulation={this.props.simulation}
-            onSimStateChange={this.props.onSimStateChange}
-          />
-        </div>
-        <div className={`view ${this.getViewPosition("raysSpace")}`}>
-          <RaysViewComp
-            ref={this.raysSpaceRef} type="space" simulation={this.props.simulation}
-            onSimStateChange={this.props.onSimStateChange}
-          />
-        </div>
-        { this.renderViewSelect("main") }
-        { this.renderViewSelect("small-top") }
-        { this.renderViewSelect("small-bottom") }
+  return (
+    <div className="view-manager">
+      <div className={`view ${getViewPosition("earth")}`}>
+        <EarthViewComp
+          ref={earthRef} simulation={simulation} onSimStateChange={onSimStateChange}
+          onCameraChange={syncCameraAndViewAxis} log={log}
+        />
       </div>
-    );
-  }
-}
+      <div className={`view ${getViewPosition("orbit")}`}>
+        <OrbitViewComp
+          ref={orbitRef} simulation={simulation} onSimStateChange={onSimStateChange}
+          log={log} showCamera={showOrbitViewCameraModel()}
+        />
+      </div>
+      <div className={`view ${getViewPosition("raysGround")}`}>
+        <div className="rays-ground-text">{ t("~NOON", lang) }</div>
+        <RaysViewComp
+          ref={raysGroundRef} type="ground" simulation={simulation}
+          onSimStateChange={onSimStateChange}
+        />
+      </div>
+      <div className={`view ${getViewPosition("raysSpace")}`}>
+        <RaysViewComp
+          ref={raysSpaceRef} type="space" simulation={simulation}
+          onSimStateChange={onSimStateChange}
+        />
+      </div>
+      { renderViewSelect("main") }
+      { renderViewSelect("small-top") }
+      { renderViewSelect("small-bottom") }
+    </div>
+  );
+});
+
+ViewManager.displayName = "ViewManager";
+export default ViewManager;

@@ -1,5 +1,4 @@
-import $ from "jquery";
-import React, { Component, createRef } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import update, { Spec } from "immutability-helper";
 import ViewManager from "./view-manager";
 import Slider from "./slider/slider";
@@ -49,347 +48,327 @@ function capitalize(string: string) {
 }
 
 interface IProps {
-  lang: Language;
-  initialState: Partial<IState>;
-  logHandler: (action: string, data: any) => void;
-  onSimStateChange: (change: ISimState) => void;
-  onViewStateChange: (change: IViewState) => void;
+  lang?: Language;
+  initialState?: Partial<IState>;
+  logHandler?: (action: string, data: any) => void;
 }
-export default class Seasons extends Component<IProps, IState> {
-  static defaultProps: IProps = {
-    lang: "en_us",
-    // Can be used to overwrite default initial state.
-    initialState: {},
-    // State is divided into values that are related to simulation and physics and ones that purely define UI.
-    onSimStateChange (simState: Partial<ISimState>) {},
-    onViewStateChange (viewState: Partial<IViewState>) {},
-    logHandler (action: any, data: any) {
-      console.log("[log]", action, data);
+
+const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandler }) => {
+  const playButtonRef = useRef<AnimationButton>(null);
+  const rotatingButtonRef = useRef<AnimationCheckbox>(null);
+  const viewRef = useRef<any>(null);
+
+  const [state, setState] = useState<IState>({
+    ...DEFAULT_STATE,
+    ...initialState,
+    sim: {
+      ...DEFAULT_STATE.sim,
+      ...initialState.sim,
+      lang: lang || (getURLParam("lang") as Language) || DEFAULT_STATE.sim.lang
     }
+  });
+
+  const simLang = state.sim.lang;
+  const earthVisible = Object.values(state.view).indexOf("earth") > -1;
+
+  const log = (action: string, data?: any) => {
+    logHandler?.(action, data);
   };
 
-  playButtonRef = createRef<AnimationButton>();
-  rotatingButtonRef = createRef<AnimationCheckbox>();
-  viewRef = createRef<ViewManager>();
+  useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      sim: {
+        ...prevState.sim,
+        lang
+      }
+    }));
+  }, [lang]);
 
-  state: IState;
-  constructor(props: IProps) {
-    super(props);
-    this.state = $.extend(true, {}, DEFAULT_STATE, props.initialState);
-    this.state.sim.lang = props.lang || getURLParam("lang") as Language || DEFAULT_STATE.sim.lang;
-    this.simStateChange = this.simStateChange.bind(this);
-    this.viewChange = this.viewChange.bind(this);
-    this.daySliderChange = this.daySliderChange.bind(this);
-    this.daySliderStop = this.daySliderStop.bind(this);
-    this.dayAnimFrame = this.dayAnimFrame.bind(this);
-    this.earthRotationAnimFrame = this.earthRotationAnimFrame.bind(this);
-    this.simCheckboxChange = this.simCheckboxChange.bind(this);
-    this.latSliderChange = this.latSliderChange.bind(this);
-    this.longSliderChange = this.longSliderChange.bind(this);
-    this.citySelectChange = this.citySelectChange.bind(this);
-    this.subpolarButtonClick = this.subpolarButtonClick.bind(this);
-    this.logCheckboxChange = this.logCheckboxChange.bind(this);
-    this.logButtonClick = this.logButtonClick.bind(this);
-    this.log = this.log.bind(this);
-  }
+  useEffect(() => {
+    lookAtSubsolarPoint();
+  }, []);
 
-  log(action: string, data?: any) {
-    this.props.logHandler(action, data);
-  }
-  UNSAFE_componentWillReceiveProps(nextProps: IProps){
-    this.setState((prevState: IState) => {
-      const sim = prevState.sim;
-      sim.lang = nextProps.lang;
-      return { sim };
-    });
-  }
-  componentDidMount() {
-    this.lookAtSubsolarPoint();
-  }
+  useEffect(() => {
+    log("ViewsRearranged", state.view);
+  }, [state.view]);
 
-  getMonth(date: Date) {
-    const lang = this.state.sim.lang;
+  const getMonth = (date: Date) => {
     const monthNames = t("~MONTHS", lang);
     return monthNames[date.getMonth()];
-  }
-  getFormattedDay() {
-    // Initialize a date in `2015-01-01` (it's not a leap year).
-    const date = new Date(2015, 0);
-    // Add the number of days.
-    date.setDate(this.state.sim.day + 1);
-    return `${this.getMonth(date)} ${date.getDate()}`;
-  }
+  };
 
-  getFormattedLat() {
+  const getFormattedDay = () => {
+    const date = new Date(2015, 0);
+    date.setDate(state.sim.day + 1);
+    return `${getMonth(date)} ${date.getDate()}`;
+  };
+
+  const getFormattedLat = () => {
     let dir = "";
-    const lang = this.state.sim.lang;
-    const lat = this.state.sim.lat;
-    if (lat > 0) dir = t("~DIR_NORTH", lang);
-    else if (lat < 0) dir = t("~DIR_SOUTH", lang);
+    const lat = state.sim.lat;
+    if (lat > 0) dir = t("~DIR_NORTH", simLang);
+    else if (lat < 0) dir = t("~DIR_SOUTH", simLang);
     const latitude = Math.abs(lat).toFixed(2);
     return `${latitude}°${dir}`;
-  }
+  };
 
-  getFormattedLong() {
+  const getFormattedLong = () => {
     let dir = "";
-    const lang = this.state.sim.lang;
-    const lng = this.state.sim.long;
-    if (lng > 0) dir = t("~DIR_EAST", lang);
-    else if (lng < 0) dir = t("~DIR_WEST", lang);
+    const lng = state.sim.long;
+    if (lng > 0) dir = t("~DIR_EAST", simLang);
+    else if (lng < 0) dir = t("~DIR_WEST", simLang);
     const long = Math.abs(lng).toFixed(2);
     return `${long}°${dir}`;
-  }
+  };
 
-  getAnimSpeed() {
-    // Slow down animation when daily rotation is on.
-    return this.state.sim.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED;
-  }
+  const getAnimSpeed = () => {
+    return state.sim.dailyRotation ? DAILY_ROTATION_ANIM_SPEED : ANIM_SPEED;
+  };
 
-  setPlayBtnDisabled(v: boolean) {
-    (this.playButtonRef.current as any)?.setDisabled(v);
-  }
-
-  setRotatingBtnDisabled(v: boolean) {
-    (this.rotatingButtonRef.current as any)?.setDisabled(v);
-  }
-
-  setSimState(newSimState: Partial<ISimState>, callback?: () => void, skipEvent=false) {
+  const setSimState = (newSimState: Partial<ISimState>, callback?: () => void, skipEvent = false) => {
     const updateStruct: Spec<ISimState> = {};
     let key: keyof ISimState;
     for (key in newSimState) {
-      if (newSimState[key] !== this.state.sim[key]) {
+      if (newSimState[key] !== state.sim[key]) {
         updateStruct[key] = { $set: newSimState[key] } as any;
       }
     }
     if (Object.keys(updateStruct).length === 0) {
-      // Skip if there is nothing to update.
       return;
     }
-    this.setState(prevState => {
+    setState(prevState => {
       const newState = update(prevState.sim, updateStruct);
-      return { sim: newState };
-    }, () => {
-      if (callback) callback();
-      if (!skipEvent) {
-        this.props.onSimStateChange(this.state.sim);
-      }
+      return { ...prevState, sim: newState };
     });
-  }
+  };
 
-  // Used by the simulation view itself, as user can interact with the view.
-  simStateChange(newState: Partial<ISimState>) {
-    this.setSimState(newState);
-  }
+  const simStateChange = (newState: Partial<ISimState>) => {
+    setSimState(newState);
+  };
 
-  viewChange(viewPosition: keyof IViewState, viewName: ViewType) {
+  const viewChange = (viewPosition: keyof IViewState, viewName: ViewType) => {
     const updateStruct: Spec<IViewState> = {};
     updateStruct[viewPosition] = { $set: viewName };
-    // Swap views if needed.
     if (viewName !== "nothing") {
-      const oldView = this.state.view[viewPosition];
-      for (const key in this.state.view) {
-        if (this.state.view[key as keyof IViewState] === viewName) {
+      const oldView = state.view[viewPosition];
+      for (const key in state.view) {
+        if (state.view[key as keyof IViewState] === viewName) {
           updateStruct[key as keyof IViewState] = { $set: oldView };
         }
       }
     }
-    this.setState(prevState => {
+    setState(prevState => {
       const newState = update(prevState.view, updateStruct);
-      return { view: newState };
-    }, () => {
-      this.log("ViewsRearranged", this.state.view);
-      this.props.onViewStateChange(this.state.view);
+      return { ...prevState, view: newState };
     });
-  }
+  };
 
-  daySliderChange(event: any, ui: any) {
-    this.setSimState({ day: ui.value });
-  }
+  const daySliderChange = (event: any, ui: any) => {
+    setSimState({ day: ui.value });
+  };
 
-  daySliderStop(event: any, ui: any) {
-    this.log("DaySliderChanged", { day: ui.value });
-  }
-
-  dayAnimFrame(newDay: number) {
-    // % 365 as this handler is also used for animation, which doesn't care about 365 limit.
-    const state: Partial<ISimState> = { day: newDay % 365 };
-    if (this.state.sim.dailyRotation) {
-      state.earthRotation = (newDay % 1) * 2 * Math.PI;
+  const dayAnimFrame = (newDay: number) => {
+    const stateUpdate: Partial<ISimState> = { day: newDay % 365 };
+    if (state.sim.dailyRotation) {
+      stateUpdate.earthRotation = (newDay % 1) * 2 * Math.PI;
     }
-    this.setSimState(state);
-  }
+    setSimState(stateUpdate);
+  };
 
-  earthRotationAnimFrame(newAngle: number) {
-    // Again, animation simply increases value so make sure that angle has reasonable value.
-    this.setSimState({ earthRotation: newAngle % (2 * Math.PI) });
-  }
+  const earthRotationAnimFrame = (newAngle: number) => {
+    setSimState({ earthRotation: newAngle % (2 * Math.PI) });
+  };
 
-  simCheckboxChange(event: any) {
-    const newSimState: Partial<ISimState> = {};
-    newSimState[event.target.name as keyof ISimState] = event.target.checked;
-    this.setSimState(newSimState);
-    this.logCheckboxChange(event);
-  }
+  const simCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newSimState: Partial<ISimState> = {
+      [event.target.name as any as keyof ISimState]: event.target.checked
+    };
+    setSimState(newSimState);
+    logCheckboxChange(event);
+  };
 
-  logCheckboxChange(event: any) {
-    this.log(capitalize(event.target.name) + "CheckboxChanged", {
+  const logCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    log(capitalize(event.target.name) + "CheckboxChanged", {
       value: event.target.checked
     });
-  }
+  };
 
-  logButtonClick(event: any) {
-    this.log(capitalize(event.target.name) + "ButtonClicked");
-  }
+  const logButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    log(capitalize(event.currentTarget.name) + "ButtonClicked");
+  };
 
-  latSliderChange(event: any, ui: any) {
-    this.setSimState({ lat: ui.value });
-  }
+  const latSliderChange = (event: any, ui: any) => {
+    setSimState({ lat: ui.value });
+  };
 
-  longSliderChange(event: any, ui: any) {
-    this.setSimState({ long: ui.value });
-  }
+  const longSliderChange = (event: any, ui: any) => {
+    setSimState({ long: ui.value });
+  };
 
-  citySelectChange(lat: number, long: number, city: string) {
-    // When a new city is selected, update lat-long marker, but also:
-    // - rotate earth so the new point is on the bright side of earth,
-    // - update camera position to look at this point.
+  const citySelectChange = (lat: number, long: number, city: string) => {
     const rot = -long * Math.PI / 180;
-    this.setSimState({ lat, long, earthRotation: rot }, () => {
-      // .setState is an async operation!
-      this.viewRef.current?.lookAtLatLongMarker();
+    setSimState({ lat, long, earthRotation: rot }, () => {
+      viewRef.current?.lookAtLatLongMarker();
     });
-    this.log("CityPulldownChanged", {
+    log("CityPulldownChanged", {
       value: city,
       lat,
       long
-    })
-  }
+    });
+  };
 
-  lookAtSubsolarPoint() {
-    this.viewRef.current?.lookAtSubsolarPoint();
-    // Clicking the subsolar button should also turn the Earth such that the longitude of
-    // the selected city or point is visible. 11.5 deg shift ensures that the point is perfectly
-    // positioned. I can't explain why we need it.
-    this.setSimState({ earthRotation: (11.5 - this.state.sim.long) * Math.PI / 180 });
-  }
+  const lookAtSubsolarPoint = () => {
+    viewRef.current?.lookAtSubsolarPoint();
+    setSimState({ earthRotation: (11.5 - state.sim.long) * Math.PI / 180 });
+  };
 
-  subpolarButtonClick(event: any) {
-    this.lookAtSubsolarPoint();
-    this.logButtonClick(event);
-  }
+  const subpolarButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    lookAtSubsolarPoint();
+    logButtonClick(event);
+  };
 
-  getEarthScreenPosition(){
-    return this.viewRef.current?.getEarthScreenPosition();
-  }
-
-  lockCameraRotation(lock: boolean) {
-    this.viewRef.current?.lockCameraRotation(lock);
-  }
-
-  render() {
-    const lang = this.state.sim.lang,
-    earthVisible = Object.values(this.state.view).indexOf("earth") > -1;
-
-    return (
-      <div className="grasp-seasons">
-        <ViewManager
-          ref={this.viewRef}
-          view={this.state.view}
-          simulation={this.state.sim}
-          onSimStateChange={this.simStateChange}
-          onViewChange={this.viewChange}
-          log={this.log}
-        />
-        <div className="controls" >
-          <div className="left-col">
-            <div className="form-group">
-              <AnimationButton ref={this.playButtonRef} speed={this.getAnimSpeed()} currentValue={this.state.sim.day}
-                lang={lang} onAnimationStep={this.dayAnimFrame} onClick={this.logButtonClick}
+  return (
+    <div className="grasp-seasons">
+      <ViewManager
+        ref={viewRef}
+        view={state.view}
+        simulation={state.sim}
+        onSimStateChange={simStateChange}
+        onViewChange={viewChange}
+        log={log}
+      />
+      <div className="controls">
+        <div className="left-col">
+          <div className="form-group">
+            <AnimationButton
+              ref={playButtonRef}
+              speed={getAnimSpeed()}
+              currentValue={state.sim.day}
+              lang={simLang}
+              onAnimationStep={dayAnimFrame}
+              onClick={logButtonClick}
+            />
+            <label>
+              <input
+                type="checkbox"
+                name="dailyRotation"
+                checked={state.sim.dailyRotation}
+                onChange={simCheckboxChange}
               />
-              <label>
-                <input
-                  type="checkbox" name="dailyRotation" checked={this.state.sim.dailyRotation}
-                  onChange={this.simCheckboxChange}
-                />
-                { t("~DAILY_ROTATION", lang) }
-              </label>
-              <label className="day">{ t("~DAY", lang) }: { this.getFormattedDay() }</label>
-              <div className="day-slider">
-                <InfiniteDaySlider
-                  value={this.state.sim.day} slide={this.daySliderChange} lang={lang} log={this.log} logId="Day"
-                />
-              </div>
-            </div>
-            <div className="form-group pull-left">
-              <CitySelect
-                lat={this.state.sim.lat} long={this.state.sim.long} lang={lang} onCityChange={this.citySelectChange}
+              { t("~DAILY_ROTATION", simLang) }
+            </label>
+            <label className="day">{ t("~DAY", simLang) }: { getFormattedDay() }</label>
+            <div className="day-slider">
+              <InfiniteDaySlider
+                value={state.sim.day}
+                slide={daySliderChange}
+                lang={simLang}
+                log={log}
+                logId="Day"
               />
-              <div className="earth-gridlines-toggle">
-
-              </div>
             </div>
           </div>
-          <div className="right-col">
-            <button className="btn btn-default" onClick={this.subpolarButtonClick} name="ViewSubpolarPoint">
-              { t("~VIEW_SUBSOLAR_POINT", lang) }
-            </button>
-            <div className="long-lat-sliders">
-              <div className="form-group">
-                <label>{ t("~LATITUDE", lang) }: { this.getFormattedLat() }</label>
-                <Slider
-                  value={this.state.sim.lat} min={-90} max={90} step={1} slide={this.latSliderChange}
-                  log={this.log} logId="Latitude"
-                />
-              </div>
-              <div className="form-group">
-                <label>{ t("~LONGITUDE", lang) }: { this.getFormattedLong() }</label>
-                <Slider
-                  value={this.state.sim.long} min={-180} max={180} step={1} slide={this.longSliderChange}
-                  log={this.log} logId="Longitude"
-                />
-              </div>
-            </div>
-            <div className="checkboxes">
-              <label>
-                <AnimationCheckbox
-                  ref={this.rotatingButtonRef} speed={ROTATION_SPEED} currentValue={this.state.sim.earthRotation}
-                  onAnimationStep={this.earthRotationAnimFrame} name="EarthRotation" onChange={this.logCheckboxChange}
-                />
-                { t("~ROTATING", lang) }
-              </label>
-              <label>
-                <input
-                  type="checkbox" name="earthTilt" checked={this.state.sim.earthTilt} onChange={this.simCheckboxChange}
-                />
-                { t("~TILTED", lang) }
-              </label>
-              <label>
-                <input
-                type="checkbox" name="sunEarthLine" checked={this.state.sim.sunEarthLine}
-                onChange={this.simCheckboxChange}
-                />
-                { t("~SUN_EARTH_LINE", lang) }
-              </label>
-              {
-                earthVisible &&
-                <label>
-                  <input
-                    type="checkbox" name="earthGridlines" checked={this.state.sim.earthGridlines}
-                    onChange={this.simCheckboxChange}
-                  />
-                  { t("~EARTH_GRIDLINES", lang) }
-                </label>
-              }
-            </div>
+          <div className="form-group pull-left">
+            <CitySelect
+              lat={state.sim.lat}
+              long={state.sim.long}
+              lang={simLang}
+              onCityChange={citySelectChange}
+            />
+            <div className="earth-gridlines-toggle"></div>
           </div>
         </div>
-        <footer className="page-footer">
-          <section>
-            <a className="cc-brand" href="http://concord.org/" target="_blank" title="The Concord Consortium - Revolutionary digital learning for science, math and engineering" rel="noreferrer"><img src={CCLogoImg} alt="The Concord Consortium" /></a>
-            <p>&copy; Copyright 2024 The Concord Consortium</p>
-          </section>
-        </footer>
+        <div className="right-col">
+          <button className="btn btn-default" onClick={subpolarButtonClick} name="ViewSubpolarPoint">
+            { t("~VIEW_SUBSOLAR_POINT", simLang) }
+          </button>
+          <div className="long-lat-sliders">
+            <div className="form-group">
+              <label>{ t("~LATITUDE", simLang) }: { getFormattedLat() }</label>
+              <Slider
+                value={state.sim.lat}
+                min={-90}
+                max={90}
+                step={1}
+                slide={latSliderChange}
+                log={log}
+                logId="Latitude"
+              />
+            </div>
+            <div className="form-group">
+              <label>{ t("~LONGITUDE", simLang) }: { getFormattedLong() }</label>
+              <Slider
+                value={state.sim.long}
+                min={-180}
+                max={180}
+                step={1}
+                slide={longSliderChange}
+                log={log}
+                logId="Longitude"
+              />
+            </div>
+          </div>
+          <div className="checkboxes">
+            <label>
+              <AnimationCheckbox
+                ref={rotatingButtonRef}
+                speed={ROTATION_SPEED}
+                currentValue={state.sim.earthRotation}
+                onAnimationStep={earthRotationAnimFrame}
+                name="EarthRotation"
+                onChange={logCheckboxChange}
+              />
+              { t("~ROTATING", simLang) }
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                name="earthTilt"
+                checked={state.sim.earthTilt}
+                onChange={simCheckboxChange}
+              />
+              { t("~TILTED", simLang) }
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                name="sunEarthLine"
+                checked={state.sim.sunEarthLine}
+                onChange={simCheckboxChange}
+              />
+              { t("~SUN_EARTH_LINE", simLang) }
+            </label>
+            { earthVisible && (
+              <label>
+                <input
+                  type="checkbox"
+                  name="earthGridlines"
+                  checked={state.sim.earthGridlines}
+                  onChange={simCheckboxChange}
+                />
+                { t("~EARTH_GRIDLINES", simLang) }
+              </label>
+            ) }
+          </div>
+        </div>
       </div>
-    );
-  }
-}
+      <footer className="page-footer">
+        <section>
+          <a
+            className="cc-brand"
+            href="http://concord.org/"
+            target="_blank"
+            title="The Concord Consortium - Revolutionary digital learning for science, math and engineering"
+            rel="noreferrer"
+          >
+            <img src={CCLogoImg} alt="The Concord Consortium" />
+          </a>
+          <p>&copy; Copyright 2024 The Concord Consortium</p>
+        </section>
+      </footer>
+    </div>
+  );
+};
+
+export default Seasons;
