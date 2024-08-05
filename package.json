@@ -1,6 +1,6 @@
 {
   "name": "grasp-seasons",
-  "version": "0.13.10",
+  "version": "0.14.0",
   "description": "",
   "main": "dist-lib/grasp-seasons.js",
   "files": [
@@ -13,7 +13,12 @@
     "build": "webpack",
     "build:lib": "WEBPACK_TARGET=lib webpack",
     "prepublishOnly": "WEBPACK_TARGET=lib webpack",
-    "start": "webpack serve"
+    "start": "webpack serve",
+    "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:build": "eslint -c \".eslintrc.build.js\" \"./src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:style": "eslint -c \".eslintrc.style.js\" \"./src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:style:fix": "eslint --fix -c \".eslintrc.style.js\" \"./src/**/*.{js,jsx,ts,tsx}\""
   },
   "repository": {
     "type": "git",
@@ -37,11 +42,19 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-mixin": "^2.0.37",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "@types/three": "^0.167.1",
     "autoprefixer": "^10.4.19",
-    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
-    "less-loader": "^12.2.0",
+    "eslint": "^8.57.0",
+    "eslint-config-react": "^1.1.7",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.35.0",
+    "eslint-webpack-plugin": "^4.2.0",
+    "html-webpack-plugin": "^5.6.0",
     "postcss-loader": "^8.1.1",
     "sass": "^1.77.8",
     "sass-loader": "^16.0.0",

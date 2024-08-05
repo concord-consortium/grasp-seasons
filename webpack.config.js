@@ -1,11 +1,17 @@
 var path = require('path');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+// DEPLOY_PATH is set by the s3-deploy-action its value will be:
+// `branch/[branch-name]/` or `version/[tag-name]/`
+// See the following documentation for more detail:
+// https://github.com/concord-consortium/s3-deploy-action/blob/main/README.md#top-branch-example
+const DEPLOY_PATH = process.env.DEPLOY_PATH;
 
 // WEBPACK_TARGET=lib webpack will build UMD library.
 var lib = process.env.WEBPACK_TARGET === 'lib';
 
 module.exports = {
-  entry: lib ? './js/lib.ts' : './js/main.tsx',
+  entry: lib ? './src/lib.ts' : './src/index.tsx',
   output: {
     path: path.join(__dirname, lib ? 'dist-lib' : 'dist'),
     filename: lib ? 'grasp-seasons.js' : 'app.js',
@@ -39,19 +45,6 @@ module.exports = {
           options: {
             esModule: false
           }
-        }]
-      },
-      {
-        test: /\.less$/,
-        use: [{
-          loader: 'style-loader' // creates style nodes from JS strings
-        }, {
-          loader: 'css-loader', // translates CSS into CommonJS
-          options: {
-            esModule: false
-          }
-        }, {
-          loader: 'less-loader' // compiles Less to CSS
         }]
       },
       {
@@ -89,8 +82,16 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin({
-      patterns: [{ from: 'public' }]
-    })
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'src/index.html',
+      publicPath: '.',
+    }),
+    ...(DEPLOY_PATH ? [new HtmlWebpackPlugin({
+      filename: 'index-top.html',
+      template: 'src/index.html',
+      favicon: 'src/public/favicon.ico',
+      publicPath: DEPLOY_PATH
+    })] : []),
   ]
 };
