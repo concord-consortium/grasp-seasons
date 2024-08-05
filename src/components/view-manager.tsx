@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useImperativeHandle, forwardRef, ChangeEvent } from "react";
+import React, { useEffect, useRef, useImperativeHandle, forwardRef, ChangeEvent, useCallback } from "react";
 import EarthViewComp from "./earth-view-comp";
 import OrbitViewComp from "./orbit-view-comp";
 import RaysViewComp from "./rays-view-comp";
@@ -32,11 +32,11 @@ const ViewManager = forwardRef<ViewManagerHandles, IProps>(({
 
   const rafId = useRef<number | undefined>(undefined);
 
-  const rafCallback = (timestamp: number) => {
+  const rafCallback = useCallback((timestamp: number) => {
     earthRef.current?.rafCallback(timestamp);
     orbitRef.current?.rafCallback(timestamp);
     rafId.current = requestAnimationFrame(rafCallback);
-  };
+  }, []);
 
   // When earth view camera is changed, we need to update view axis in the orbit view.
   const syncCameraAndViewAxis = () => {
@@ -75,7 +75,7 @@ const ViewManager = forwardRef<ViewManagerHandles, IProps>(({
         cancelAnimationFrame(rafId.current);
       }
     };
-  }, []);
+  }, [rafCallback]);
 
   useEffect(() => {
     earthRef.current?.resize();

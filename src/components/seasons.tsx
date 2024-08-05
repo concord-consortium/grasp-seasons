@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ChangeEvent } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent, useCallback } from "react";
 import ViewManager, { ViewManagerHandles } from "./view-manager";
 import Slider from "./slider/slider";
 import InfiniteDaySlider from "./slider/infinite-day-slider";
@@ -43,10 +43,10 @@ function capitalize(string: string) {
 interface IProps {
   lang?: Language;
   initialState?: Partial<ISimState>;
-  logHandler?: (action: string, data: any) => void;
+  log?: (action: string, data?: any) => void;
 }
 
-const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandler }) => {
+const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, log = (action: string, data?: any) => {} }) => {
   const viewRef = useRef<ViewManagerHandles>(null);
 
   // State
@@ -86,25 +86,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
   const earthVisible = Object.values(viewState).indexOf("earth") > -1;
   const playStopLabel = mainAnimationStarted ? t("~STOP", simLang) : t("~PLAY", simLang);
 
-  // Setup initial view to look at subsolar point
-  useEffect(() => {
-    lookAtSubsolarPoint();
-  }, []);
-
-  // Keep updating lang in simState when lang prop changes
-  useEffect(() => {
-    setSimState(prevState => ({ ...prevState, lang }));
-  }, [lang]);
-
-  useEffect(() => {
-    log("ViewsRearranged", viewState);
-  }, [viewState]);
-
-  // Helper functions
-  const log = (action: string, data?: any) => {
-    logHandler?.(action, data);
-  };
-
+  // Log helpers
   const logCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     log(capitalize(event.target.name) + "CheckboxChanged", {
       value: event.target.checked
@@ -115,11 +97,17 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
     log(capitalize(event.currentTarget.name) + "ButtonClicked");
   };
 
-  const lookAtSubsolarPoint = () => {
+  const lookAtSubsolarPoint = useCallback(() => {
     viewRef.current?.lookAtSubsolarPoint();
     setSimState(prevState => ({ ...prevState, earthRotation: (11.5 - simState.long) * Math.PI / 180 }));
-  };
+  }, [simState.long]);
 
+  // Keep updating lang in simState when lang prop changes
+  useEffect(() => {
+    setSimState(prevState => ({ ...prevState, lang }));
+  }, [lang]);
+
+  // Helper functions
   const getMonth = (date: Date) => {
     const monthNames = t("~MONTHS", simLang);
     return monthNames[date.getMonth()];
@@ -166,6 +154,7 @@ const Seasons: React.FC<IProps> = ({ lang = "en_us", initialState = {}, logHandl
       }
     }
     setViewState(prevState => ({ ...prevState, ...newViewState }));
+    log("ViewsRearranged", viewState);
   };
 
   const handleDaySliderChange = (event: any, ui: any) => {
