@@ -106,7 +106,7 @@ export default {
 
     const geometry = new TextGeometry(txt, {
       size: small ? SIZE_SMALL * c.SF : SIZE * c.SF,
-      height: small ? HEIGHT_SMALL * c.SF : HEIGHT * c.SF,
+      depth: small ? HEIGHT_SMALL * c.SF : HEIGHT * c.SF,
       font
     });
     const material = new THREE.LineBasicMaterial({ color: small ? COLOR_SMALL : COLOR });
@@ -183,4 +183,4 @@ export default {
   hiddenCameraSymbol () {
     return new THREE.Object3D();
   }
-}
+};

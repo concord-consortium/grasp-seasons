@@ -44,6 +44,6 @@ export default class CanvasView<TProps extends ICanvasProps> extends Component<T
       <div ref={this.containerRef} style={{ width: "100%", height: "100%" }}>
         { /* Canvas will be inserted here by the external view. */ }
       </div>
-    )
+    );
   }
 }

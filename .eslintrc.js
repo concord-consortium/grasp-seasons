@@ -5,7 +5,7 @@ module.exports = {
     sourceType: "module",
     project: ["tsconfig.json"]
   },
-  plugins: ["@typescript-eslint", "react"],
+  plugins: ["@typescript-eslint", "react", "react-hooks", "@stylistic"],
   env: {
     browser: true,
     es6: true
@@ -34,7 +34,8 @@ module.exports = {
     "plugin:eslint-comments/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
   ],
   rules: {
     "@typescript-eslint/explicit-module-boundary-types": "off",
